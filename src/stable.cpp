@@ -4,7 +4,6 @@
 #include <cmath>
 #include "stable.hpp"
 
-
 StableDistribution::StableDistribution(): generator(12345), uniform_distribution(0, 1) {};
 
 StableDistribution::StableDistribution(double alphaInput, double betaInput, double gammaInput,
