@@ -1,1 +1,1 @@
-add_executable(stable stable.cpp)
+add_executable(main  main.cpp stable.cpp)
