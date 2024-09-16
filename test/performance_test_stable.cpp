@@ -33,6 +33,48 @@ void timeExecutionUniform(StableDistribution* const stable)
 }
 
 
+void timeExecutionSymmetricZ(StableDistribution* const stable)
+{
+    auto start = high_resolution_clock::now();
+
+    stable->generateSymmetricZVector();
+
+    auto stop = high_resolution_clock::now();
+
+    auto duration = duration_cast<microseconds>(stop-start);
+
+    std::cout << "Generates exponential vector at " << duration.count() << std::endl;
+}
+
+
+void timeExecutionNonSymmetricZ(StableDistribution* const stable)
+{
+    auto start = high_resolution_clock::now();
+
+    stable->generateNonSymmetricZVector();
+
+    auto stop = high_resolution_clock::now();
+
+    auto duration = duration_cast<microseconds>(stop-start);
+
+    std::cout << "Generates exponential vector at " << duration.count() << std::endl;
+}
+
+
+void timeExecutionStable(StableDistribution* const stable)
+{
+    auto start = high_resolution_clock::now();
+
+    stable->generateStableXVector();
+
+    auto stop = high_resolution_clock::now();
+
+    auto duration = duration_cast<microseconds>(stop-start);
+
+    std::cout << "Generates stable vector at " << duration.count() << std::endl;
+}
+
+
 int main()
 {
     StableDistribution* stable = new StableDistribution();
@@ -40,6 +82,12 @@ int main()
     timeExecutionExponential(stable);
 
     timeExecutionUniform(stable);
+
+    timeExecutionSymmetricZ(stable);
+
+    timeExecutionNonSymmetricZ(stable);
+
+    timeExecutionStable(stable);
 
     delete stable;
 
