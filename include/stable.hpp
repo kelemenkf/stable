@@ -29,9 +29,11 @@ public:
 
     double generateExponentialNumber();
 
-    double generateSymmetricStableNumber();
+    double generateSymmetricZ();
 
-    double generateNonSymmetricStableNumber();
+    double generateNonSymmetricZ();
+
+    double generateSymmetricX();
 
     std::vector<double> generateUniformVector(int n = 10000);
 
