@@ -5,7 +5,7 @@ project(stable LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Python3 3.9 REQUIRED COMPONENTS Interpreter Development)
+find_package(Python3 3.12 REQUIRED COMPONENTS Interpreter Development)
 
 # Add the include directory
 include_directories(${PROJECT_SOURCE_DIR}/include)

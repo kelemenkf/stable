@@ -33,9 +33,9 @@ public:
 
     double generateNonSymmetricStableNumber();
 
-    std::vector<double> generateUniformVector(int n);
+    std::vector<double> generateUniformVector(int n = 10000);
 
-    std::vector<double> generateExponentialVector(int n);
+    std::vector<double> generateExponentialVector(int n = 10000);
 };
 
 #endif

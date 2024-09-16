@@ -13,7 +13,9 @@ PYBIND11_MODULE(stable, m) {
         .def("get_uniform_bounds", &StableDistribution::getUniformBounds)
         .def("generate_uniform_number", &StableDistribution::generateUniformNumber)
         .def("generate_exponential_number", &StableDistribution::generateExponentialNumber)
-        .def("generate_uniform_vector", &StableDistribution::generateUniformVector)
-        .def("generate_exponential_vector", &StableDistribution::generateExponentialVector)
+        .def("generate_uniform_vector", &StableDistribution::generateUniformVector, 
+        py::arg("n"))
+        .def("generate_exponential_vector", &StableDistribution::generateExponentialVector,
+        py::arg("n"))
         ;
 }

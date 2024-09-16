@@ -2,6 +2,7 @@
 #include <numbers>
 #include <cmath>
 #include "stable.hpp"
+using namespace std::chrono;
 
 StableDistribution::StableDistribution(): generator(12345), uniform_distribution(0, 1) {};
 
@@ -81,7 +82,8 @@ double StableDistribution::generateNonSymmetricStableNumber()
 
 std::vector<double> StableDistribution::generateUniformVector(int n)
 {
-    std::vector<double> numbers;
+    std::vector<double> numbers(n);
+
     for (auto element = numbers.begin(); element != numbers.end();
     ++element)
     {
@@ -94,7 +96,8 @@ std::vector<double> StableDistribution::generateUniformVector(int n)
 
 std::vector<double> StableDistribution::generateExponentialVector(int n)
 {
-    std::vector<double> numbers;
+    std::vector<double> numbers(n);
+     
     for (auto element = numbers.begin(); element != numbers.end(); 
     ++element)
     {
