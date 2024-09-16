@@ -2,6 +2,7 @@
 #define STABLE_H
 
 #include <random>
+#include <vector>
 
 class StableDistribution
 {
@@ -31,6 +32,10 @@ public:
     double generateSymmetricStableNumber();
 
     double generateNonSymmetricStableNumber();
+
+    std::vector<double> generateUniformVector(int n);
+
+    std::vector<double> generateExponentialVector(int n);
 };
 
 #endif

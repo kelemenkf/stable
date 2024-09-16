@@ -1,5 +1,4 @@
 #include <iostream>
-#include <vector>
 #include <numbers>
 #include <cmath>
 #include "stable.hpp"
@@ -77,4 +76,30 @@ double StableDistribution::generateNonSymmetricStableNumber()
 
         return number;
     }
+}
+
+
+std::vector<double> StableDistribution::generateUniformVector(int n)
+{
+    std::vector<double> numbers;
+    for (auto element = numbers.begin(); element != numbers.end();
+    ++element)
+    {
+        *element = generateUniformNumber();
+    }
+
+    return numbers;
+}
+
+
+std::vector<double> StableDistribution::generateExponentialVector(int n)
+{
+    std::vector<double> numbers;
+    for (auto element = numbers.begin(); element != numbers.end(); 
+    ++element)
+    {
+        *element = generateExponentialNumber();
+    }
+
+    return numbers;
 }
