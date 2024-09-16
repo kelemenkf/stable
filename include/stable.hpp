@@ -25,6 +25,10 @@ public:
 
     void getUniformBounds() const;
 
+    int getParametrization() const;
+
+    void setParametrization(const int& param);
+
     double generateUniformNumber();
 
     double generateExponentialNumber();

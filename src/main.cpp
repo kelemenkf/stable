@@ -9,15 +9,7 @@ int main()
 
     StableDistribution* stable = new StableDistribution();
 
-    auto start = high_resolution_clock::now();
-
-    stable->generateExponentialVector();
-
-    auto stop = high_resolution_clock::now();
-
-    auto duration = duration_cast<microseconds>(stop-start);
-
-    cout << "Geneates exponential vector at " << duration.count() << endl;
+    std::cout << stable->getParametrization() << std::endl;
 
     return 0;
 }

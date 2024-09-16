@@ -22,6 +22,19 @@ void StableDistribution::getUniformBounds() const
     std::cout << params.b() << std::endl;
 }
 
+
+int StableDistribution::getParametrization() const
+{
+    return parametrization_index;
+}
+
+
+void StableDistribution::setParametrization(const int& param)
+{
+    parametrization_index = param;
+}
+
+
 double StableDistribution::generateUniformNumber()
 {
     double number;
