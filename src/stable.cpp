@@ -53,6 +53,7 @@ double StableDistribution::generateExponentialNumber()
 
 double StableDistribution::generateSymmetricZ()
 {
+    //Generates a symmetric Z with the 1 parametrization. 
     double number;
     double uniform = generateUniformNumber();
 
@@ -72,6 +73,7 @@ double StableDistribution::generateSymmetricZ()
 
 double StableDistribution::generateNonSymmetricZ()
 {
+    //Generates a nonsymmetric Z with the 1 parametrization. 
     double number;
     double uniform = generateUniformNumber();
     double exponential = generateExponentialNumber();
@@ -90,31 +92,37 @@ double StableDistribution::generateNonSymmetricZ()
 }
 
 
-double StableDistribution::generateSymmetricX()
+double StableDistribution::generateStableX()
 {
+    /*
+
+    Can be used to generate both 0 and 1 paramterized variables, even though Z is
+    generated using the 1 parametrization. 
+    
+    */
     double number;
-    double symmetricZ = generateNonSymmetricZ();
+    double Z = generateNonSymmetricZ();
 
     if (parametrization_index == 0)
     {
         if (alpha == 1)
         {
-            number = (gamma * symmetricZ) + delta;
+            number = (gamma * Z) + delta;
         }
         else
         {
-            number = gamma * (symmetricZ - beta * tan((std::numbers::pi * alpha )/ 2)) + delta;
+            number = gamma * (Z - beta * tan((std::numbers::pi * alpha )/ 2)) + delta;
         }
     }
     else if (parametrization_index == 1)
     {
         if (alpha == 1)
         {
-            number = (gamma * symmetricZ) + (delta + beta * (2/std::numbers::pi) * gamma * log(gamma));
+            number = (gamma * Z) + (delta + beta * (2/std::numbers::pi) * gamma * log(gamma));
         }
         else
         {
-            number = (gamma * symmetricZ) + delta;
+            number = (gamma * Z) + delta;
         }
     }
 
@@ -144,6 +152,48 @@ std::vector<double> StableDistribution::generateExponentialVector(int n)
     ++element)
     {
         *element = generateExponentialNumber();
+    }
+
+    return numbers;
+}
+
+
+std::vector<double> StableDistribution::generateSymmetricZVector(int n)
+{
+    std::vector<double> numbers(n);
+
+    for (auto element = numbers.begin(); element != numbers.end();
+    ++element)
+    {
+        *element = generateSymmetricZ();
+    }
+
+    return numbers;
+}
+
+
+std::vector<double> StableDistribution::generateNonSymmetricZVector(int n)
+{
+    std::vector<double> numbers(n);
+
+    for (auto element = numbers.begin(); element != numbers.end();
+    ++element)
+    {
+        *element = generateNonSymmetricZ();
+    }
+
+    return numbers;
+}
+
+
+std::vector<double> StableDistribution::generateStableXVector(int n)
+{
+    std::vector<double> numbers(n);
+
+    for (auto element = numbers.begin(); element != numbers.end();
+    ++element)
+    {
+        *element = generateStableX();
     }
 
     return numbers;

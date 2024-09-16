@@ -13,12 +13,15 @@ PYBIND11_MODULE(stable, m) {
         .def("set_param", &StableDistribution::setParametrization)
         .def("generate_symmetric_z", &StableDistribution::generateSymmetricZ)
         .def("generate_nonsymmetric_z", &StableDistribution::generateNonSymmetricZ)
-        .def("generate_stable_x", &StableDistribution::generateSymmetricX)
+        .def("generate_stable_x", &StableDistribution::generateStableX)
         .def("generate_uniform_number", &StableDistribution::generateUniformNumber)
         .def("generate_exponential_number", &StableDistribution::generateExponentialNumber)
-        .def("generate_uniform_vector", &StableDistribution::generateUniformVector, 
+        .def("uniform_vector", &StableDistribution::generateUniformVector, 
         py::arg("n"))
-        .def("generate_exponential_vector", &StableDistribution::generateExponentialVector,
+        .def("exponential_vector", &StableDistribution::generateExponentialVector,
         py::arg("n"))
+        .def("symmetric_vector", &StableDistribution::generateSymmetricZVector)
+        .def("nonsymmetric_vector", &StableDistribution::generateNonSymmetricZVector)
+        .def("stable", &StableDistribution::generateStableXVector)
         ;
 }

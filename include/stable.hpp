@@ -37,11 +37,17 @@ public:
 
     double generateNonSymmetricZ();
 
-    double generateSymmetricX();
+    double generateStableX();
 
     std::vector<double> generateUniformVector(int n = 10000);
 
     std::vector<double> generateExponentialVector(int n = 10000);
+
+    std::vector<double> generateSymmetricZVector(int n = 10000);
+
+    std::vector<double> generateNonSymmetricZVector(int n = 10000);
+
+    std::vector<double> generateStableXVector(int n = 10000);
 };
 
 #endif
