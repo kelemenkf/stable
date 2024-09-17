@@ -1,15 +1,15 @@
 #include <chrono>
-#include "stable.hpp"
+#include "stable_simulation.hpp"
 #include <string>
 #include <iostream>
 using namespace std::chrono;
 
 
-void timeExecutionExponential(StableDistribution* const stable)
+void timeExecutionExponential(Simulator* const stable, unsigned int n)
 {
     auto start = high_resolution_clock::now();
 
-    stable->generateExponentialVector();
+    stable->generateExponentialVector(n);
 
     auto stop = high_resolution_clock::now();
 
@@ -19,11 +19,11 @@ void timeExecutionExponential(StableDistribution* const stable)
 }
 
 
-void timeExecutionUniform(StableDistribution* const stable)
+void timeExecutionUniform(Simulator* const stable, unsigned int n)
 {
     auto start = high_resolution_clock::now();
 
-    stable->generateUniformVector();
+    stable->generateUniformVector(n);
 
     auto stop = high_resolution_clock::now();
 
@@ -33,11 +33,11 @@ void timeExecutionUniform(StableDistribution* const stable)
 }
 
 
-void timeExecutionSymmetricZ(StableDistribution* const stable)
+void timeExecutionSymmetricZ(Simulator* const stable, unsigned int n)
 {
     auto start = high_resolution_clock::now();
 
-    stable->generateSymmetricZVector();
+    stable->generateSymmetricZVector(n);
 
     auto stop = high_resolution_clock::now();
 
@@ -47,11 +47,11 @@ void timeExecutionSymmetricZ(StableDistribution* const stable)
 }
 
 
-void timeExecutionNonSymmetricZ(StableDistribution* const stable)
+void timeExecutionNonSymmetricZ(Simulator* const stable, unsigned int n)
 {
     auto start = high_resolution_clock::now();
 
-    stable->generateNonSymmetricZVector();
+    stable->generateNonSymmetricZVector(n);
 
     auto stop = high_resolution_clock::now();
 
@@ -61,11 +61,11 @@ void timeExecutionNonSymmetricZ(StableDistribution* const stable)
 }
 
 
-void timeExecutionStable(StableDistribution* const stable)
+void timeExecutionStable(Simulator* const stable, unsigned int n)
 {
     auto start = high_resolution_clock::now();
 
-    stable->generateStableXVector();
+    stable->generateStableXVector(n);
 
     auto stop = high_resolution_clock::now();
 
@@ -77,17 +77,19 @@ void timeExecutionStable(StableDistribution* const stable)
 
 int main()
 {
-    StableDistribution* stable = new StableDistribution(1.5, 0.5, 2, 4);
+    Simulator* stable = new Simulator(1.5, 0.5, 2, 4);
 
-    timeExecutionExponential(stable);
+    unsigned int n = 10000;
 
-    timeExecutionUniform(stable);
+    timeExecutionExponential(stable, n);
 
-    timeExecutionSymmetricZ(stable);
+    timeExecutionUniform(stable, n);
 
-    timeExecutionNonSymmetricZ(stable);
+    timeExecutionSymmetricZ(stable, n);
 
-    timeExecutionStable(stable);
+    timeExecutionNonSymmetricZ(stable, n);
+
+    timeExecutionStable(stable, n);
 
     delete stable;
 

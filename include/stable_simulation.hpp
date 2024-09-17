@@ -1,4 +1,4 @@
-#ifndef STABLE_SIMUALTI0N_HPP
+#ifndef STABLE_SIMULATION_HPP
 #define STABLE_SIMULATION_HPP
 
 #include "stable_distribution.hpp"
@@ -6,13 +6,12 @@
 class Simulator: private StableDistribution
 {
 private: 
+    unsigned int n;
     std::vector<double> numbers;
 
 public:
-    Simulator();
-
-    Simulator(double alphaInput, double betaInput, double gammaInput, double deltaInput, 
-    unsigned short parametrizationIndexInput);
+    Simulator(double alphaInput = 2, double betaInput = 0, double gammaInput = 1, double deltaInput = 0, 
+    unsigned short parametrizationIndexInput = 0, unsigned int nInput = 1);
 
     ~Simulator();
 

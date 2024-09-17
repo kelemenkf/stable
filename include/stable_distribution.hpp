@@ -31,8 +31,4 @@ public:
     void setParametrization(const int& param);
 };
 
-
-std::mt19937 StableDistribution::generator(std::random_device{}());
-std::uniform_real_distribution<double> StableDistribution::uniform_distribution(0.0, 1.0);
-
 #endif

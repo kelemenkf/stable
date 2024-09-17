@@ -2,12 +2,17 @@
 #include "stable_simulation.hpp"
 
 
-Simulator::Simulator() {};
-
-
 Simulator::Simulator(double alphaInput, double betaInput, double gammaInput, double deltaInput, 
-unsigned short parametrizationIndexInput) : StableDistribution(alphaInput, betaInput, gammaInput, deltaInput, parametrizationIndexInput)
-{};
+unsigned short parametrizationIndexInput, unsigned int nInput) : StableDistribution(alphaInput, betaInput, gammaInput, deltaInput, parametrizationIndexInput), n(nInput)
+{
+    numbers.resize(n);
+};
+
+
+Simulator::~Simulator()
+{
+    
+}
 
 
 std::vector<double> Simulator::generateStableXVector(unsigned int n)

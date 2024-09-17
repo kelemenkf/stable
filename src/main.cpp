@@ -1,7 +1,5 @@
 #include <iostream>
-#include <chrono>
-#include "stable.hpp"
-using namespace std::chrono;
+#include "stable_distribution.hpp"
 
 int main()
 {
