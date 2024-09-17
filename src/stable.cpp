@@ -1,14 +1,17 @@
 #include <iostream>
 #include <numbers>
 #include <cmath>
+#include <algorithm>
 #include "stable.hpp"
 using namespace std::chrono;
 
 StableDistribution::StableDistribution(): generator(12345), uniform_distribution(0, 1) {};
 
+
 StableDistribution::StableDistribution(double alphaInput, double betaInput, double gammaInput,
 double deltaInput): alpha(alphaInput), beta(betaInput), gamma(gammaInput), 
 delta(deltaInput), generator(std::random_device{}()), uniform_distribution(0, 1), parametrization_index(0) {};
+
 
 StableDistribution::~StableDistribution()
 {
@@ -35,21 +38,43 @@ void StableDistribution::setParametrization(const int& param)
 }
 
 
-double StableDistribution::generateUniformNumber()
+double StableDistribution::generateStableX()
 {
+    /*
+
+    Can be used to generate both 0 and 1 paramterized variables, even though Z is
+    generated using the 1 parametrization. 
+    
+    */
     double number;
-    number = std::numbers::pi * (uniform_distribution(generator) - 0.5);  
+    double Z = generateNonSymmetricZ();
+
+    if (parametrization_index == 0)
+    {
+        if (alpha == 1)
+        {
+            number = (gamma * Z) + delta;
+        }
+        else
+        {
+            number = gamma * (Z - beta * tan((std::numbers::pi * alpha )/ 2)) + delta;
+        }
+    }
+    else if (parametrization_index == 1)
+    {
+        if (alpha == 1)
+        {
+            number = (gamma * Z) + (delta + beta * (2/std::numbers::pi) * gamma * log(gamma));
+        }
+        else
+        {
+            number = (gamma * Z) + delta;
+        }
+    }
 
     return number;
 }
 
-double StableDistribution::generateExponentialNumber()
-{
-    double number;
-    number = -std::log(uniform_distribution(generator));
-
-    return number;
-}
 
 double StableDistribution::generateSymmetricZ()
 {
@@ -92,67 +117,32 @@ double StableDistribution::generateNonSymmetricZ()
 }
 
 
-double StableDistribution::generateStableX()
+double StableDistribution::generateExponentialNumber()
 {
-    /*
-
-    Can be used to generate both 0 and 1 paramterized variables, even though Z is
-    generated using the 1 parametrization. 
-    
-    */
     double number;
-    double Z = generateNonSymmetricZ();
 
-    if (parametrization_index == 0)
-    {
-        if (alpha == 1)
-        {
-            number = (gamma * Z) + delta;
-        }
-        else
-        {
-            number = gamma * (Z - beta * tan((std::numbers::pi * alpha )/ 2)) + delta;
-        }
-    }
-    else if (parametrization_index == 1)
-    {
-        if (alpha == 1)
-        {
-            number = (gamma * Z) + (delta + beta * (2/std::numbers::pi) * gamma * log(gamma));
-        }
-        else
-        {
-            number = (gamma * Z) + delta;
-        }
-    }
+    number = -std::log(uniform_distribution(generator));
 
     return number;
 }
 
 
-std::vector<double> StableDistribution::generateUniformVector(int n)
+double StableDistribution::generateUniformNumber()
 {
-    std::vector<double> numbers(n);
+    double number;
 
-    for (auto element = numbers.begin(); element != numbers.end();
-    ++element)
-    {
-        *element = generateUniformNumber();
-    }
+    number = std::numbers::pi * (uniform_distribution(generator) - 0.5);  
 
-    return numbers;
+    return number;
 }
 
 
-std::vector<double> StableDistribution::generateExponentialVector(int n)
+std::vector<double> StableDistribution::generateStableXVector(int n)
 {
     std::vector<double> numbers(n);
-     
-    for (auto element = numbers.begin(); element != numbers.end(); 
-    ++element)
-    {
-        *element = generateExponentialNumber();
-    }
+
+    auto stableLambda = [this]() -> double { return this->generateStableX(); };
+    std::generate(numbers.begin(), numbers.end(), stableLambda);
 
     return numbers;
 }
@@ -162,11 +152,8 @@ std::vector<double> StableDistribution::generateSymmetricZVector(int n)
 {
     std::vector<double> numbers(n);
 
-    for (auto element = numbers.begin(); element != numbers.end();
-    ++element)
-    {
-        *element = generateSymmetricZ();
-    }
+    auto symmetricZLambda = [this]() -> double { return this->generateNonSymmetricZ(); };
+    std::generate(numbers.begin(), numbers.end(), symmetricZLambda);
 
     return numbers;
 }
@@ -176,25 +163,30 @@ std::vector<double> StableDistribution::generateNonSymmetricZVector(int n)
 {
     std::vector<double> numbers(n);
 
-    for (auto element = numbers.begin(); element != numbers.end();
-    ++element)
-    {
-        *element = generateNonSymmetricZ();
-    }
+    auto nonSymmetricZLambda = [this]() -> double { return this->generateNonSymmetricZ(); };
+    std::generate(numbers.begin(), numbers.end(), nonSymmetricZLambda);
 
     return numbers;
 }
 
 
-std::vector<double> StableDistribution::generateStableXVector(int n)
+std::vector<double> StableDistribution::generateExponentialVector(int n)
+{
+    std::vector<double> numbers(n);
+     
+    auto exponentialLambda = [this]() -> double { return this->generateExponentialNumber(); };
+    std::generate(numbers.begin(), numbers.end(), exponentialLambda);
+
+    return numbers;
+}
+
+
+std::vector<double> StableDistribution::generateUniformVector(int n)
 {
     std::vector<double> numbers(n);
 
-    for (auto element = numbers.begin(); element != numbers.end();
-    ++element)
-    {
-        *element = generateStableX();
-    }
+    auto uniformLambda = [this]() -> double { return this->generateUniformNumber(); };
+    std::generate(numbers.begin(), numbers.end(), uniformLambda);
 
     return numbers;
 }

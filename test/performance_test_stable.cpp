@@ -29,7 +29,7 @@ void timeExecutionUniform(StableDistribution* const stable)
 
     auto duration = duration_cast<microseconds>(stop-start);
 
-    std::cout << "Generates exponential vector at " << duration.count() << std::endl;
+    std::cout << "Generates uniform vector at " << duration.count() << std::endl;
 }
 
 
@@ -43,7 +43,7 @@ void timeExecutionSymmetricZ(StableDistribution* const stable)
 
     auto duration = duration_cast<microseconds>(stop-start);
 
-    std::cout << "Generates exponential vector at " << duration.count() << std::endl;
+    std::cout << "Generates symmetric standardized stable vector at " << duration.count() << std::endl;
 }
 
 
@@ -57,7 +57,7 @@ void timeExecutionNonSymmetricZ(StableDistribution* const stable)
 
     auto duration = duration_cast<microseconds>(stop-start);
 
-    std::cout << "Generates exponential vector at " << duration.count() << std::endl;
+    std::cout << "Generates nonsymmetric standardized vector at " << duration.count() << std::endl;
 }
 
 
@@ -77,7 +77,7 @@ void timeExecutionStable(StableDistribution* const stable)
 
 int main()
 {
-    StableDistribution* stable = new StableDistribution();
+    StableDistribution* stable = new StableDistribution(1.5, 0.5, 2, 4);
 
     timeExecutionExponential(stable);
 

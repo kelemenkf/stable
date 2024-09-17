@@ -29,25 +29,25 @@ public:
 
     void setParametrization(const int& param);
 
+    double generateStableX();
+
+    double generateNonSymmetricZ();
+
+    double generateSymmetricZ();
+
     double generateUniformNumber();
 
     double generateExponentialNumber();
 
-    double generateSymmetricZ();
-
-    double generateNonSymmetricZ();
-
-    double generateStableX();
-
-    std::vector<double> generateUniformVector(int n = 10000);
-
-    std::vector<double> generateExponentialVector(int n = 10000);
-
-    std::vector<double> generateSymmetricZVector(int n = 10000);
+    std::vector<double> generateStableXVector(int n = 10000);
 
     std::vector<double> generateNonSymmetricZVector(int n = 10000);
 
-    std::vector<double> generateStableXVector(int n = 10000);
+    std::vector<double> generateSymmetricZVector(int n = 10000);
+
+    std::vector<double> generateExponentialVector(int n = 10000);
+
+    std::vector<double> generateUniformVector(int n = 10000);
 };
 
 #endif
