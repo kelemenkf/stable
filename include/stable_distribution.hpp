@@ -2,6 +2,7 @@
 #define STABLE_H
 
 #include <random>
+#include <stdexcept>
 #include <vector>
 
 class StableDistribution
@@ -29,6 +30,12 @@ public:
     int getParametrization() const;
 
     void setParametrization(const int& param);
+
+
+private: 
+    static double validateAlpha(double alpha);
+    
+    static double validateBeta(double beta);
 };
 
 #endif

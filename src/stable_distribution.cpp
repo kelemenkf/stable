@@ -9,8 +9,8 @@ std::uniform_real_distribution<double> StableDistribution::uniform_distribution(
 
 
 StableDistribution::StableDistribution(double alphaInput, double betaInput, double gammaInput,
-double deltaInput, unsigned short parametrizationIndexInput) : alpha(alphaInput), beta(betaInput), gamma(gammaInput), 
-delta(deltaInput), parametrizationIndex(parametrizationIndexInput) {};
+double deltaInput, unsigned short parametrizationIndexInput) : alpha(StableDistribution::validateAlpha(alphaInput)), 
+beta(StableDistribution::validateBeta(betaInput)), gamma(gammaInput), delta(deltaInput), parametrizationIndex(parametrizationIndexInput) {};
 
 
 StableDistribution::~StableDistribution()
@@ -42,4 +42,26 @@ int StableDistribution::getParametrization() const
 void StableDistribution::setParametrization(const int& param)
 {
     parametrizationIndex = param;
+}
+
+
+double StableDistribution::validateAlpha(double alpha)
+{    
+    if (alpha > 2 || alpha <= 0)
+    {
+        throw std::invalid_argument("Alpha out of range (0;-2]");
+    }
+
+    return alpha;
+}
+
+
+double StableDistribution::validateBeta(double beta)
+{
+    if (beta < -1 || beta > 1)
+    {
+        throw std::invalid_argument("Beta out of range [-1;1]");
+    }
+
+    return beta;
 }
