@@ -6,7 +6,7 @@
 
 class StableDistribution
 {
-private:
+protected:
     static std::mt19937 generator; 
     static std::uniform_real_distribution<double> uniform_distribution;
 
@@ -31,27 +31,6 @@ public:
     int getParametrization() const;
 
     void setParametrization(const int& param);
-
-    std::vector<double> generateStableXVector(int n = 10000);
-
-    std::vector<double> generateNonSymmetricZVector(int n = 10000);
-
-    std::vector<double> generateSymmetricZVector(int n = 10000);
-
-    std::vector<double> generateExponentialVector(int n = 10000);
-
-    std::vector<double> generateUniformVector(int n = 10000);
-
-private:
-    double generateStableX();
-
-    double generateNonSymmetricZ();
-
-    double generateSymmetricZ();
-
-    double generateUniformNumber();
-
-    double generateExponentialNumber();
 };
 
 
