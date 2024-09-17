@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <vector>
 
+
 class StableDistribution
 {
 protected:
@@ -31,11 +32,12 @@ public:
 
     void setParametrization(const int& param);
 
-
-private: 
+private:
     static double validateAlpha(double alpha);
-    
+
     static double validateBeta(double beta);
+
+    int getAlpha();
 };
 
 #endif
