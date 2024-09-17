@@ -14,15 +14,13 @@ protected:
     double beta;
     double gamma; 
     double delta; 
-    int parametrizationIndex;
+    unsigned short parametrizationIndex;
 
 public: 
     static void setRandomEngine();
-
-    StableDistribution();
     
-    StableDistribution(double alphaInput, double betaInput, double gammaInput,
-    double deltaInput);
+    StableDistribution(double alphaInput = 2, double betaInput = 0, double gammaInput = 1,
+    double deltaInput = 0, unsigned short parameterizationIndexInput = 0);
 
     ~StableDistribution();
 

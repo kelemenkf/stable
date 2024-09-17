@@ -1,7 +1,7 @@
 #ifndef STABLE_SIMUALTI0N_HPP
 #define STABLE_SIMULATION_HPP
 
-#include "stable.hpp"
+#include "stable_distribution.hpp"
 
 class Simulator: private StableDistribution
 {
@@ -9,9 +9,12 @@ private:
     std::vector<double> numbers;
 
 public:
-    Simulator() {};
+    Simulator();
 
-    ~Simulator() {};
+    Simulator(double alphaInput, double betaInput, double gammaInput, double deltaInput, 
+    unsigned short parametrizationIndexInput);
+
+    ~Simulator();
 
     std::vector<double> generateStableXVector(unsigned int n);
 

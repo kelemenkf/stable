@@ -1,8 +1,18 @@
 #include <numbers>
 #include "stable_simulation.hpp"
 
+
+Simulator::Simulator() {};
+
+
+Simulator::Simulator(double alphaInput, double betaInput, double gammaInput, double deltaInput, 
+unsigned short parametrizationIndexInput) : StableDistribution(alphaInput, betaInput, gammaInput, deltaInput, parametrizationIndexInput)
+{};
+
+
 std::vector<double> Simulator::generateStableXVector(unsigned int n)
 {
+    numbers.resize(n);
     auto stableLambda = [this]() -> double { return this->generateStableX(); };
     std::generate(numbers.begin(), numbers.end(), stableLambda);
 
@@ -12,6 +22,7 @@ std::vector<double> Simulator::generateStableXVector(unsigned int n)
 
 std::vector<double> Simulator::generateSymmetricZVector(unsigned int n)
 {
+    numbers.resize(n);
     auto symmetricZLambda = [this]() -> double { return this->generateNonSymmetricZ(); };
     std::generate(numbers.begin(), numbers.end(), symmetricZLambda);
 
@@ -21,6 +32,7 @@ std::vector<double> Simulator::generateSymmetricZVector(unsigned int n)
 
 std::vector<double> Simulator::generateNonSymmetricZVector(unsigned int n)
 {
+    numbers.resize(n);
     auto nonSymmetricZLambda = [this]() -> double { return this->generateNonSymmetricZ(); };
     std::generate(numbers.begin(), numbers.end(), nonSymmetricZLambda);
 
@@ -30,6 +42,7 @@ std::vector<double> Simulator::generateNonSymmetricZVector(unsigned int n)
 
 std::vector<double> Simulator::generateExponentialVector(unsigned int n)
 {
+    numbers.resize(n);
     auto exponentialLambda = [this]() -> double { return this->generateExponentialNumber(); };
     std::generate(numbers.begin(), numbers.end(), exponentialLambda);
 
@@ -39,6 +52,7 @@ std::vector<double> Simulator::generateExponentialVector(unsigned int n)
 
 std::vector<double> Simulator::generateUniformVector(unsigned int n)
 {
+    numbers.resize(n);
     auto uniformLambda = [this]() -> double { return this->generateUniformNumber(); };
     std::generate(numbers.begin(), numbers.end(), uniformLambda);
 

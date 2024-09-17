@@ -3,12 +3,10 @@
 #include <algorithm>
 #include "stable_distribution.hpp"
 
-StableDistribution::StableDistribution() {};
-
 
 StableDistribution::StableDistribution(double alphaInput, double betaInput, double gammaInput,
-double deltaInput): alpha(alphaInput), beta(betaInput), gamma(gammaInput), 
-delta(deltaInput), parametrizationIndex(0) {};
+double deltaInput, unsigned short parametrizationIndexInput) : alpha(alphaInput), beta(betaInput), gamma(gammaInput), 
+delta(deltaInput), parametrizationIndex(parametrizationIndexInput) {};
 
 
 StableDistribution::~StableDistribution()
