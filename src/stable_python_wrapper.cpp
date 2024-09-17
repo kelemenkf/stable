@@ -1,4 +1,4 @@
-#include "stable.hpp"
+#include "stable_distribution.hpp"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
