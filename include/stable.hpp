@@ -7,15 +7,18 @@
 class StableDistribution
 {
 private:
+    static std::mt19937 generator; 
+    static std::uniform_real_distribution<double> uniform_distribution;
+
     double alpha; 
     double beta;
     double gamma; 
     double delta; 
-    int parametrization_index;
-    std::mt19937 generator; 
-    std::uniform_real_distribution<double> uniform_distribution;
+    int parametrizationIndex;
 
 public: 
+    static void setRandomEngine();
+
     StableDistribution();
     
     StableDistribution(double alphaInput, double betaInput, double gammaInput,
@@ -29,16 +32,6 @@ public:
 
     void setParametrization(const int& param);
 
-    double generateStableX();
-
-    double generateNonSymmetricZ();
-
-    double generateSymmetricZ();
-
-    double generateUniformNumber();
-
-    double generateExponentialNumber();
-
     std::vector<double> generateStableXVector(int n = 10000);
 
     std::vector<double> generateNonSymmetricZVector(int n = 10000);
@@ -48,6 +41,21 @@ public:
     std::vector<double> generateExponentialVector(int n = 10000);
 
     std::vector<double> generateUniformVector(int n = 10000);
+
+private:
+    double generateStableX();
+
+    double generateNonSymmetricZ();
+
+    double generateSymmetricZ();
+
+    double generateUniformNumber();
+
+    double generateExponentialNumber();
 };
+
+
+std::mt19937 StableDistribution::generator(std::random_device{}());
+std::uniform_real_distribution<double> StableDistribution::uniform_distribution(0.0, 1.0);
 
 #endif

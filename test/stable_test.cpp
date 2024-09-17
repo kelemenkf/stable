@@ -6,6 +6,4 @@
 BOOST_AUTO_TEST_CASE( test_stable_distribution )
 {
     StableDistribution stable;
-    BOOST_TEST( stable.generateUniformNumber() >= -(std::numbers::pi) / 2);
-    BOOST_TEST( stable.generateUniformNumber() <= (std::numbers::pi) / 2 );
 }
