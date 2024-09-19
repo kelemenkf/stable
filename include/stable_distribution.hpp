@@ -1,5 +1,5 @@
-#ifndef STABLE_H
-#define STABLE_H
+#ifndef STABLE_DISTRIBUTION_H
+#define STABLE_DISTRIBUTION_H
 
 #include <random>
 #include <stdexcept>
