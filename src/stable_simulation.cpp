@@ -3,7 +3,8 @@
 
 
 Simulator::Simulator(double alphaInput, double betaInput, double gammaInput, double deltaInput, 
-unsigned short parametrizationIndexInput, unsigned int nInput) : StableDistribution(alphaInput, betaInput, gammaInput, deltaInput, parametrizationIndexInput), n(nInput)
+unsigned short parametrizationIndexInput, unsigned int nInput) : 
+StableDistribution(alphaInput, betaInput, gammaInput, deltaInput, parametrizationIndexInput), n(Simulator::validateN(nInput))
 {
     numbers.resize(n);
 };
@@ -17,7 +18,8 @@ Simulator::~Simulator()
 
 std::vector<double> Simulator::generateStableXVector(unsigned int n)
 {
-    numbers.resize(n);
+    if (n != 1)
+        numbers.resize(n);
     auto stableLambda = [this]() -> double { return this->generateStableX(); };
     std::generate(numbers.begin(), numbers.end(), stableLambda);
 
@@ -27,7 +29,8 @@ std::vector<double> Simulator::generateStableXVector(unsigned int n)
 
 std::vector<double> Simulator::generateSymmetricZVector(unsigned int n)
 {
-    numbers.resize(n);
+    if (n != 1)
+        numbers.resize(n);
     auto symmetricZLambda = [this]() -> double { return this->generateNonSymmetricZ(); };
     std::generate(numbers.begin(), numbers.end(), symmetricZLambda);
 
@@ -37,7 +40,8 @@ std::vector<double> Simulator::generateSymmetricZVector(unsigned int n)
 
 std::vector<double> Simulator::generateNonSymmetricZVector(unsigned int n)
 {
-    numbers.resize(n);
+    if (n != 1)
+        numbers.resize(n);
     auto nonSymmetricZLambda = [this]() -> double { return this->generateNonSymmetricZ(); };
     std::generate(numbers.begin(), numbers.end(), nonSymmetricZLambda);
 
@@ -47,7 +51,8 @@ std::vector<double> Simulator::generateNonSymmetricZVector(unsigned int n)
 
 std::vector<double> Simulator::generateExponentialVector(unsigned int n)
 {
-    numbers.resize(n);
+    if (n != 1)
+        numbers.resize(n);
     auto exponentialLambda = [this]() -> double { return this->generateExponentialNumber(); };
     std::generate(numbers.begin(), numbers.end(), exponentialLambda);
 
@@ -57,7 +62,8 @@ std::vector<double> Simulator::generateExponentialVector(unsigned int n)
 
 std::vector<double> Simulator::generateUniformVector(unsigned int n)
 {
-    numbers.resize(n);
+    if (n != 1)
+        numbers.resize(n);
     auto uniformLambda = [this]() -> double { return this->generateUniformNumber(); };
     std::generate(numbers.begin(), numbers.end(), uniformLambda);
 
@@ -161,4 +167,15 @@ double Simulator::generateUniformNumber()
     number = std::numbers::pi * (uniform_distribution(generator) - 0.5);  
 
     return number;
+}
+
+
+unsigned int Simulator::validateN(const unsigned int& n)
+{
+    if (n == 0)
+    {
+        throw std::invalid_argument("n must be greater than 0");
+    }
+
+    return n;
 }

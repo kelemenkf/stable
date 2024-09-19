@@ -15,15 +15,15 @@ public:
 
     ~Simulator();
 
-    std::vector<double> generateStableXVector(unsigned int n);
+    std::vector<double> generateStableXVector(unsigned int n = 1);
 
-    std::vector<double> generateNonSymmetricZVector(unsigned int n);
+    std::vector<double> generateNonSymmetricZVector(unsigned int n = 1);
 
-    std::vector<double> generateSymmetricZVector(unsigned int n);
+    std::vector<double> generateSymmetricZVector(unsigned int n = 1);
 
-    std::vector<double> generateExponentialVector(unsigned int n);
+    std::vector<double> generateExponentialVector(unsigned int n = 1);
 
-    std::vector<double> generateUniformVector(unsigned int n);
+    std::vector<double> generateUniformVector(unsigned int n = 1);
 
 private:
     double generateStableX();
@@ -35,6 +35,8 @@ private:
     double generateUniformNumber();
 
     double generateExponentialNumber();
+
+    static unsigned int validateN(const unsigned int& n);
 };
 
 

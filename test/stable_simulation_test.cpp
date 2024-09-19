@@ -50,8 +50,9 @@ double getVarianceTolerance(double variance, size_t df, double criticalValue)
 BOOST_AUTO_TEST_SUITE( StableSimulationTestSuite )
 
 
-BOOST_AUTO_TEST_CASE( SimulatorConstruction ) {
-
+BOOST_AUTO_TEST_CASE( SimulatorNonDefaultConstructor ) {
+    BOOST_CHECK_THROW(Simulator simulator(1, 0, 1, 0, 0, 0), std::invalid_argument);
+    BOOST_CHECK_NO_THROW(Simulator simulator(1, 0, 1, 0, 0, 1000));
 }
 
 
@@ -177,20 +178,25 @@ BOOST_AUTO_TEST_CASE( TestExponentialVariance ) {
 }
 
 
-BOOST_AUTO_TEST_CASE( StableSimulation )
-{
+BOOST_AUTO_TEST_CASE( TestSymmetricZSize ) {
     Simulator simulator;
     std::vector<double> numbers = simulator.generateSymmetricZVector(1000);
     BOOST_CHECK_EQUAL(numbers.size(), 1000);
+}
 
 
-    numbers = simulator.generateNonSymmetricZVector(1000);
+BOOST_AUTO_TEST_CASE( TestNonSymmetricZSize) {
+    Simulator simulator;
+    std::vector<double> numbers = simulator.generateNonSymmetricZVector(1000);
     BOOST_CHECK_EQUAL(numbers.size(), 1000);
+}
 
 
-    numbers = simulator.generateStableXVector(1000);
+BOOST_AUTO_TEST_CASE( TestNonStableXSize) {
+    Simulator simulator;
+    std::vector<double> numbers = simulator.generateStableXVector(1000);
     BOOST_CHECK_EQUAL(numbers.size(), 1000);
-} 
+}
 
 
 BOOST_AUTO_TEST_SUITE_END()
