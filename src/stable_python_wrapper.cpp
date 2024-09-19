@@ -1,4 +1,5 @@
 #include "stable_distribution.hpp"
+#include "stable_simulation.hpp"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -11,17 +12,13 @@ PYBIND11_MODULE(stable, m) {
         .def("get_uniform_bounds", &StableDistribution::getUniformBounds)
         .def("get_param", &StableDistribution::getParametrization)
         .def("set_param", &StableDistribution::setParametrization)
-        .def("generate_symmetric_z", &StableDistribution::generateSymmetricZ)
-        .def("generate_nonsymmetric_z", &StableDistribution::generateNonSymmetricZ)
-        .def("generate_stable_x", &StableDistribution::generateStableX)
-        .def("generate_uniform_number", &StableDistribution::generateUniformNumber)
-        .def("generate_exponential_number", &StableDistribution::generateExponentialNumber)
-        .def("uniform_vector", &StableDistribution::generateUniformVector, 
-        py::arg("n"))
-        .def("exponential_vector", &StableDistribution::generateExponentialVector,
-        py::arg("n"))
-        .def("symmetric_vector", &StableDistribution::generateSymmetricZVector)
-        .def("nonsymmetric_vector", &StableDistribution::generateNonSymmetricZVector)
-        .def("stable", &StableDistribution::generateStableXVector)
-        ;
+    ;
+
+    py::class_<Simulator>(m, "Simulator")
+        .def(py::init<>())
+        .def(py::init<double, double, double, double, unsigned short, unsigned int>())
+        .def("symmetric", &Simulator::generateSymmetricZVector)
+        .def("non_symmetric", &Simulator::generateNonSymmetricZVector)
+        .def("stable", &Simulator::generateStableXVector)
+    ;
 }

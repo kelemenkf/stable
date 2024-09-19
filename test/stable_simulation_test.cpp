@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_SUITE( StableSimulationTestSuite )
 
 
 BOOST_AUTO_TEST_CASE( SimulatorNonDefaultConstructor ) {
-    BOOST_CHECK_THROW(Simulator simulator(1, 0, 1, 0, 0, 0), std::invalid_argument);
+    BOOST_CHECK_THROW(Simulator simulator(1, 0, 1, 0, 0, 0l), std::invalid_argument);
     BOOST_CHECK_NO_THROW(Simulator simulator(1, 0, 1, 0, 0, 1000));
 }
 
