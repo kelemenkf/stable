@@ -10,7 +10,8 @@ std::uniform_real_distribution<double> StableDistribution::uniform_distribution(
 
 StableDistribution::StableDistribution(double alphaInput, double betaInput, double gammaInput,
 double deltaInput, unsigned short parametrizationIndexInput) : alpha(StableDistribution::validateAlpha(alphaInput)), 
-beta(StableDistribution::validateBeta(betaInput)), gamma(gammaInput), delta(deltaInput), parametrizationIndex(parametrizationIndexInput) 
+beta(StableDistribution::validateBeta(betaInput)), gamma(gammaInput), delta(deltaInput), 
+parametrizationIndex(StableDistribution::validateParametrizationIndex(parametrizationIndexInput)) 
 {};
 
 
@@ -34,15 +35,15 @@ void StableDistribution::getUniformBounds() const
 }
 
 
-int StableDistribution::getParametrization() const
+unsigned short StableDistribution::getParametrization() const
 {
     return parametrizationIndex;
 }
 
 
-void StableDistribution::setParametrization(const int& param)
+void StableDistribution::setParametrization(const unsigned short& param)
 {
-    parametrizationIndex = param;
+    parametrizationIndex = StableDistribution::validateParametrizationIndex(param);;
 }
 
 
@@ -71,4 +72,15 @@ double StableDistribution::validateBeta(double beta)
     }
 
     return beta;
+}
+
+
+unsigned short StableDistribution::validateParametrizationIndex(unsigned short index)
+{
+    if (index != 0 && index != 1)
+    {
+        throw std::invalid_argument("Not a valid parametrization");
+    }
+
+    return index;
 }

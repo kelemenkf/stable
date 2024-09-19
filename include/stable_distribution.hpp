@@ -28,14 +28,16 @@ public:
 
     void getUniformBounds() const;
 
-    int getParametrization() const;
+    unsigned short getParametrization() const;
 
-    void setParametrization(const int& param);
+    void setParametrization(const unsigned short& param);
 
 private:
     static double validateAlpha(double alpha);
 
     static double validateBeta(double beta);
+
+    static unsigned short validateParametrizationIndex(unsigned short index);
 
     int getAlpha();
 };
