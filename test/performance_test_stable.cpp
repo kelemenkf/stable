@@ -9,7 +9,7 @@ void timeExecutionExponential(Simulator* const stable, unsigned int n)
 {
     auto start = high_resolution_clock::now();
 
-    stable->generateExponentialVector(n);
+    stable->simulateExponentialVector(n);
 
     auto stop = high_resolution_clock::now();
 
@@ -23,7 +23,7 @@ void timeExecutionUniform(Simulator* const stable, unsigned int n)
 {
     auto start = high_resolution_clock::now();
 
-    stable->generateUniformVector(n);
+    stable->simulateUniformVector(n);
 
     auto stop = high_resolution_clock::now();
 
@@ -37,7 +37,7 @@ void timeExecutionSymmetricZ(Simulator* const stable, unsigned int n)
 {
     auto start = high_resolution_clock::now();
 
-    stable->generateSymmetricZVector(n);
+    stable->simulateSymmetricZVector(n);
 
     auto stop = high_resolution_clock::now();
 
@@ -51,7 +51,7 @@ void timeExecutionNonSymmetricZ(Simulator* const stable, unsigned int n)
 {
     auto start = high_resolution_clock::now();
 
-    stable->generateNonSymmetricZVector(n);
+    stable->simulateNonSymmetricZVector(n);
 
     auto stop = high_resolution_clock::now();
 
@@ -65,7 +65,7 @@ void timeExecutionStable(Simulator* const stable, unsigned int n)
 {
     auto start = high_resolution_clock::now();
 
-    stable->generateStableXVector(n);
+    stable->simulateStableXVector(n);
 
     auto stop = high_resolution_clock::now();
 

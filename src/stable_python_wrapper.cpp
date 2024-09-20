@@ -16,8 +16,8 @@ PYBIND11_MODULE(stable, m) {
     py::class_<Simulator>(m, "Simulator")
         .def(py::init<>())
         .def(py::init<double, double, double, double, unsigned short, unsigned int>())
-        .def("symmetric", &Simulator::generateSymmetricZVector)
-        .def("non_symmetric", &Simulator::generateNonSymmetricZVector)
-        .def("stable", &Simulator::generateStableXVector)
+        .def("symmetric", &Simulator::simulateSymmetricZVector)
+        .def("non_symmetric", &Simulator::simulateNonSymmetricZVector)
+        .def("stable", &Simulator::simulateStableXVector)
     ;
 }
