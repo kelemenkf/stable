@@ -16,62 +16,62 @@ Simulator::~Simulator()
 }
 
 
-std::vector<double> Simulator::generateStableXVector(unsigned int n)
+std::vector<double> Simulator::simulateStableXVector(unsigned int n)
 {
     if (n != 1)
         numbers.resize(n);
-    auto stableLambda = [this]() -> double { return this->generateStableX(); };
+    auto stableLambda = [this]() -> double { return this->simulateStableX(); };
     std::generate(numbers.begin(), numbers.end(), stableLambda);
 
     return numbers;
 }
 
 
-std::vector<double> Simulator::generateSymmetricZVector(unsigned int n)
+std::vector<double> Simulator::simulateSymmetricZVector(unsigned int n)
 {
     if (n != 1)
         numbers.resize(n);
-    auto symmetricZLambda = [this]() -> double { return this->generateNonSymmetricZ(); };
+    auto symmetricZLambda = [this]() -> double { return this->simulateNonSymmetricZ(); };
     std::generate(numbers.begin(), numbers.end(), symmetricZLambda);
 
     return numbers;
 }
 
 
-std::vector<double> Simulator::generateNonSymmetricZVector(unsigned int n)
+std::vector<double> Simulator::simulateNonSymmetricZVector(unsigned int n)
 {
     if (n != 1)
         numbers.resize(n);
-    auto nonSymmetricZLambda = [this]() -> double { return this->generateNonSymmetricZ(); };
+    auto nonSymmetricZLambda = [this]() -> double { return this->simulateNonSymmetricZ(); };
     std::generate(numbers.begin(), numbers.end(), nonSymmetricZLambda);
 
     return numbers;
 }
 
 
-std::vector<double> Simulator::generateExponentialVector(unsigned int n)
+std::vector<double> Simulator::simulateExponentialVector(unsigned int n)
 {
     if (n != 1)
         numbers.resize(n);
-    auto exponentialLambda = [this]() -> double { return this->generateExponentialNumber(); };
+    auto exponentialLambda = [this]() -> double { return this->simulateExponentialNumber(); };
     std::generate(numbers.begin(), numbers.end(), exponentialLambda);
 
     return numbers;
 }
 
 
-std::vector<double> Simulator::generateUniformVector(unsigned int n)
+std::vector<double> Simulator::simulateUniformVector(unsigned int n)
 {
     if (n != 1)
         numbers.resize(n);
-    auto uniformLambda = [this]() -> double { return this->generateUniformNumber(); };
+    auto uniformLambda = [this]() -> double { return this->simulateUniformNumber(); };
     std::generate(numbers.begin(), numbers.end(), uniformLambda);
 
     return numbers;
 }
 
 
-double Simulator::generateStableX()
+double Simulator::simulateStableX()
 {
     /*
 
@@ -80,7 +80,7 @@ double Simulator::generateStableX()
     
     */
     double number;
-    double Z = generateNonSymmetricZ();
+    double Z = simulateNonSymmetricZ();
 
     if (parametrizationIndex == 0)
     {
@@ -109,11 +109,11 @@ double Simulator::generateStableX()
 }
 
 
-double Simulator::generateSymmetricZ()
+double Simulator::simulateSymmetricZ()
 {
     //Generates a symmetric Z with the 1 parametrization. 
     double number;
-    double uniform = generateUniformNumber();
+    double uniform = simulateUniformNumber();
 
     if (alpha == 1)
     {
@@ -121,7 +121,7 @@ double Simulator::generateSymmetricZ()
     }
     else
     { 
-        double exponential = generateExponentialNumber();
+        double exponential = simulateExponentialNumber();
         number = (sin(alpha*uniform) / pow(cos(uniform), (1/alpha))) * pow((cos((alpha - 1) * uniform)) / exponential, (1-alpha) / alpha);
     }
 
@@ -129,12 +129,12 @@ double Simulator::generateSymmetricZ()
 }
 
 
-double Simulator::generateNonSymmetricZ()
+double Simulator::simulateNonSymmetricZ()
 {
     //Generates a nonsymmetric Z with the 1 parametrization. 
     double number;
-    double uniform = generateUniformNumber();
-    double exponential = generateExponentialNumber();
+    double uniform = simulateUniformNumber();
+    double exponential = simulateExponentialNumber();
 
     if (alpha == 1)
     {
@@ -150,7 +150,7 @@ double Simulator::generateNonSymmetricZ()
 }
 
 
-double Simulator::generateExponentialNumber()
+double Simulator::simulateExponentialNumber()
 {
     double number;
 
@@ -160,7 +160,7 @@ double Simulator::generateExponentialNumber()
 }
 
 
-double Simulator::generateUniformNumber()
+double Simulator::simulateUniformNumber()
 {
     double number;
 

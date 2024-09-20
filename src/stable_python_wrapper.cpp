@@ -9,7 +9,6 @@ PYBIND11_MODULE(stable, m) {
     py::class_<StableDistribution>(m, "StableDistribution")
         .def(py::init<>())
         .def(py::init<double, double, double, double>())
-        .def("get_uniform_bounds", &StableDistribution::getUniformBounds)
         .def("get_param", &StableDistribution::getParametrization)
         .def("set_param", &StableDistribution::setParametrization)
     ;

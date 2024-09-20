@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE( SimulatorNonDefaultConstructor ) {
 BOOST_AUTO_TEST_CASE( TestUniformSize ) {
     Simulator simulator;
 
-    std::vector<double> numbers = simulator.generateUniformVector(10000);
+    std::vector<double> numbers = simulator.simulateUniformVector(10000);
     BOOST_CHECK_EQUAL(numbers.size(), 10000);
 
     for (auto num: numbers) {
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE( TestUniformSize ) {
 BOOST_AUTO_TEST_CASE( TestUniformBounds ) {
     Simulator simulator;
 
-    std::vector<double> numbers = simulator.generateUniformVector(10000);
+    std::vector<double> numbers = simulator.simulateUniformVector(10000);
 
     for (auto num: numbers) {
         BOOST_CHECK_GE(num, -std::numbers::pi / 2);
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE( TestUniformBounds ) {
 
 BOOST_AUTO_TEST_CASE( TestUniformMean ) {
     Simulator simulator;
-    std::vector<double> numbers = simulator.generateUniformVector(10000);
+    std::vector<double> numbers = simulator.simulateUniformVector(10000);
 
     double sum = std::accumulate(numbers.begin(), numbers.end(), 0.0);
     double mean = sum / numbers.size();
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE( TestUniformMean ) {
 
 BOOST_AUTO_TEST_CASE( TestUniformVariance ) {
     Simulator simulator;
-    std::vector<double> numbers = simulator.generateUniformVector(10000);
+    std::vector<double> numbers = simulator.simulateUniformVector(10000);
 
     double sum = std::accumulate(numbers.begin(), numbers.end(), 0.0);
     double mean = sum / numbers.size();
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE( TestUniformVariance ) {
 BOOST_AUTO_TEST_CASE( TestExponentialSize ) {
     Simulator simulator;
 
-    std::vector<double> numbers = simulator.generateExponentialVector(10000);
+    std::vector<double> numbers = simulator.simulateExponentialVector(10000);
     BOOST_CHECK_EQUAL(numbers.size(), 10000);
 }
 
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE( TestExponentialSize ) {
 BOOST_AUTO_TEST_CASE( TestExponentialBounds ) {
     Simulator simulator;
 
-    std::vector<double> numbers = simulator.generateExponentialVector(10000);
+    std::vector<double> numbers = simulator.simulateExponentialVector(10000);
 
     for (auto num: numbers) {
         BOOST_CHECK_GE(num, 0);
@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE( TestExponentialBounds ) {
 
 BOOST_AUTO_TEST_CASE( TestExponentialMean ) {
     Simulator simulator;
-    std::vector<double> numbers = simulator.generateExponentialVector(10000);
+    std::vector<double> numbers = simulator.simulateExponentialVector(10000);
 
     double sum = std::accumulate(numbers.begin(), numbers.end(), 0.0);
     double mean = sum / numbers.size();
@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE( TestExponentialMean ) {
 
 BOOST_AUTO_TEST_CASE( TestExponentialVariance ) {
     Simulator simulator;
-    std::vector<double> numbers = simulator.generateExponentialVector(10000);
+    std::vector<double> numbers = simulator.simulateExponentialVector(10000);
 
     double sum = std::accumulate(numbers.begin(), numbers.end(), 0.0);
     double mean = sum / numbers.size();
@@ -180,21 +180,21 @@ BOOST_AUTO_TEST_CASE( TestExponentialVariance ) {
 
 BOOST_AUTO_TEST_CASE( TestSymmetricZSize ) {
     Simulator simulator;
-    std::vector<double> numbers = simulator.generateSymmetricZVector(1000);
+    std::vector<double> numbers = simulator.simulateSymmetricZVector(1000);
     BOOST_CHECK_EQUAL(numbers.size(), 1000);
 }
 
 
 BOOST_AUTO_TEST_CASE( TestNonSymmetricZSize) {
     Simulator simulator;
-    std::vector<double> numbers = simulator.generateNonSymmetricZVector(1000);
+    std::vector<double> numbers = simulator.simulateNonSymmetricZVector(1000);
     BOOST_CHECK_EQUAL(numbers.size(), 1000);
 }
 
 
 BOOST_AUTO_TEST_CASE( TestNonStableXSize) {
     Simulator simulator;
-    std::vector<double> numbers = simulator.generateStableXVector(1000);
+    std::vector<double> numbers = simulator.simulateStableXVector(1000);
     BOOST_CHECK_EQUAL(numbers.size(), 1000);
 }
 
