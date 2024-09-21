@@ -36,6 +36,10 @@ private:
 
     static double validateBetaMax(double betaMax);
 
+    void fillAlphas(std::vector<double> alphaValues);
+
+    void fillBetas(std::vector<double> betaValues);
+
 
 protected:
     size_t getTableSize() const;

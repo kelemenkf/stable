@@ -25,14 +25,81 @@ void QuantileEstimatorLookupTable::calculateLookupTable()
 {
     Simulator simulator;
 
-    std::vector<double> alphaValues(static_cast<size_t>((getAlphaMax() - getAlphaMin()) / getMesh()));
-
-    std::cout << (getAlphaMax() - getAlphaMin()) / getMesh() << std::endl;
-
-    std::vector<double> betaValues(static_cast<size_t>((getBetaMax() - getBetaMin()) / getMesh()));
-
-    std::cout << betaValues.size() << std::endl;
+    std::vector<double> alphaValues;
+    std::vector<double> betaValues;
+    fillAlphas(alphaValues);
+    fillBetas(betaValues);
 } 
+
+
+void QuantileEstimatorLookupTable::fillAlphas(std::vector<double> alphaValues)
+{
+    std::vector<double> alphaValues(static_cast<size_t>(getAlphaMax() / getMesh()));
+
+    double currentAlpha = this->getAlphaMin();
+
+    auto alphaFill = [this, currentAlpha]() mutable -> double {
+        while(currentAlpha <= this->getAlphaMax())
+        {
+            return currentAlpha++;
+        } 
+    };
+
+    std::transform(alphaValues.begin(), alphaValues.end(), alphaValues.begin(), alphaFill);
+}
+
+
+void QuantileEstimatorLookupTable::fillBetas(std::vector<double> betaValues)
+{
+    std::vector<double> alphaValues(static_cast<size_t>((getBetaMax() + getMesh()) / getMesh()));
+
+    double currentBeta = this->getBetaMin();
+
+    auto betaFill = [this, currentBeta]() mutable -> double {
+        while(currentBeta <= this->getBetaMax())
+        {
+            return currentBeta++;
+        } 
+    };
+
+    std::transform(betaValues.begin(), betaValues.end(), betaValues.begin(), betaFill);
+}
+
+
+size_t QuantileEstimatorLookupTable::getTableSize() const 
+{
+    return table.size();
+}
+
+
+double QuantileEstimatorLookupTable::getMesh() const
+{
+    return mesh;
+}
+
+
+double QuantileEstimatorLookupTable::getAlphaMin() const
+{
+    return alphaMin;
+}
+
+
+double QuantileEstimatorLookupTable::getAlphaMax() const
+{
+    return alphaMax;
+}
+
+
+double QuantileEstimatorLookupTable::getBetaMin() const
+{
+    return betaMin;
+}
+
+
+double QuantileEstimatorLookupTable::getBetaMax() const
+{
+    return betaMax;
+}
 
 
 double QuantileEstimatorLookupTable::validateMesh(double mesh)
@@ -88,41 +155,5 @@ double QuantileEstimatorLookupTable::validateBetaMax(double betaMax)
         throw std::invalid_argument("Maximum beta is 1");
     }
 
-    return betaMax;
-}
-
-
-size_t QuantileEstimatorLookupTable::getTableSize() const 
-{
-    return table.size();
-}
-
-
-double QuantileEstimatorLookupTable::getMesh() const
-{
-    return mesh;
-}
-
-
-double QuantileEstimatorLookupTable::getAlphaMin() const
-{
-    return alphaMin;
-}
-
-
-double QuantileEstimatorLookupTable::getAlphaMax() const
-{
-    return alphaMax;
-}
-
-
-double QuantileEstimatorLookupTable::getBetaMin() const
-{
-    return betaMin;
-}
-
-
-double QuantileEstimatorLookupTable::getBetaMax() const
-{
     return betaMax;
 }
