@@ -23,6 +23,18 @@ public:
     void calculateLookupTable();
 
     void writeLookupTableToFile();
+
+
+private:
+    static double validateMesh(double mesh);
+
+    static double validateAlphaMin(double alphaMin);
+
+    static double validateAlphaMax(double alphaMax);
+
+    static double validateBetaMin(double betaMin);
+
+    static double validateBetaMax(double betaMax);
 };
 
 #endif
