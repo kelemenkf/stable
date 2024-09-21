@@ -3,6 +3,7 @@
 
 #include "stable_estimation.hpp"
 
+
 class QuantileEstimator: private Estimator
 {
 private:
@@ -13,6 +14,8 @@ public:
     QuantileEstimator(std::vector<double> sample);
 
     ~QuantileEstimator();
+
+    //Sample sorted. Five quantiles determined with correction.
 };
 
 #endif

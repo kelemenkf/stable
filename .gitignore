@@ -1,6 +1,7 @@
 bin/
 build/
 notebooks/
+papers/
 
 *.o
 *.obj
