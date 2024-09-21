@@ -17,7 +17,7 @@ private:
 
 
 public:
-    QuantileEstimatorLookupTable(double meshInput, double alphaMinInput = 0.1, double alphaMaxInput = 2.0, 
+    QuantileEstimatorLookupTable(double meshInput = 0.1, double alphaMinInput = 0.1, double alphaMaxInput = 2.0, 
     double betaMinInput = 0, double betaMaxInput = 1.0);
 
     void calculateLookupTable();
@@ -35,6 +35,20 @@ private:
     static double validateBetaMin(double betaMin);
 
     static double validateBetaMax(double betaMax);
+
+
+protected:
+    size_t getTableSize() const;
+
+    double getMesh() const;
+
+    double getAlphaMin() const;
+
+    double getAlphaMax() const;
+
+    double getBetaMin() const;
+
+    double getBetaMax() const;
 };
 
 #endif

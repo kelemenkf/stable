@@ -81,3 +81,39 @@ double QuantileEstimatorLookupTable::validateBetaMax(double betaMax)
 
     return betaMax;
 }
+
+
+size_t QuantileEstimatorLookupTable::getTableSize() const 
+{
+    return table.size();
+}
+
+
+double QuantileEstimatorLookupTable::getMesh() const
+{
+    return mesh;
+}
+
+
+double QuantileEstimatorLookupTable::getAlphaMin() const
+{
+    return alphaMin;
+}
+
+
+double QuantileEstimatorLookupTable::getAlphaMax() const
+{
+    return alphaMax;
+}
+
+
+double QuantileEstimatorLookupTable::getBetaMin() const
+{
+    return betaMin;
+}
+
+
+double QuantileEstimatorLookupTable::getBetaMax() const
+{
+    return betaMax;
+}
