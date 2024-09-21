@@ -5,11 +5,12 @@
 #include "utils.hpp"
 #include <string>
 #include <map>
+#include <tuple>
 
 class QuantileEstimatorLookupTable
 {
 private:
-    std::map<std::string, std::vector<double>> table;
+    std::map<std::string, std::map<std::tuple<double, double>, double>> lookupTables;
     double mesh;
     double alphaMin;
     double alphaMax;
@@ -22,8 +23,6 @@ public:
     double betaMinInput = 0, double betaMaxInput = 1.0);
 
     void calculateLookupTable();
-
-    void writeLookupTableToFile();
 
 
 private:
@@ -42,6 +41,10 @@ private:
     void fillBetas(const std::vector<double>& betaValues);
 
     std::map<std::string, double> calculateV(const double& alpha, const double& beta);
+
+    double interpolateAlpha();
+
+    double interpolateBeta();
 
 
 

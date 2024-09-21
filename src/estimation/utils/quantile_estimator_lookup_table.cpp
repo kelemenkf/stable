@@ -7,19 +7,19 @@ QuantileEstimatorLookupTable::QuantileEstimatorLookupTable(double meshInput, dou
 double alphaMaxInput, double betaMinInput, double betaMaxInput)
 : mesh(QuantileEstimatorLookupTable::validateMesh(meshInput)), alphaMin(QuantileEstimatorLookupTable::validateAlphaMin(alphaMinInput)),
 alphaMax(QuantileEstimatorLookupTable::validateAlphaMax(alphaMaxInput)), betaMin(QuantileEstimatorLookupTable::validateBetaMin(betaMinInput)), 
-betaMax(QuantileEstimatorLookupTable::validateBetaMax(betaMaxInput)) {};
+betaMax(QuantileEstimatorLookupTable::validateBetaMax(betaMaxInput)) {
+    std::map<std::tuple<double, double>, double> vAlphaValues;
+    std::map<std::tuple<double, double>, double> vBetaValues; 
+    std::map<std::tuple<double, double>, double> vGammaValues; 
+    std::map<std::tuple<double, double>, double> vDeltaValues; 
 
-
-void QuantileEstimatorLookupTable::writeLookupTableToFile()
-{
-    std::ofstream lookupTableStream;
-
-    lookupTableStream.open("lookup_table.csv", std::ios::out);
-
-    if (lookupTableStream.is_open()) 
-    {
-    }
-}
+    lookupTables = {
+        {"vAlpha", vAlphaValues },
+        {"vBeta", vBetaValues },
+        {"vGamma",  vGammaValues },
+        {"vDelta", vDeltaValues }
+    };   
+};
 
 
 void QuantileEstimatorLookupTable::calculateLookupTable()
@@ -28,6 +28,21 @@ void QuantileEstimatorLookupTable::calculateLookupTable()
     std::vector<double> betaValues;
     fillAlphas(alphaValues);
     fillBetas(betaValues);
+
+    for (auto alpha = alphaValues.cbegin(); alpha != alphaValues.cend(); 
+    ++alpha)
+    {
+        for (auto beta = betaValues.cbegin(); beta != betaValues.cend();
+        ++beta)
+        {
+            std::tuple<double, double> index(*alpha, *beta);
+            std::map<std::string, double> vValues = calculateV(*alpha, *beta);
+            lookupTables["vAlpha"][index] = vValues["alpha"];
+            lookupTables["vBeta"][index] = vValues["beta"];
+            lookupTables["vGamma"][index] = vValues["gamma"];
+            lookupTables["vDelta"][index] = vValues["delta"];
+        }
+    }
 } 
 
 
@@ -69,7 +84,9 @@ std::map<std::string, double> QuantileEstimatorLookupTable::calculateV(const dou
 {
     std::map<std::string, double> V = {
         {"alpha", 0},
-        {"beta", 0}
+        {"beta", 0},
+        {"gamma", 0},
+        {"delta", 0}
     };
 
     //Needs 0 parametrization, which is the default.
@@ -85,9 +102,12 @@ std::map<std::string, double> QuantileEstimatorLookupTable::calculateV(const dou
     (getQuantile(sample, 0.75) - getQuantile(sample, 0.25));
     double vBeta = (getQuantile(sample, 0.05) + getQuantile(sample, 0.95) - 2*getQuantile(sample, 0.50)) / 
     (getQuantile(sample, 0.95) - getQuantile(sample, 0.05));
+    double vGamma = (getQuantile(sample, 0.75) - getQuantile(sample, 0.25));
+    double vDelta = -getQuantile(sample, -0.5);
     V["alpha"] = vAlpha;
     V["beta"] = vBeta;
-
+    V["gamma"] = vGamma;
+    V["delta"] = vDelta;
     return V;
 }
 
@@ -125,7 +145,7 @@ double QuantileEstimatorLookupTable::getBetaMax() const
 
 size_t QuantileEstimatorLookupTable::getTableSize() const 
 {
-    return table.size();
+    return lookupTables.size();
 }
 
 
