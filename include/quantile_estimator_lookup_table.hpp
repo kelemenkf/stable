@@ -2,6 +2,7 @@
 #define QUANTILE_ESTIMATOR_LOOKUP_TABLE_HPP
 
 #include "stable_simulation.hpp"
+#include "utils.hpp"
 #include <string>
 #include <map>
 
@@ -36,9 +37,12 @@ private:
 
     static double validateBetaMax(double betaMax);
 
-    void fillAlphas(std::vector<double> alphaValues);
+    void fillAlphas(const std::vector<double>& alphaValues);
 
-    void fillBetas(std::vector<double> betaValues);
+    void fillBetas(const std::vector<double>& betaValues);
+
+    std::map<std::string, double> calculateV(const double& alpha, const double& beta);
+
 
 
 protected:

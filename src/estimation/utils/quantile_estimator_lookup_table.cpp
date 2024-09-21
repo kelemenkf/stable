@@ -1,4 +1,5 @@
 #include "quantile_estimator_lookup_table.hpp"
+#include "utils.hpp"
 #include <fstream>
 #include <iostream>
 
@@ -23,8 +24,6 @@ void QuantileEstimatorLookupTable::writeLookupTableToFile()
 
 void QuantileEstimatorLookupTable::calculateLookupTable()
 {
-    Simulator simulator;
-
     std::vector<double> alphaValues;
     std::vector<double> betaValues;
     fillAlphas(alphaValues);
@@ -32,7 +31,7 @@ void QuantileEstimatorLookupTable::calculateLookupTable()
 } 
 
 
-void QuantileEstimatorLookupTable::fillAlphas(std::vector<double> alphaValues)
+void QuantileEstimatorLookupTable::fillAlphas(const std::vector<double>& alphaValues)
 {
     std::vector<double> alphaValues(static_cast<size_t>(getAlphaMax() / getMesh()));
 
@@ -49,7 +48,7 @@ void QuantileEstimatorLookupTable::fillAlphas(std::vector<double> alphaValues)
 }
 
 
-void QuantileEstimatorLookupTable::fillBetas(std::vector<double> betaValues)
+void QuantileEstimatorLookupTable::fillBetas(const std::vector<double>& betaValues)
 {
     std::vector<double> alphaValues(static_cast<size_t>((getBetaMax() + getMesh()) / getMesh()));
 
@@ -66,10 +65,32 @@ void QuantileEstimatorLookupTable::fillBetas(std::vector<double> betaValues)
 }
 
 
-size_t QuantileEstimatorLookupTable::getTableSize() const 
+std::map<std::string, double> QuantileEstimatorLookupTable::calculateV(const double& alpha, const double& beta)
 {
-    return table.size();
+    std::map<std::string, double> V = {
+        {"alpha", 0},
+        {"beta", 0}
+    };
+
+    //Needs 0 parametrization, which is the default.
+    Simulator simulator(alpha, beta);
+    std::vector<double> sample;
+    sample = simulator.simulateSymmetricZVector(100000);
+
+    std::sort(sample.begin(), sample.end(), [](double a, double b) {
+        return a < b;
+    });
+
+    double vAlpha = (getQuantile(sample, 0.95) - getQuantile(sample, 0.05)) / 
+    (getQuantile(sample, 0.75) - getQuantile(sample, 0.25));
+    double vBeta = (getQuantile(sample, 0.05) + getQuantile(sample, 0.95) - 2*getQuantile(sample, 0.50)) / 
+    (getQuantile(sample, 0.95) - getQuantile(sample, 0.05));
+    V["alpha"] = vAlpha;
+    V["beta"] = vBeta;
+
+    return V;
 }
+
 
 
 double QuantileEstimatorLookupTable::getMesh() const
@@ -102,14 +123,9 @@ double QuantileEstimatorLookupTable::getBetaMax() const
 }
 
 
-double QuantileEstimatorLookupTable::validateMesh(double mesh)
+size_t QuantileEstimatorLookupTable::getTableSize() const 
 {
-    if (mesh < 0 || mesh > 0.5)
-    {
-        throw std::invalid_argument("Mesh has range (0; 0.5]");
-    }
-
-    return mesh;
+    return table.size();
 }
 
 
