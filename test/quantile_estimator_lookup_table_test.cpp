@@ -29,13 +29,37 @@ BOOST_AUTO_TEST_CASE( QuantileEstimatorLookupTableConstructorValidation ) {
 }
 
 
-BOOST_FIXTURE_TEST_CASE( QuantileEstimatorTableCalculationSize, LookupTableFixture ) {
+BOOST_FIXTURE_TEST_CASE( QuantileEstimatorTableCalculationDefaultSize, LookupTableFixture ) {
     QuantileEstimatorLookupTable table;
-    table.calculateLookupTable();
-    double size = ((getAlphaMax() - getAlphaMin()) / getMesh()) * ((getBetaMax() / getBetaMin()) / getMesh());
+    size_t size;
+    std::cout << (getAlphaMax() / getMesh()) *  ((getBetaMax() + getMesh()) / getMesh()) << std::endl;
+    size =  (getAlphaMax() / getMesh()) *  ((getBetaMax() + getMesh()) / getMesh());
 
-    BOOST_CHECK_EQUAL(getTableSize(), static_cast<size_t>(size)); 
+    BOOST_CHECK_EQUAL(getAlphaMax(), 2.0);
+    BOOST_CHECK_EQUAL(getAlphaMin(), 0.1); 
+    BOOST_CHECK_EQUAL(getBetaMax(), 1.0);
+    BOOST_CHECK_EQUAL(getBetaMin(), 0.0);
+    BOOST_CHECK_EQUAL(getMesh(), 0.1);
+
+    BOOST_CHECK_EQUAL(size, 220); 
 }
+
+
+BOOST_FIXTURE_TEST_CASE( QuantileEstimatorTableCalculationSize, LookupTableFixture ) {
+    QuantileEstimatorLookupTable table(0.25, 0.5, 2.0, 0.5, 1.0);
+    size_t size;
+    std::cout << (getAlphaMax() / getMesh()) *  ((getBetaMax() + getMesh()) / getMesh()) << std::endl;
+    size =  (getAlphaMax() / getMesh()) *  ((getBetaMax() + getMesh()) / getMesh());
+
+    BOOST_CHECK_EQUAL(getAlphaMax(), 2.0);
+    BOOST_CHECK_EQUAL(getAlphaMin(), 0.5); 
+    BOOST_CHECK_EQUAL(getBetaMax(), 1.0);
+    BOOST_CHECK_EQUAL(getBetaMin(), 0.5);
+    BOOST_CHECK_EQUAL(getMesh(), 0.25);
+
+    BOOST_CHECK_EQUAL(size, table.getTableSize()); 
+}
+
 
 
 BOOST_AUTO_TEST_SUITE_END()

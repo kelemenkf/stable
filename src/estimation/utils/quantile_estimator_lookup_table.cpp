@@ -1,5 +1,6 @@
 #include "quantile_estimator_lookup_table.hpp"
 #include <fstream>
+#include <iostream>
 
 QuantileEstimatorLookupTable::QuantileEstimatorLookupTable(double meshInput, double alphaMinInput,
 double alphaMaxInput, double betaMinInput, double betaMaxInput)
@@ -23,7 +24,15 @@ void QuantileEstimatorLookupTable::writeLookupTableToFile()
 void QuantileEstimatorLookupTable::calculateLookupTable()
 {
     Simulator simulator;
-}
+
+    std::vector<double> alphaValues(static_cast<size_t>((getAlphaMax() - getAlphaMin()) / getMesh()));
+
+    std::cout << (getAlphaMax() - getAlphaMin()) / getMesh() << std::endl;
+
+    std::vector<double> betaValues(static_cast<size_t>((getBetaMax() - getBetaMin()) / getMesh()));
+
+    std::cout << betaValues.size() << std::endl;
+} 
 
 
 double QuantileEstimatorLookupTable::validateMesh(double mesh)
