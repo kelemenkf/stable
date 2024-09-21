@@ -10,10 +10,17 @@ class QuantileEstimatorLookupTable
 private:
     std::map<std::string, std::vector<double>> table;
     double mesh;
+    double alphaMin;
+    double alphaMax;
+    double betaMin;
+    double betaMax;
 
 
 public:
-    QuantileEstimatorLookupTable(double meshInput);
+    QuantileEstimatorLookupTable(double meshInput, double alphaMinInput = 0.1, double alphaMaxInput = 2.0, 
+    double betaMinInput = 0, double betaMaxInput = 1.0);
+
+    void calculateLookupTable();
 
     void writeLookupTableToFile();
 };
