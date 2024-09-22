@@ -8,5 +8,7 @@ add_library(stable_library estimation/utils/quantile_estimator_lookup_table.cpp 
 stable_distribution.cpp stable_simulation.cpp utils/utils.cpp)
 
 add_executable(main  main.cpp)
+add_executable(build_lookup_tables build_lookup_tables.cpp)
 
 target_link_libraries(main stable_library)
+target_link_libraries(build_lookup_tables stable_library)

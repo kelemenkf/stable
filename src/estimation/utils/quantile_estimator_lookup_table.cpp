@@ -145,7 +145,7 @@ std::map<std::string, double> QuantileEstimatorLookupTable::calculateVFunctionVa
     //Needs 0 parametrization, which is the default.
     Simulator simulator(alpha, beta);
     std::vector<double> sample;
-    sample = simulator.simulateSymmetricZVector(1000000);
+    sample = simulator.simulateSymmetricZVector(100000);
 
     std::sort(sample.begin(), sample.end(), [](double a, double b) {
         return a < b;
