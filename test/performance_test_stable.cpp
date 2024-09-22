@@ -79,7 +79,7 @@ int main()
 {
     Simulator* stable = new Simulator(1.5, 0.5, 2, 4);
 
-    unsigned int n = 10000;
+    unsigned int n = 100000;
 
     timeExecutionExponential(stable, n);
 

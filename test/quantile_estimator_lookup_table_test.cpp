@@ -187,12 +187,45 @@ BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVDeltaNonDefaultSi
 }
 
 
-BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableWriteToFileSuccess, LookupTableFixture) {
+BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableWriteToFileSuccessVAlpha, LookupTableFixture) {
     QuantileEstimatorLookupTable table;
     std::string vFunction = "vAlpha";
     table.writeLookupTablesToFile(vFunction);
 
-    std::string filePath = "/assets/" + vFunction + "_lookup_tables.csv";
+    std::string filePath = "../../assets/" + vFunction + "_lookup_tables.csv";
+
+    BOOST_CHECK(std::filesystem::exists(filePath));
+}
+
+
+BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableWriteToFileSuccessVBeta, LookupTableFixture) {
+    QuantileEstimatorLookupTable table;
+    std::string vFunction = "vBeta";
+    table.writeLookupTablesToFile(vFunction);
+
+    std::string filePath = "../../assets/" + vFunction + "_lookup_tables.csv";
+
+    BOOST_CHECK(std::filesystem::exists(filePath));
+}
+
+
+BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableWriteToFileSuccessVGamma, LookupTableFixture) {
+    QuantileEstimatorLookupTable table;
+    std::string vFunction = "vGamma";
+    table.writeLookupTablesToFile(vFunction);
+
+    std::string filePath = "../../assets/" + vFunction + "_lookup_tables.csv";
+
+    BOOST_CHECK(std::filesystem::exists(filePath));
+}
+
+
+BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableWriteToFileSuccessVDelta, LookupTableFixture) {
+    QuantileEstimatorLookupTable table;
+    std::string vFunction = "vDelta";
+    table.writeLookupTablesToFile(vFunction);
+
+    std::string filePath = "../../assets/" + vFunction + "_lookup_tables.csv";
 
     BOOST_CHECK(std::filesystem::exists(filePath));
 }
