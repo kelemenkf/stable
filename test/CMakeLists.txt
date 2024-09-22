@@ -1,5 +1,6 @@
 # Find Boost
 find_package(Boost 1.76 REQUIRED COMPONENTS unit_test_framework)
+find_package(Boost 1.76 REQUIRED COMPONENTS timer)
 
 # Add test executable
 add_executable(stable_distribution_test stable_distribution_test.cpp)
@@ -8,6 +9,7 @@ add_executable(stable_simulation_test stable_simulation_test.cpp)
 add_executable(stable_estimation_test stable_estimation_test.cpp)
 add_executable(stable_estimation_quantile_test stable_estimation_quantile_test.cpp)
 add_executable(quantile_estimator_lookup_table_test quantile_estimator_lookup_table_test.cpp)
+add_executable(mean_test mean_test.cpp)
 
 
 target_link_libraries(stable_distribution_test stable_library)
@@ -16,6 +18,7 @@ target_link_libraries(stable_simulation_test stable_library)
 target_link_libraries(stable_estimation_test stable_library)
 target_link_libraries(stable_estimation_quantile_test stable_library)
 target_link_libraries(quantile_estimator_lookup_table_test stable_library)
+target_link_libraries(mean_test stable_library)
 
 
 # Link Boost libraries
@@ -24,3 +27,4 @@ target_link_libraries(stable_simulation_test Boost::unit_test_framework)
 target_link_libraries(stable_estimation_test Boost::unit_test_framework)
 target_link_libraries(stable_estimation_quantile_test Boost::unit_test_framework)
 target_link_libraries(quantile_estimator_lookup_table_test Boost::unit_test_framework)
+target_link_libraries(mean_test Boost::timer)

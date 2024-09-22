@@ -24,12 +24,22 @@ public:
 
     std::map<std::tuple<double, double>, double> operator[] (const std::string& tableName);
     
-    void calculateLookupTables();
-
     void writeLookupTablesToFile(const std::string& vFunction);
+
+    void calculateLookupTables();
 
 
 private:
+    void fillAlphaVector(std::vector<double>& alphaValues);
+
+    void fillBetaVector(std::vector<double>& betaValues);
+
+    std::map<std::string, double> calculateVFunctionValuesForAlphaBetaPair(const double& alpha, const double& beta);
+
+    std::vector<double> calculateMeanQuantiles(const unsigned int& n);
+
+    std::vector<double> calculateSumOfSamples(const unsigned int& n);
+
     static double validateMesh(double mesh);
 
     static double validateAlphaMin(double alphaMin);
@@ -39,12 +49,6 @@ private:
     static double validateBetaMin(double betaMin);
 
     static double validateBetaMax(double betaMax);
-
-    void fillAlphaVector(std::vector<double>& alphaValues);
-
-    void fillBetaVector(std::vector<double>& betaValues);
-
-    std::map<std::string, double> calculateVFunctionValuesForAlphaBetaPair(const double& alpha, const double& beta);
 
 
 protected:

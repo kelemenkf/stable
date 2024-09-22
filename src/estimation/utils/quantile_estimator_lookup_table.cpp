@@ -29,30 +29,6 @@ std::map<std::tuple<double, double>, double> QuantileEstimatorLookupTable::opera
 }
 
 
-void QuantileEstimatorLookupTable::calculateLookupTables()
-{
-    std::vector<double> alphaValues;
-    std::vector<double> betaValues;
-    fillAlphaVector(alphaValues);
-    fillBetaVector(betaValues);
-
-    for (auto alpha = alphaValues.cbegin(); alpha != alphaValues.cend(); 
-    ++alpha)
-    {
-        for (auto beta = betaValues.cbegin(); beta != betaValues.cend();
-        ++beta)
-        {
-            std::tuple<double, double> index(*alpha, *beta);
-            std::map<std::string, double> vValues = calculateVFunctionValuesForAlphaBetaPair(*alpha, *beta);
-            lookupTables["vAlpha"][index] = vValues["alpha"];
-            lookupTables["vBeta"][index] = vValues["beta"];
-            lookupTables["vGamma"][index] = vValues["gamma"];
-            lookupTables["vDelta"][index] = vValues["delta"];
-        }
-    }
-} 
-
-
 void QuantileEstimatorLookupTable::writeLookupTablesToFile(const std::string& vFunction)
 {
     std::vector<double> alphaValues;
@@ -89,6 +65,30 @@ void QuantileEstimatorLookupTable::writeLookupTablesToFile(const std::string& vF
         std::cerr << "Error opening file" << std::endl;
     }
 }
+
+
+void QuantileEstimatorLookupTable::calculateLookupTables()
+{
+    std::vector<double> alphaValues;
+    std::vector<double> betaValues;
+    fillAlphaVector(alphaValues);
+    fillBetaVector(betaValues);
+
+    for (auto alpha = alphaValues.cbegin(); alpha != alphaValues.cend(); 
+    ++alpha)
+    {
+        for (auto beta = betaValues.cbegin(); beta != betaValues.cend();
+        ++beta)
+        {
+            std::tuple<double, double> index(*alpha, *beta);
+            std::map<std::string, double> vValues = calculateVFunctionValuesForAlphaBetaPair(*alpha, *beta);
+            lookupTables["vAlpha"][index] = vValues["alpha"];
+            lookupTables["vBeta"][index] = vValues["beta"];
+            lookupTables["vGamma"][index] = vValues["gamma"];
+            lookupTables["vDelta"][index] = vValues["delta"];
+        }
+    }
+} 
 
 
 void QuantileEstimatorLookupTable::fillAlphaVector(std::vector<double>& alphaValues)
@@ -142,28 +142,54 @@ std::map<std::string, double> QuantileEstimatorLookupTable::calculateVFunctionVa
         {"delta", 0}
     };
 
-    //Needs 0 parametrization, which is the default.
-    Simulator simulator(alpha, beta);
-    std::vector<double> sample;
-    sample = simulator.simulateSymmetricZVector(100000);
+    std::vector<double> meanOfSamples = calculateMeanQuantiles(100000);
 
-    std::sort(sample.begin(), sample.end(), [](double a, double b) {
+    std::sort(meanOfSamples.begin(), meanOfSamples.end(), [](double a, double b) {
         return a < b;
     });
 
-    double vAlpha = (getQuantile(sample, 0.95) - getQuantile(sample, 0.05)) / 
-    (getQuantile(sample, 0.75) - getQuantile(sample, 0.25));
-    double vBeta = (getQuantile(sample, 0.05) + getQuantile(sample, 0.95) - 2*getQuantile(sample, 0.50)) / 
-    (getQuantile(sample, 0.95) - getQuantile(sample, 0.05));
-    double vGamma = (getQuantile(sample, 0.75) - getQuantile(sample, 0.25));
-    double vDelta = -getQuantile(sample, -0.5);
+    double vAlpha = (getQuantile(meanOfSamples, 0.95) - getQuantile(meanOfSamples, 0.05)) / 
+    (getQuantile(meanOfSamples, 0.75) - getQuantile(meanOfSamples, 0.25));
+    double vBeta = (getQuantile(meanOfSamples, 0.05) + getQuantile(meanOfSamples, 0.95) - 2*getQuantile(meanOfSamples, 0.50)) / 
+    (getQuantile(meanOfSamples, 0.95) - getQuantile(meanOfSamples, 0.05));
+    double vGamma = (getQuantile(meanOfSamples, 0.75) - getQuantile(meanOfSamples, 0.25));
+    double vDelta = -getQuantile(meanOfSamples, -0.5);
+
     V["alpha"] = vAlpha;
     V["beta"] = vBeta;
     V["gamma"] = vGamma;
     V["delta"] = vDelta;
+
     return V;
 }
 
+
+std::vector<double> QuantileEstimatorLookupTable::calculateMeanQuantiles(const unsigned int& n)
+{
+    std::vector<double> sumOfSamples = calculateSumOfSamples(n);
+    std::vector<double> meanOfSamples(100000);
+
+    std::transform(sumOfSamples.begin(), sumOfSamples.end(), meanOfSamples.begin(), [n](double value) { return value / n; });
+
+    return meanOfSamples;
+}
+
+
+std::vector<double> QuantileEstimatorLookupTable::calculateSumOfSamples(const unsigned int& n)
+{
+    std::vector<double> sumOfSamples(100000);
+    Simulator simulator;
+
+    auto addVectors = [](double a, double b){ return a + b; };
+
+    for (unsigned int i = 0; i < n; i++)
+    {
+        std::vector<double> sample = simulator.simulateNonSymmetricZVector(100000);  
+        std::transform(sumOfSamples.begin(), sumOfSamples.end(), sample.begin(), sample.end(), addVectors);
+    }
+
+    return sumOfSamples;
+}
 
 
 double QuantileEstimatorLookupTable::getMesh() const

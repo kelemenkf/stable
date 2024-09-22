@@ -77,21 +77,21 @@ void timeExecutionStable(Simulator* const stable, unsigned int n)
 
 int main()
 {
-    Simulator* stable = new Simulator(1.5, 0.5, 2, 4);
+    Simulator* simulator = new Simulator(1.5, 0.5, 2, 4);
 
     unsigned int n = 100000;
 
-    timeExecutionExponential(stable, n);
+    timeExecutionExponential(simulator, n);
 
-    timeExecutionUniform(stable, n);
+    timeExecutionUniform(simulator, n);
 
-    timeExecutionSymmetricZ(stable, n);
+    timeExecutionSymmetricZ(simulator, n);
 
-    timeExecutionNonSymmetricZ(stable, n);
+    timeExecutionNonSymmetricZ(simulator, n);
 
-    timeExecutionStable(stable, n);
+    timeExecutionStable(simulator, n);
 
-    delete stable;
+    delete simulator;
 
     return 0;
 }

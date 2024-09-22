@@ -33,6 +33,7 @@ struct LookupTableFixture: public QuantileEstimatorLookupTable
     }
 };
 
+
 BOOST_AUTO_TEST_SUITE( QuantileEstimatorLookupTableTestSuite )
 
 
@@ -229,6 +230,5 @@ BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableWriteToFileSuccessVDelta, L
 
     BOOST_CHECK(std::filesystem::exists(filePath));
 }
-
 
 BOOST_AUTO_TEST_SUITE_END()
