@@ -54,8 +54,14 @@ int StableDistribution::getAlpha()
 
 
 double StableDistribution::validateAlpha(double alpha)
-{    
-    if (alpha > 2 || alpha <= 0)
+{   
+    /*
+    Included to due to imprecision in storing double values and evaluating to more than 2 
+    (2.0000000000001). 
+    */
+    const double epsilon = 1e-10;
+
+    if (alpha > 2 + epsilon || alpha <= 0)
     {
         throw std::invalid_argument("Alpha out of range (0;2]");
     }
