@@ -59,10 +59,14 @@ void QuantileEstimatorLookupTable::fillAlphas(std::vector<double>& alphaValues)
     double currentAlpha = this->getAlphaMin();
 
     auto alphaFill = [this, currentAlpha]() mutable -> double {
-        while(currentAlpha <= this->getAlphaMax())
+        double alpha = currentAlpha;
+        
+        if (currentAlpha <= this->getAlphaMax())
         {
-            return currentAlpha++;
+            currentAlpha += getMesh();
         } 
+
+        return alpha;
     };
 
     std::generate(alphaValues.begin(), alphaValues.end(), alphaFill);
@@ -76,10 +80,14 @@ void QuantileEstimatorLookupTable::fillBetas(std::vector<double>& betaValues)
     double currentBeta = this->getBetaMin();
 
     auto betaFill = [this, currentBeta]() mutable -> double {
-        while(currentBeta <= this->getBetaMax())
+        double beta = currentBeta;
+
+        if (currentBeta <= this->getBetaMax())
         {
-            return currentBeta++;
+            currentBeta+= getMesh();
         } 
+
+        return beta;
     };
 
     std::generate(betaValues.begin(), betaValues.end(), betaFill);

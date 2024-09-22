@@ -57,7 +57,7 @@ double StableDistribution::validateAlpha(double alpha)
 {    
     if (alpha > 2 || alpha <= 0)
     {
-        throw std::invalid_argument("Alpha out of range (0;-2]");
+        throw std::invalid_argument("Alpha out of range (0;2]");
     }
 
     return alpha;
