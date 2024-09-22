@@ -5,5 +5,14 @@ QuantileEstimator::QuantileEstimator(std::vector<double> sampleInput) : Estimato
 
 QuantileEstimator::~QuantileEstimator()
 {
+
+}
+
+
+QuantileEstimatorLookupTable QuantileEstimator::fillTable()
+{
+    QuantileEstimatorLookupTable lookupTables;
+    lookupTables.calculateLookupTables();
     
+    return lookupTables;
 }

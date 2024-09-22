@@ -2,13 +2,21 @@
 find_package(Boost 1.76 REQUIRED COMPONENTS unit_test_framework)
 
 # Add test executable
-add_executable(stable_distribution_test stable_distribution_test.cpp ../src/stable_distribution.cpp)
-add_executable(performance_test_stable performance_test_stable.cpp ../src/stable_distribution.cpp 
-../src/stable_simulation.cpp)
-add_executable(stable_simulation_test stable_simulation_test.cpp ../src/stable_simulation.cpp ../src/stable_distribution.cpp)
-add_executable(stable_estimation_test stable_estimation_test.cpp ../src/estimation/stable_estimation.cpp ../src/stable_distribution.cpp)
-add_executable(stable_estimation_quantile_test stable_estimation_quantile_test.cpp ../src/estimation/stable_estimation_quantile.cpp ../src/estimation/stable_estimation.cpp ../src/stable_distribution.cpp)
-add_executable(quantile_estimator_lookup_table_test quantile_estimator_lookup_table_test.cpp ../src/estimation/utils/quantile_estimator_lookup_table.cpp ../src/stable_simulation.cpp ../src/stable_distribution.cpp)
+add_executable(stable_distribution_test stable_distribution_test.cpp)
+add_executable(performance_test_stable performance_test_stable.cpp)
+add_executable(stable_simulation_test stable_simulation_test.cpp)
+add_executable(stable_estimation_test stable_estimation_test.cpp)
+add_executable(stable_estimation_quantile_test stable_estimation_quantile_test.cpp)
+add_executable(quantile_estimator_lookup_table_test quantile_estimator_lookup_table_test.cpp)
+
+
+target_link_libraries(stable_distribution_test stable_library)
+target_link_libraries(performance_test_stable stable_library)
+target_link_libraries(stable_simulation_test stable_library)
+target_link_libraries(stable_estimation_test stable_library)
+target_link_libraries(stable_estimation_quantile_test stable_library)
+target_link_libraries(quantile_estimator_lookup_table_test stable_library)
+
 
 # Link Boost libraries
 target_link_libraries(stable_distribution_test Boost::unit_test_framework)

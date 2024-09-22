@@ -22,7 +22,7 @@ betaMax(QuantileEstimatorLookupTable::validateBetaMax(betaMaxInput)) {
 };
 
 
-void QuantileEstimatorLookupTable::calculateLookupTable()
+void QuantileEstimatorLookupTable::calculateLookupTables()
 {
     std::vector<double> alphaValues;
     std::vector<double> betaValues;
@@ -46,9 +46,9 @@ void QuantileEstimatorLookupTable::calculateLookupTable()
 } 
 
 
-void QuantileEstimatorLookupTable::fillAlphas(const std::vector<double>& alphaValues)
+void QuantileEstimatorLookupTable::fillAlphas(std::vector<double>& alphaValues)
 {
-    std::vector<double> alphaValues(static_cast<size_t>(getAlphaMax() / getMesh()));
+    alphaValues.resize(static_cast<size_t>(getAlphaMax() / getMesh()));
 
     double currentAlpha = this->getAlphaMin();
 
@@ -59,13 +59,13 @@ void QuantileEstimatorLookupTable::fillAlphas(const std::vector<double>& alphaVa
         } 
     };
 
-    std::transform(alphaValues.begin(), alphaValues.end(), alphaValues.begin(), alphaFill);
+    std::generate(alphaValues.begin(), alphaValues.end(), alphaFill);
 }
 
 
-void QuantileEstimatorLookupTable::fillBetas(const std::vector<double>& betaValues)
+void QuantileEstimatorLookupTable::fillBetas(std::vector<double>& betaValues)
 {
-    std::vector<double> alphaValues(static_cast<size_t>((getBetaMax() + getMesh()) / getMesh()));
+    betaValues.resize(static_cast<size_t>((getBetaMax() + getMesh()) / getMesh()));
 
     double currentBeta = this->getBetaMin();
 
@@ -76,7 +76,7 @@ void QuantileEstimatorLookupTable::fillBetas(const std::vector<double>& betaValu
         } 
     };
 
-    std::transform(betaValues.begin(), betaValues.end(), betaValues.begin(), betaFill);
+    std::generate(betaValues.begin(), betaValues.end(), betaFill);
 }
 
 
@@ -146,6 +146,18 @@ double QuantileEstimatorLookupTable::getBetaMax() const
 size_t QuantileEstimatorLookupTable::getTableSize() const 
 {
     return lookupTables.size();
+}
+
+
+
+double QuantileEstimatorLookupTable::validateMesh(double mesh)
+{
+    if (mesh < 0 || mesh > 0.5)
+    {
+        throw std::invalid_argument("Mesh shoud be in the range [0; 0.5]");
+    }
+
+    return mesh;
 }
 
 
