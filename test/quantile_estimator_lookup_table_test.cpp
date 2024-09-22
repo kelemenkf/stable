@@ -57,6 +57,7 @@ BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVAlphaSize, Lookup
 
     size_t vAlphaSize;
     size_t expectedSize = 220;
+    vAlphaSize = table["vAlpha"].size();
 
     BOOST_CHECK_EQUAL(vAlphaSize, expectedSize);
 }
@@ -68,6 +69,7 @@ BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVBetaSize, LookupT
 
     size_t vBetaSize;
     size_t expectedSize = 220;
+    vBetaSize = table["vBeta"].size();
 
     BOOST_CHECK_EQUAL(vBetaSize, expectedSize);
 }
@@ -79,6 +81,7 @@ BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVGammaSize, Lookup
 
     size_t vGammaSize;
     size_t expectedSize = 220;
+    vGammaSize = table["vGamma"].size();
 
     BOOST_CHECK_EQUAL(vGammaSize, expectedSize);
 }
@@ -90,6 +93,7 @@ BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVDeltaSize, Lookup
 
     size_t vDeltaSize;
     size_t expectedSize = 220;
+    vDeltaSize = table["vDelta"].size();
 
     BOOST_CHECK_EQUAL(vDeltaSize, expectedSize);
 }

@@ -24,6 +24,8 @@ public:
 
     void calculateLookupTables();
 
+    std::map<std::tuple<double, double>, double> operator[] (const std::string& tableName);
+
 
 private:
     static double validateMesh(double mesh);

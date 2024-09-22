@@ -46,6 +46,12 @@ void QuantileEstimatorLookupTable::calculateLookupTables()
 } 
 
 
+std::map<std::tuple<double, double>, double> QuantileEstimatorLookupTable::operator[] (const std::string& tableName)
+{
+    return lookupTables[tableName];
+}
+
+
 void QuantileEstimatorLookupTable::fillAlphas(std::vector<double>& alphaValues)
 {
     alphaValues.resize(static_cast<size_t>(getAlphaMax() / getMesh()));
