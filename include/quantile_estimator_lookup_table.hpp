@@ -22,9 +22,11 @@ public:
     QuantileEstimatorLookupTable(double meshInput = 0.1, double alphaMinInput = 0.1, double alphaMaxInput = 2.0, 
     double betaMinInput = 0, double betaMaxInput = 1.0);
 
+    std::map<std::tuple<double, double>, double> operator[] (const std::string& tableName);
+    
     void calculateLookupTables();
 
-    std::map<std::tuple<double, double>, double> operator[] (const std::string& tableName);
+    void writeLookupTablesToFile();
 
 
 private:
@@ -38,11 +40,11 @@ private:
 
     static double validateBetaMax(double betaMax);
 
-    void fillAlphas(std::vector<double>& alphaValues);
+    void fillAlphaVector(std::vector<double>& alphaValues);
 
-    void fillBetas(std::vector<double>& betaValues);
+    void fillBetaVector(std::vector<double>& betaValues);
 
-    std::map<std::string, double> calculateV(const double& alpha, const double& beta);
+    std::map<std::string, double> calculateVFunctionValuesForAlphaBetaPair(const double& alpha, const double& beta);
 
 
 protected:

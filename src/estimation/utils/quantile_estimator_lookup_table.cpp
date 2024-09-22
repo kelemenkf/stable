@@ -22,12 +22,18 @@ betaMax(QuantileEstimatorLookupTable::validateBetaMax(betaMaxInput)) {
 };
 
 
+std::map<std::tuple<double, double>, double> QuantileEstimatorLookupTable::operator[] (const std::string& tableName)
+{
+    return lookupTables[tableName];
+}
+
+
 void QuantileEstimatorLookupTable::calculateLookupTables()
 {
     std::vector<double> alphaValues;
     std::vector<double> betaValues;
-    fillAlphas(alphaValues);
-    fillBetas(betaValues);
+    fillAlphaVector(alphaValues);
+    fillBetaVector(betaValues);
 
     for (auto alpha = alphaValues.cbegin(); alpha != alphaValues.cend(); 
     ++alpha)
@@ -36,7 +42,7 @@ void QuantileEstimatorLookupTable::calculateLookupTables()
         ++beta)
         {
             std::tuple<double, double> index(*alpha, *beta);
-            std::map<std::string, double> vValues = calculateV(*alpha, *beta);
+            std::map<std::string, double> vValues = calculateVFunctionValuesForAlphaBetaPair(*alpha, *beta);
             lookupTables["vAlpha"][index] = vValues["alpha"];
             lookupTables["vBeta"][index] = vValues["beta"];
             lookupTables["vGamma"][index] = vValues["gamma"];
@@ -46,15 +52,9 @@ void QuantileEstimatorLookupTable::calculateLookupTables()
 } 
 
 
-std::map<std::tuple<double, double>, double> QuantileEstimatorLookupTable::operator[] (const std::string& tableName)
+void QuantileEstimatorLookupTable::fillAlphaVector(std::vector<double>& alphaValues)
 {
-    return lookupTables[tableName];
-}
-
-
-void QuantileEstimatorLookupTable::fillAlphas(std::vector<double>& alphaValues)
-{
-    alphaValues.resize(static_cast<size_t>(getAlphaMax() / getMesh()));
+    alphaValues.resize(static_cast<size_t>((getAlphaMax() - getAlphaMin() + getMesh()) / getMesh()));
 
     double currentAlpha = this->getAlphaMin();
 
@@ -73,9 +73,9 @@ void QuantileEstimatorLookupTable::fillAlphas(std::vector<double>& alphaValues)
 }
 
 
-void QuantileEstimatorLookupTable::fillBetas(std::vector<double>& betaValues)
+void QuantileEstimatorLookupTable::fillBetaVector(std::vector<double>& betaValues)
 {
-    betaValues.resize(static_cast<size_t>((getBetaMax() + getMesh()) / getMesh()));
+    betaValues.resize(static_cast<size_t>((getBetaMax() - getBetaMin() + getMesh()) / getMesh()));
 
     double currentBeta = this->getBetaMin();
 
@@ -94,7 +94,7 @@ void QuantileEstimatorLookupTable::fillBetas(std::vector<double>& betaValues)
 }
 
 
-std::map<std::string, double> QuantileEstimatorLookupTable::calculateV(const double& alpha, const double& beta)
+std::map<std::string, double> QuantileEstimatorLookupTable::calculateVFunctionValuesForAlphaBetaPair(const double& alpha, const double& beta)
 {
     std::map<std::string, double> V = {
         {"alpha", 0},

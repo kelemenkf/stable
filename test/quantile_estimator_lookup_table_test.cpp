@@ -133,4 +133,56 @@ BOOST_AUTO_TEST_CASE( QuantileEstimatorTableNonDefaultInitialization ) {
     BOOST_CHECK_EQUAL(fixtureTable.testGetBetaMax(), 1.0);
 }
 
+
+BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVAlphaNonDefaultSize, LookupTableFixture) {
+    LookupTableFixture fixtureTable(0.25, 0.5, 2.0, 0.5, 1.0);
+    fixtureTable.calculateLookupTables();
+
+    size_t vAlphaSize;
+    size_t expectedSize = ((fixtureTable.testGetAlphaMax() - fixtureTable.testGetAlphaMin() + fixtureTable.testGetMesh())/ fixtureTable.testGetMesh()) *
+    ((fixtureTable.testGetBetaMax() - fixtureTable.testGetBetaMin() + fixtureTable.testGetMesh()) / fixtureTable.testGetMesh());
+    vAlphaSize = fixtureTable["vAlpha"].size();
+
+    BOOST_CHECK_EQUAL(vAlphaSize, expectedSize);
+}
+
+
+BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVBetaNonDefaultSize, LookupTableFixture) {
+    LookupTableFixture fixtureTable(0.25, 0.5, 2.0, 0.5, 1.0);
+    fixtureTable.calculateLookupTables();
+
+    size_t vBetaSize;
+    size_t expectedSize = ((fixtureTable.testGetAlphaMax() - fixtureTable.testGetAlphaMin() + fixtureTable.testGetMesh())/ fixtureTable.testGetMesh()) *
+    ((fixtureTable.testGetBetaMax() - fixtureTable.testGetBetaMin() + fixtureTable.testGetMesh()) / fixtureTable.testGetMesh());
+    vBetaSize = fixtureTable["vBeta"].size();
+
+    BOOST_CHECK_EQUAL(vBetaSize, expectedSize);
+}
+
+
+BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVGammaNonDefaultSize, LookupTableFixture) {
+    LookupTableFixture fixtureTable(0.25, 0.5, 2.0, 0.5, 1.0);
+    fixtureTable.calculateLookupTables();
+
+    size_t vGammaSize;
+    size_t expectedSize = ((fixtureTable.testGetAlphaMax() - fixtureTable.testGetAlphaMin() + fixtureTable.testGetMesh())/ fixtureTable.testGetMesh()) *
+    ((fixtureTable.testGetBetaMax() - fixtureTable.testGetBetaMin() + fixtureTable.testGetMesh()) / fixtureTable.testGetMesh());
+    vGammaSize = fixtureTable["vGamma"].size();
+
+    BOOST_CHECK_EQUAL(vGammaSize, expectedSize);
+}
+
+
+BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVDeltaNonDefaultSize, LookupTableFixture) {
+    LookupTableFixture fixtureTable(0.25, 0.5, 2.0, 0.5, 1.0);
+    fixtureTable.calculateLookupTables();
+
+    size_t vDeltaSize;
+    size_t expectedSize = ((fixtureTable.testGetAlphaMax() - fixtureTable.testGetAlphaMin() + fixtureTable.testGetMesh())/ fixtureTable.testGetMesh()) *
+    ((fixtureTable.testGetBetaMax() - fixtureTable.testGetBetaMin() + fixtureTable.testGetMesh()) / fixtureTable.testGetMesh());
+    vDeltaSize = fixtureTable["vDelta"].size();
+
+    BOOST_CHECK_EQUAL(vDeltaSize, expectedSize);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
