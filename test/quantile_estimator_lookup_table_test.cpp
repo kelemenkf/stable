@@ -5,7 +5,31 @@
 struct LookupTableFixture: public QuantileEstimatorLookupTable
 {
     LookupTableFixture() {};
+
+    LookupTableFixture(double meshInput, double alphaMinInput, double alphaMaxInput, double betaMinInput, 
+    double betaMaxInput) : QuantileEstimatorLookupTable(meshInput, alphaMinInput, alphaMaxInput, betaMinInput, betaMaxInput) {};
+
     ~LookupTableFixture() {};
+
+    double testGetMesh() const {
+        return getMesh();
+    }
+
+    double testGetAlphaMin() const {
+        return getAlphaMin();
+    }
+
+    double testGetAlphaMax() const {
+        return getAlphaMax();
+    }
+
+    double testGetBetaMin() const {
+        return getBetaMin();
+    }
+
+    double testGetBetaMax() const {
+        return getBetaMax();
+    }
 };
 
 BOOST_AUTO_TEST_SUITE( QuantileEstimatorLookupTableTestSuite )
@@ -99,14 +123,14 @@ BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVDeltaSize, Lookup
 }
 
 
-BOOST_FIXTURE_TEST_CASE( QuantileEstimatorTableNonDefaultInitialization, LookupTableFixture ) {
-    QuantileEstimatorLookupTable table(0.25, 0.5, 2.0, 0.5, 1.0);
+BOOST_AUTO_TEST_CASE( QuantileEstimatorTableNonDefaultInitialization ) {
+    LookupTableFixture fixtureTable(0.25, 0.5, 2.0, 0.5, 1.0);
 
-    BOOST_CHECK_EQUAL(getMesh(), 0.25);
-    BOOST_CHECK_EQUAL(getAlphaMin(), 0.5); 
-    BOOST_CHECK_EQUAL(getAlphaMax(), 2.0);
-    BOOST_CHECK_EQUAL(getBetaMin(), 0.5);
-    BOOST_CHECK_EQUAL(getBetaMax(), 1.0);
+    BOOST_CHECK_EQUAL(fixtureTable.testGetMesh(), 0.25);
+    BOOST_CHECK_EQUAL(fixtureTable.testGetAlphaMin(), 0.5); 
+    BOOST_CHECK_EQUAL(fixtureTable.testGetAlphaMax(), 2.0);
+    BOOST_CHECK_EQUAL(fixtureTable.testGetBetaMin(), 0.5);
+    BOOST_CHECK_EQUAL(fixtureTable.testGetBetaMax(), 1.0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

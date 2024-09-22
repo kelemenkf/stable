@@ -29,9 +29,6 @@ void QuantileEstimatorLookupTable::calculateLookupTables()
     fillAlphas(alphaValues);
     fillBetas(betaValues);
 
-    std::for_each(alphaValues.cbegin(), alphaValues.cend(), [](double value){std::cout << value << " ";});
-    std::cout << std::endl;
-
     for (auto alpha = alphaValues.cbegin(); alpha != alphaValues.cend(); 
     ++alpha)
     {
@@ -107,7 +104,6 @@ std::map<std::string, double> QuantileEstimatorLookupTable::calculateV(const dou
     };
 
     //Needs 0 parametrization, which is the default.
-    std::cout << alpha << " " << beta << std::endl;
     Simulator simulator(alpha, beta);
     std::vector<double> sample;
     sample = simulator.simulateSymmetricZVector(100000);
