@@ -142,7 +142,8 @@ std::map<std::string, double> QuantileEstimatorLookupTable::calculateVFunctionVa
         {"delta", 0}
     };
 
-    std::vector<double> meanOfSamples = calculateMeanQuantiles(100000);
+    std::vector<double> sumOfSamples = calculateSumOfSamples(10000);
+    std::vector<double> meanOfSamples = calculateMeanQuantiles(sumOfSamples);
 
     std::sort(meanOfSamples.begin(), meanOfSamples.end(), [](double a, double b) {
         return a < b;
@@ -164,29 +165,34 @@ std::map<std::string, double> QuantileEstimatorLookupTable::calculateVFunctionVa
 }
 
 
-std::vector<double> QuantileEstimatorLookupTable::calculateMeanQuantiles(const unsigned int& n)
+std::vector<double> QuantileEstimatorLookupTable::calculateMeanQuantiles(std::vector<double>& sumOfSamples)
 {
-    std::vector<double> sumOfSamples = calculateSumOfSamples(n);
     std::vector<double> meanOfSamples(100000);
 
-    std::transform(sumOfSamples.begin(), sumOfSamples.end(), meanOfSamples.begin(), [n](double value) { return value / n; });
+    std::transform(sumOfSamples.begin(), sumOfSamples.end(), meanOfSamples.begin(), [sumOfSamples](double value) { return value / sumOfSamples.size(); });
 
     return meanOfSamples;
 }
 
 
-std::vector<double> QuantileEstimatorLookupTable::calculateSumOfSamples(const unsigned int& n)
+std::vector<double> QuantileEstimatorLookupTable::calculateSumOfSamples(const unsigned int& numberOfSamples)
 {
     std::vector<double> sumOfSamples(100000);
     Simulator simulator;
 
-    auto addVectors = [](double a, double b){ return a + b; };
+    int counter = 0;
 
-    for (unsigned int i = 0; i < n; i++)
+    auto addVectors = [](double a, double b){  return a + b; };
+
+    for (unsigned int i = 0; i < numberOfSamples; i++)
     {
         std::vector<double> sample = simulator.simulateNonSymmetricZVector(100000);  
+        std::sort(sample.begin(), sample.end(), [](double a, double b){ return a < b; });
         std::transform(sumOfSamples.begin(), sumOfSamples.end(), sample.begin(), sample.end(), addVectors);
+        counter++;
     }
+
+    sampleCounterForTest = counter;
 
     return sumOfSamples;
 }
@@ -227,6 +233,11 @@ size_t QuantileEstimatorLookupTable::getTableSize() const
     return lookupTables.size();
 }
 
+
+int QuantileEstimatorLookupTable::getSampleCounterForTest() const
+{
+    return sampleCounterForTest;
+}
 
 
 double QuantileEstimatorLookupTable::validateMesh(double mesh)

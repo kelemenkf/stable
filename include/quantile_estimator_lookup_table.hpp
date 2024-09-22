@@ -17,6 +17,8 @@ private:
     double betaMin;
     double betaMax;
 
+    int sampleCounterForTest;
+
 
 public:
     QuantileEstimatorLookupTable(double meshInput = 0.1, double alphaMinInput = 0.1, double alphaMaxInput = 2.0, 
@@ -30,16 +32,6 @@ public:
 
 
 private:
-    void fillAlphaVector(std::vector<double>& alphaValues);
-
-    void fillBetaVector(std::vector<double>& betaValues);
-
-    std::map<std::string, double> calculateVFunctionValuesForAlphaBetaPair(const double& alpha, const double& beta);
-
-    std::vector<double> calculateMeanQuantiles(const unsigned int& n);
-
-    std::vector<double> calculateSumOfSamples(const unsigned int& n);
-
     static double validateMesh(double mesh);
 
     static double validateAlphaMin(double alphaMin);
@@ -52,6 +44,16 @@ private:
 
 
 protected:
+    void fillAlphaVector(std::vector<double>& alphaValues);
+
+    void fillBetaVector(std::vector<double>& betaValues);
+
+    std::map<std::string, double> calculateVFunctionValuesForAlphaBetaPair(const double& alpha, const double& beta);
+
+    std::vector<double> calculateMeanQuantiles(std::vector<double>& sumOfSamples);
+
+    std::vector<double> calculateSumOfSamples(const unsigned int& numberOfSamples);
+
     size_t getTableSize() const;
 
     double getMesh() const;
@@ -63,6 +65,8 @@ protected:
     double getBetaMin() const;
 
     double getBetaMax() const;
+
+    int getSampleCounterForTest() const;
 };
 
 #endif

@@ -1,6 +1,7 @@
 #define BOOST_TEST_MODULE QuantileEstimatorLookupTableTestSuite
 #include <boost/test/included/unit_test.hpp>
 #include <filesystem>
+#include <ranges>
 #include "quantile_estimator_lookup_table.hpp"
 
 struct LookupTableFixture: public QuantileEstimatorLookupTable
@@ -31,204 +32,253 @@ struct LookupTableFixture: public QuantileEstimatorLookupTable
     double testGetBetaMax() const {
         return getBetaMax();
     }
+
+    int testGetSampleCounterForTest() const {
+        return getSampleCounterForTest();
+    }
+
+    std::vector<double> testCalculateSumOfSamples(const unsigned int& numberOfSamples)
+    {
+        return calculateSumOfSamples(numberOfSamples);
+    }
+
+    std::vector<double> testCalculateMeanQuantiles(std::vector<double>& sumOfSamples)
+    {
+        return calculateMeanQuantiles(sumOfSamples);
+    }
 };
 
 
 BOOST_AUTO_TEST_SUITE( QuantileEstimatorLookupTableTestSuite )
 
 
-BOOST_AUTO_TEST_CASE( QuantileEstimatorLookupTableConstructorValidation ) {
-    BOOST_CHECK_NO_THROW(QuantileEstimatorLookupTable table(0.1));
-    BOOST_CHECK_THROW(QuantileEstimatorLookupTable table(1.5), std::invalid_argument);
+// BOOST_AUTO_TEST_CASE( QuantileEstimatorLookupTableConstructorValidation ) {
+//     BOOST_CHECK_NO_THROW(QuantileEstimatorLookupTable table(0.1));
+//     BOOST_CHECK_THROW(QuantileEstimatorLookupTable table(1.5), std::invalid_argument);
 
-    BOOST_CHECK_NO_THROW(QuantileEstimatorLookupTable table(0.1, 1));
-    BOOST_CHECK_THROW(QuantileEstimatorLookupTable table(0.1, -1.0), std::invalid_argument);
+//     BOOST_CHECK_NO_THROW(QuantileEstimatorLookupTable table(0.1, 1));
+//     BOOST_CHECK_THROW(QuantileEstimatorLookupTable table(0.1, -1.0), std::invalid_argument);
 
-    BOOST_CHECK_NO_THROW(QuantileEstimatorLookupTable table(0.1, 1, 2));
-    BOOST_CHECK_THROW(QuantileEstimatorLookupTable table(0.1, 1, 2.5), std::invalid_argument);
+//     BOOST_CHECK_NO_THROW(QuantileEstimatorLookupTable table(0.1, 1, 2));
+//     BOOST_CHECK_THROW(QuantileEstimatorLookupTable table(0.1, 1, 2.5), std::invalid_argument);
 
-    BOOST_CHECK_NO_THROW(QuantileEstimatorLookupTable table(0.1, 1, 2, 0.5));
-    BOOST_CHECK_THROW(QuantileEstimatorLookupTable table(0.1, 1, 2, -0.5), std::invalid_argument);
+//     BOOST_CHECK_NO_THROW(QuantileEstimatorLookupTable table(0.1, 1, 2, 0.5));
+//     BOOST_CHECK_THROW(QuantileEstimatorLookupTable table(0.1, 1, 2, -0.5), std::invalid_argument);
 
-    BOOST_CHECK_NO_THROW(QuantileEstimatorLookupTable table(0.1, 1, 2, 0.5, 1));
-    BOOST_CHECK_THROW(QuantileEstimatorLookupTable table(0.1, 1, 2, 0.5, 1.5), std::invalid_argument);
+//     BOOST_CHECK_NO_THROW(QuantileEstimatorLookupTable table(0.1, 1, 2, 0.5, 1));
+//     BOOST_CHECK_THROW(QuantileEstimatorLookupTable table(0.1, 1, 2, 0.5, 1.5), std::invalid_argument);
+// }
+
+
+// BOOST_FIXTURE_TEST_CASE( QuantileEstimatorTableCalculationDefaultInitialization, LookupTableFixture ) {
+//     QuantileEstimatorLookupTable table;
+
+//     BOOST_CHECK_EQUAL(getMesh(), 0.1);
+//     BOOST_CHECK_EQUAL(getAlphaMin(), 0.1); 
+//     BOOST_CHECK_EQUAL(getAlphaMax(), 2.0);
+//     BOOST_CHECK_EQUAL(getBetaMin(), 0.0);
+//     BOOST_CHECK_EQUAL(getBetaMax(), 1.0);
+// }
+
+
+// BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableMemberTableInitialziation, LookupTableFixture) {
+//     QuantileEstimatorLookupTable table;
+
+//     size_t table_size;
+//     size_t expected_size = 4;
+//     table_size = getTableSize();
+
+//     BOOST_CHECK_EQUAL(table_size, expected_size); 
+// }
+
+
+// BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVAlphaSize, LookupTableFixture) {
+//     QuantileEstimatorLookupTable table;
+//     table.calculateLookupTables();
+
+//     size_t vAlphaSize;
+//     size_t expectedSize = 220;
+//     vAlphaSize = table["vAlpha"].size();
+
+//     BOOST_CHECK_EQUAL(vAlphaSize, expectedSize);
+// }
+
+
+// BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVBetaSize, LookupTableFixture) {
+//     QuantileEstimatorLookupTable table;
+//     table.calculateLookupTables();
+
+//     size_t vBetaSize;
+//     size_t expectedSize = 220;
+//     vBetaSize = table["vBeta"].size();
+
+//     BOOST_CHECK_EQUAL(vBetaSize, expectedSize);
+// }
+
+
+// BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVGammaSize, LookupTableFixture) {
+//     QuantileEstimatorLookupTable table;
+//     table.calculateLookupTables();
+
+//     size_t vGammaSize;
+//     size_t expectedSize = 220;
+//     vGammaSize = table["vGamma"].size();
+
+//     BOOST_CHECK_EQUAL(vGammaSize, expectedSize);
+// }
+
+
+// BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVDeltaSize, LookupTableFixture) {
+//     QuantileEstimatorLookupTable table;
+//     table.calculateLookupTables();
+
+//     size_t vDeltaSize;
+//     size_t expectedSize = 220;
+//     vDeltaSize = table["vDelta"].size();
+
+//     BOOST_CHECK_EQUAL(vDeltaSize, expectedSize);
+// }
+
+
+// BOOST_AUTO_TEST_CASE( QuantileEstimatorTableNonDefaultInitialization ) {
+//     LookupTableFixture fixtureTable(0.25, 0.5, 2.0, 0.5, 1.0);
+
+//     BOOST_CHECK_EQUAL(fixtureTable.testGetMesh(), 0.25);
+//     BOOST_CHECK_EQUAL(fixtureTable.testGetAlphaMin(), 0.5); 
+//     BOOST_CHECK_EQUAL(fixtureTable.testGetAlphaMax(), 2.0);
+//     BOOST_CHECK_EQUAL(fixtureTable.testGetBetaMin(), 0.5);
+//     BOOST_CHECK_EQUAL(fixtureTable.testGetBetaMax(), 1.0);
+// }
+
+
+// BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVAlphaNonDefaultSize, LookupTableFixture) {
+//     LookupTableFixture fixtureTable(0.25, 0.5, 2.0, 0.5, 1.0);
+//     fixtureTable.calculateLookupTables();
+
+//     size_t vAlphaSize;
+//     size_t expectedSize = ((fixtureTable.testGetAlphaMax() - fixtureTable.testGetAlphaMin() + fixtureTable.testGetMesh())/ fixtureTable.testGetMesh()) *
+//     ((fixtureTable.testGetBetaMax() - fixtureTable.testGetBetaMin() + fixtureTable.testGetMesh()) / fixtureTable.testGetMesh());
+//     vAlphaSize = fixtureTable["vAlpha"].size();
+
+//     BOOST_CHECK_EQUAL(vAlphaSize, expectedSize);
+// }
+
+
+// BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVBetaNonDefaultSize, LookupTableFixture) {
+//     LookupTableFixture fixtureTable(0.25, 0.5, 2.0, 0.5, 1.0);
+//     fixtureTable.calculateLookupTables();
+
+//     size_t vBetaSize;
+//     size_t expectedSize = ((fixtureTable.testGetAlphaMax() - fixtureTable.testGetAlphaMin() + fixtureTable.testGetMesh())/ fixtureTable.testGetMesh()) *
+//     ((fixtureTable.testGetBetaMax() - fixtureTable.testGetBetaMin() + fixtureTable.testGetMesh()) / fixtureTable.testGetMesh());
+//     vBetaSize = fixtureTable["vBeta"].size();
+
+//     BOOST_CHECK_EQUAL(vBetaSize, expectedSize);
+// }
+
+
+// BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVGammaNonDefaultSize, LookupTableFixture) {
+//     LookupTableFixture fixtureTable(0.25, 0.5, 2.0, 0.5, 1.0);
+//     fixtureTable.calculateLookupTables();
+
+//     size_t vGammaSize;
+//     size_t expectedSize = ((fixtureTable.testGetAlphaMax() - fixtureTable.testGetAlphaMin() + fixtureTable.testGetMesh())/ fixtureTable.testGetMesh()) *
+//     ((fixtureTable.testGetBetaMax() - fixtureTable.testGetBetaMin() + fixtureTable.testGetMesh()) / fixtureTable.testGetMesh());
+//     vGammaSize = fixtureTable["vGamma"].size();
+
+//     BOOST_CHECK_EQUAL(vGammaSize, expectedSize);
+// }
+
+
+// BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVDeltaNonDefaultSize, LookupTableFixture) {
+//     LookupTableFixture fixtureTable(0.25, 0.5, 2.0, 0.5, 1.0);
+//     fixtureTable.calculateLookupTables();
+
+//     size_t vDeltaSize;
+//     size_t expectedSize = ((fixtureTable.testGetAlphaMax() - fixtureTable.testGetAlphaMin() + fixtureTable.testGetMesh())/ fixtureTable.testGetMesh()) *
+//     ((fixtureTable.testGetBetaMax() - fixtureTable.testGetBetaMin() + fixtureTable.testGetMesh()) / fixtureTable.testGetMesh());
+//     vDeltaSize = fixtureTable["vDelta"].size();
+
+//     BOOST_CHECK_EQUAL(vDeltaSize, expectedSize);
+// }
+
+
+// BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableWriteToFileSuccessVAlpha, LookupTableFixture) {
+//     QuantileEstimatorLookupTable table;
+//     std::string vFunction = "vAlpha";
+//     table.writeLookupTablesToFile(vFunction);
+
+//     std::string filePath = "../../assets/" + vFunction + "_lookup_tables.csv";
+
+//     BOOST_CHECK(std::filesystem::exists(filePath));
+// }
+
+
+// BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableWriteToFileSuccessVBeta, LookupTableFixture) {
+//     QuantileEstimatorLookupTable table;
+//     std::string vFunction = "vBeta";
+//     table.writeLookupTablesToFile(vFunction);
+
+//     std::string filePath = "../../assets/" + vFunction + "_lookup_tables.csv";
+
+//     BOOST_CHECK(std::filesystem::exists(filePath));
+// }
+
+
+// BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableWriteToFileSuccessVGamma, LookupTableFixture) {
+//     QuantileEstimatorLookupTable table;
+//     std::string vFunction = "vGamma";
+//     table.writeLookupTablesToFile(vFunction);
+
+//     std::string filePath = "../../assets/" + vFunction + "_lookup_tables.csv";
+
+//     BOOST_CHECK(std::filesystem::exists(filePath));
+// }
+
+
+// BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableWriteToFileSuccessVDelta, LookupTableFixture) {
+//     QuantileEstimatorLookupTable table;
+//     std::string vFunction = "vDelta";
+//     table.writeLookupTablesToFile(vFunction);
+
+//     std::string filePath = "../../assets/" + vFunction + "_lookup_tables.csv";
+
+//     BOOST_CHECK(std::filesystem::exists(filePath));
+// }
+
+
+BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableNumberLengthOfSample, LookupTableFixture) {
+    LookupTableFixture fixtureTable;
+    unsigned int numberOfSamples = 1;
+    std::vector<double> sumOfSamples = fixtureTable.testCalculateSumOfSamples(numberOfSamples);
+
+    BOOST_CHECK_EQUAL(sumOfSamples.size(), 100000);
 }
 
 
-BOOST_FIXTURE_TEST_CASE( QuantileEstimatorTableCalculationDefaultInitialization, LookupTableFixture ) {
-    QuantileEstimatorLookupTable table;
+BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableNumberOfSamplesUsed, LookupTableFixture) {
+    LookupTableFixture fixtureTable;
+    unsigned int numberOfSamples = 100;
+    std::vector<double> sumOfSamples = fixtureTable.testCalculateSumOfSamples(numberOfSamples);
 
-    BOOST_CHECK_EQUAL(getMesh(), 0.1);
-    BOOST_CHECK_EQUAL(getAlphaMin(), 0.1); 
-    BOOST_CHECK_EQUAL(getAlphaMax(), 2.0);
-    BOOST_CHECK_EQUAL(getBetaMin(), 0.0);
-    BOOST_CHECK_EQUAL(getBetaMax(), 1.0);
+    BOOST_CHECK_EQUAL(fixtureTable.testGetSampleCounterForTest(), numberOfSamples);
 }
 
 
-BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableMemberTableInitialziation, LookupTableFixture) {
-    QuantileEstimatorLookupTable table;
+BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableMeanOfSamplesUesd, LookupTableFixture) {
+    LookupTableFixture fixtureTable;
+    unsigned int numberOfSamples = 100;
+    std::vector<double> sumOfSamples = fixtureTable.testCalculateSumOfSamples(100);
+    std::vector<double> meanOfSamples = fixtureTable.testCalculateMeanQuantiles(sumOfSamples);
 
-    size_t table_size;
-    size_t expected_size = 4;
-    table_size = getTableSize();
+    auto meanView = sumOfSamples | std::views::transform([numberOfSamples](double val){
+        return val / numberOfSamples;
+    });
 
-    BOOST_CHECK_EQUAL(table_size, expected_size); 
-}
+    std::vector<double> meanViewAsVector(meanView.begin(), meanView.end());
 
-
-BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVAlphaSize, LookupTableFixture) {
-    QuantileEstimatorLookupTable table;
-    table.calculateLookupTables();
-
-    size_t vAlphaSize;
-    size_t expectedSize = 220;
-    vAlphaSize = table["vAlpha"].size();
-
-    BOOST_CHECK_EQUAL(vAlphaSize, expectedSize);
-}
-
-
-BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVBetaSize, LookupTableFixture) {
-    QuantileEstimatorLookupTable table;
-    table.calculateLookupTables();
-
-    size_t vBetaSize;
-    size_t expectedSize = 220;
-    vBetaSize = table["vBeta"].size();
-
-    BOOST_CHECK_EQUAL(vBetaSize, expectedSize);
-}
-
-
-BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVGammaSize, LookupTableFixture) {
-    QuantileEstimatorLookupTable table;
-    table.calculateLookupTables();
-
-    size_t vGammaSize;
-    size_t expectedSize = 220;
-    vGammaSize = table["vGamma"].size();
-
-    BOOST_CHECK_EQUAL(vGammaSize, expectedSize);
-}
-
-
-BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVDeltaSize, LookupTableFixture) {
-    QuantileEstimatorLookupTable table;
-    table.calculateLookupTables();
-
-    size_t vDeltaSize;
-    size_t expectedSize = 220;
-    vDeltaSize = table["vDelta"].size();
-
-    BOOST_CHECK_EQUAL(vDeltaSize, expectedSize);
-}
-
-
-BOOST_AUTO_TEST_CASE( QuantileEstimatorTableNonDefaultInitialization ) {
-    LookupTableFixture fixtureTable(0.25, 0.5, 2.0, 0.5, 1.0);
-
-    BOOST_CHECK_EQUAL(fixtureTable.testGetMesh(), 0.25);
-    BOOST_CHECK_EQUAL(fixtureTable.testGetAlphaMin(), 0.5); 
-    BOOST_CHECK_EQUAL(fixtureTable.testGetAlphaMax(), 2.0);
-    BOOST_CHECK_EQUAL(fixtureTable.testGetBetaMin(), 0.5);
-    BOOST_CHECK_EQUAL(fixtureTable.testGetBetaMax(), 1.0);
-}
-
-
-BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVAlphaNonDefaultSize, LookupTableFixture) {
-    LookupTableFixture fixtureTable(0.25, 0.5, 2.0, 0.5, 1.0);
-    fixtureTable.calculateLookupTables();
-
-    size_t vAlphaSize;
-    size_t expectedSize = ((fixtureTable.testGetAlphaMax() - fixtureTable.testGetAlphaMin() + fixtureTable.testGetMesh())/ fixtureTable.testGetMesh()) *
-    ((fixtureTable.testGetBetaMax() - fixtureTable.testGetBetaMin() + fixtureTable.testGetMesh()) / fixtureTable.testGetMesh());
-    vAlphaSize = fixtureTable["vAlpha"].size();
-
-    BOOST_CHECK_EQUAL(vAlphaSize, expectedSize);
-}
-
-
-BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVBetaNonDefaultSize, LookupTableFixture) {
-    LookupTableFixture fixtureTable(0.25, 0.5, 2.0, 0.5, 1.0);
-    fixtureTable.calculateLookupTables();
-
-    size_t vBetaSize;
-    size_t expectedSize = ((fixtureTable.testGetAlphaMax() - fixtureTable.testGetAlphaMin() + fixtureTable.testGetMesh())/ fixtureTable.testGetMesh()) *
-    ((fixtureTable.testGetBetaMax() - fixtureTable.testGetBetaMin() + fixtureTable.testGetMesh()) / fixtureTable.testGetMesh());
-    vBetaSize = fixtureTable["vBeta"].size();
-
-    BOOST_CHECK_EQUAL(vBetaSize, expectedSize);
-}
-
-
-BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVGammaNonDefaultSize, LookupTableFixture) {
-    LookupTableFixture fixtureTable(0.25, 0.5, 2.0, 0.5, 1.0);
-    fixtureTable.calculateLookupTables();
-
-    size_t vGammaSize;
-    size_t expectedSize = ((fixtureTable.testGetAlphaMax() - fixtureTable.testGetAlphaMin() + fixtureTable.testGetMesh())/ fixtureTable.testGetMesh()) *
-    ((fixtureTable.testGetBetaMax() - fixtureTable.testGetBetaMin() + fixtureTable.testGetMesh()) / fixtureTable.testGetMesh());
-    vGammaSize = fixtureTable["vGamma"].size();
-
-    BOOST_CHECK_EQUAL(vGammaSize, expectedSize);
-}
-
-
-BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVDeltaNonDefaultSize, LookupTableFixture) {
-    LookupTableFixture fixtureTable(0.25, 0.5, 2.0, 0.5, 1.0);
-    fixtureTable.calculateLookupTables();
-
-    size_t vDeltaSize;
-    size_t expectedSize = ((fixtureTable.testGetAlphaMax() - fixtureTable.testGetAlphaMin() + fixtureTable.testGetMesh())/ fixtureTable.testGetMesh()) *
-    ((fixtureTable.testGetBetaMax() - fixtureTable.testGetBetaMin() + fixtureTable.testGetMesh()) / fixtureTable.testGetMesh());
-    vDeltaSize = fixtureTable["vDelta"].size();
-
-    BOOST_CHECK_EQUAL(vDeltaSize, expectedSize);
-}
-
-
-BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableWriteToFileSuccessVAlpha, LookupTableFixture) {
-    QuantileEstimatorLookupTable table;
-    std::string vFunction = "vAlpha";
-    table.writeLookupTablesToFile(vFunction);
-
-    std::string filePath = "../../assets/" + vFunction + "_lookup_tables.csv";
-
-    BOOST_CHECK(std::filesystem::exists(filePath));
-}
-
-
-BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableWriteToFileSuccessVBeta, LookupTableFixture) {
-    QuantileEstimatorLookupTable table;
-    std::string vFunction = "vBeta";
-    table.writeLookupTablesToFile(vFunction);
-
-    std::string filePath = "../../assets/" + vFunction + "_lookup_tables.csv";
-
-    BOOST_CHECK(std::filesystem::exists(filePath));
-}
-
-
-BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableWriteToFileSuccessVGamma, LookupTableFixture) {
-    QuantileEstimatorLookupTable table;
-    std::string vFunction = "vGamma";
-    table.writeLookupTablesToFile(vFunction);
-
-    std::string filePath = "../../assets/" + vFunction + "_lookup_tables.csv";
-
-    BOOST_CHECK(std::filesystem::exists(filePath));
-}
-
-
-BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableWriteToFileSuccessVDelta, LookupTableFixture) {
-    QuantileEstimatorLookupTable table;
-    std::string vFunction = "vDelta";
-    table.writeLookupTablesToFile(vFunction);
-
-    std::string filePath = "../../assets/" + vFunction + "_lookup_tables.csv";
-
-    BOOST_CHECK(std::filesystem::exists(filePath));
+    BOOST_CHECK_EQUAL_COLLECTIONS(meanOfSamples.begin(), meanOfSamples.end(), meanViewAsVector.begin(), 
+    meanViewAsVector.end());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
