@@ -2,6 +2,7 @@
 #include "utils.hpp"
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 
 QuantileEstimatorLookupTable::QuantileEstimatorLookupTable(double meshInput, double alphaMinInput,
 double alphaMaxInput, double betaMinInput, double betaMaxInput)
@@ -50,6 +51,44 @@ void QuantileEstimatorLookupTable::calculateLookupTables()
         }
     }
 } 
+
+
+void QuantileEstimatorLookupTable::writeLookupTablesToFile(const std::string& vFunction)
+{
+    std::vector<double> alphaValues;
+    std::vector<double> betaValues;
+    fillAlphaVector(alphaValues);
+    fillBetaVector(betaValues);
+
+    std::string filePath = "../../assets/" + vFunction + "_lookup_tables.csv";
+    std::ofstream lookupTableFile(filePath, std::ios::trunc);
+
+    if (lookupTableFile.is_open())
+    {
+        lookupTableFile << " ,";
+        for(double beta: betaValues)
+        {
+            lookupTableFile << beta << ",";
+        }
+        lookupTableFile << '\n';
+
+        for (auto alpha: alphaValues)
+        {   
+            lookupTableFile << alpha << ',';
+            for (double beta: betaValues)
+            {
+                lookupTableFile << lookupTables[vFunction][std::tuple<double, double>(alpha, beta)] << ',';
+            }
+            lookupTableFile << '\n';
+        }
+
+        lookupTableFile.close();
+    }
+    else 
+    {
+        std::cerr << "Error opening file" << std::endl;
+    }
+}
 
 
 void QuantileEstimatorLookupTable::fillAlphaVector(std::vector<double>& alphaValues)
@@ -106,7 +145,7 @@ std::map<std::string, double> QuantileEstimatorLookupTable::calculateVFunctionVa
     //Needs 0 parametrization, which is the default.
     Simulator simulator(alpha, beta);
     std::vector<double> sample;
-    sample = simulator.simulateSymmetricZVector(100000);
+    sample = simulator.simulateSymmetricZVector(1000000);
 
     std::sort(sample.begin(), sample.end(), [](double a, double b) {
         return a < b;

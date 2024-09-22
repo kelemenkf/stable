@@ -1,5 +1,6 @@
 #define BOOST_TEST_MODULE QuantileEstimatorLookupTableTestSuite
 #include <boost/test/included/unit_test.hpp>
+#include <filesystem>
 #include "quantile_estimator_lookup_table.hpp"
 
 struct LookupTableFixture: public QuantileEstimatorLookupTable
@@ -184,5 +185,17 @@ BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableCalculateVDeltaNonDefaultSi
 
     BOOST_CHECK_EQUAL(vDeltaSize, expectedSize);
 }
+
+
+BOOST_FIXTURE_TEST_CASE( QuantileEstimatorLookupTableWriteToFileSuccess, LookupTableFixture) {
+    QuantileEstimatorLookupTable table;
+    std::string vFunction = "vAlpha";
+    table.writeLookupTablesToFile(vFunction);
+
+    std::string filePath = "/assets/" + vFunction + "_lookup_tables.csv";
+
+    BOOST_CHECK(std::filesystem::exists(filePath));
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()

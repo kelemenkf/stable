@@ -26,7 +26,7 @@ public:
     
     void calculateLookupTables();
 
-    void writeLookupTablesToFile();
+    void writeLookupTablesToFile(const std::string& vFunction);
 
 
 private:
