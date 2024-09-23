@@ -1,3 +1,6 @@
+#ifndef UTILS_HPP
+#define UTILS_HPP
+
 #include <vector>
 #include <algorithm>
 
@@ -30,3 +33,5 @@ public:
 double getQuantile(const std::vector<double>& sample, const float& p);
 
 double linearInterpolation(CartesianPoint point1, CartesianPoint poin2, double x);
+
+#endif

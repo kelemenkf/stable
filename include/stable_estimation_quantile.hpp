@@ -11,6 +11,7 @@ private:
     StableDistribution estimatedDistribution;
     double vAlphaSample;
     double vBetaSample;
+    std::vector<double> sampleQs;
 
 
 public:
@@ -22,6 +23,10 @@ public:
     
 protected:
     void sortSample();
+    
+    void calculateQVector();
+
+    double correctQuantile(CartesianPoint percentiles, CartesianPoint sampleValues);
 
     void calculateVAlpha();
 
