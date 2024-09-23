@@ -28,9 +28,8 @@ public:
     
     void writeLookupTablesToFile(const std::string& vFunction);
 
-    void calculateLookupTables();
+    void calculateLookupTables(const unsigned int& numberOfSamples);
 
-    std::map<std::string, double> calculateVFunctionValuesForAlphaBetaPair(const double& alpha, const double& beta);
 
 private:
     static double validateMesh(double mesh);
@@ -48,9 +47,11 @@ protected:
 
     void fillBetaVector(std::vector<double>& betaValues);
 
-    std::vector<double> calculateMeanOfSamples(std::vector<double>& sumOfSamples);
+    std::map<std::string, double> calculateVFunctionValuesForAlphaBetaPair(const double& alpha, const double& beta, const unsigned int& numberOfSamples);
 
-    std::vector<double> calculateSumOfSamples(const unsigned int& numberOfSamples);
+    std::vector<double> calculateMeanOfSamples(std::vector<double>& sumOfSamples, const unsigned int& numberOfSamples);
+
+    std::vector<double> calculateSumOfSamples(const unsigned int& numberOfSamples, Simulator& simulator);
 
     size_t getTableSize() const;
 

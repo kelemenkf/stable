@@ -7,11 +7,5 @@
 
 int main()
 {
-    boost::timer::cpu_timer timer;
-
-    QuantileEstimatorLookupTable table;
-
-    table.calculateVFunctionValuesForAlphaBetaPair(1.5, 0.5);
-
-    std::cout << "Elapsed time: " << timer.format() << std::endl;
+    return 0;
 }

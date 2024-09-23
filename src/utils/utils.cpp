@@ -5,7 +5,7 @@
 
 double getQuantile(const std::vector<double>& sample, const float& p)
 {
-    size_t index = sample.size() * p - 1;
+    size_t index = (sample.size() * p) - 1;
 
     return sample[index];
 }
