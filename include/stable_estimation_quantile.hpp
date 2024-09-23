@@ -12,6 +12,7 @@ private:
     double vAlphaSample;
     double vBetaSample;
     std::vector<double> sampleQs;
+    std::vector<double> correctedQuantiles;
 
 
 public:
@@ -28,7 +29,9 @@ protected:
 
     std::vector<CartesianPoint> findAdjacentQuantiles(double quantile);
 
-    double correctQuantile(CartesianPoint percentiles, CartesianPoint sampleValues);
+    double calculateCorrectedQuantile(const double& quantile);
+
+    void initializeMemberQuantiles();
 
     void calculateVAlpha();
 

@@ -3,6 +3,7 @@
 
 QuantileEstimator::QuantileEstimator(std::vector<double> sampleInput) : Estimator(sampleInput) {
     sortSample();
+    calculateQVector();
 };
 
 
@@ -41,7 +42,7 @@ std::vector<CartesianPoint> QuantileEstimator::findAdjacentQuantiles(double quan
         if (quantile == value)
         {
             before.setX(value);
-            after.setX(value);
+            after.setX(value);  
             before.setY(sample[counter]);
             after.setY(sample[counter]);
         }
@@ -66,23 +67,35 @@ std::vector<CartesianPoint> QuantileEstimator::findAdjacentQuantiles(double quan
 }
 
 
-double QuantileEstimator::correctQuantile(CartesianPoint percentiles, CartesianPoint sampleValuse)
+double QuantileEstimator::calculateCorrectedQuantile(const double& quantile)
 {
-   
+    std::vector<CartesianPoint> adjacentQuantiles = findAdjacentQuantiles(quantile);
+
+    return linearInterpolation(adjacentQuantiles[0], adjacentQuantiles[1], quantile);
+} 
+
+
+void QuantileEstimator::initializeMemberQuantiles()
+{
+    std::vector<double> quantilesNeeded {0.05, 0.25, 0.5, 0.75, 0.95};
+    for (size_t index = 0; index < quantilesNeeded.size(); ++index)
+    {
+        correctedQuantiles[index] = calculateCorrectedQuantile(quantilesNeeded[index]);
+    }
 }
 
 
 void QuantileEstimator::calculateVAlpha()
 {
-    vAlphaSample = (getQuantile(sample, 0.95) - getQuantile(sample, 0.05)) / 
-    (getQuantile(sample, 0.75) - getQuantile(sample, 0.25));
+    vAlphaSample = (correctedQuantiles[4] - correctedQuantiles[0]) / 
+    (correctedQuantiles[3] - correctedQuantiles[1]);
 }
 
 
 void QuantileEstimator::calculateVBeta()
 {
-    vBetaSample = (getQuantile(sample, 0.05) + getQuantile(sample, 0.95) - 2*getQuantile(sample, 0.50)) / 
-    (getQuantile(sample, 0.95) - getQuantile(sample, 0.05));
+    vBetaSample = (correctedQuantiles[0] + correctedQuantiles[4] - 2*correctedQuantiles[3]) / 
+    (correctedQuantiles[4] - correctedQuantiles[0]);
 }
 
 
