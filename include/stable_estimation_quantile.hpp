@@ -5,11 +5,11 @@
 #include "quantile_estimator_lookup_table.hpp"
 
 
-class QuantileEstimator: private Estimator
+class QuantileEstimator: public Estimator
 {
 private:
     StableDistribution estimatedDistribution;
-    
+
 
 public:
     QuantileEstimator(std::vector<double> sample);
@@ -18,7 +18,23 @@ public:
 
     
 private:
-    QuantileEstimatorLookupTable fillTable();
+    void sortSample();
+
+    double calculateVAlpha();
+
+    double calculateVBeta();
+
+    double calculateVGamma();
+
+    double calculateVDelta();
+
+    void readLookupTableFromFile();
+
+    std::tuple<double, double> findParameterRangeFromLookupTable(const std::map<std::tuple<double, double>, double>& lookupTable);
+
+    double interpolateParameter(std::tuple<double, double> paramRange);
+
+    void setDistributionParameters();
 };
 
 #endif

@@ -9,10 +9,7 @@ QuantileEstimator::~QuantileEstimator()
 }
 
 
-QuantileEstimatorLookupTable QuantileEstimator::fillTable()
+void QuantileEstimator::sortSample()
 {
-    QuantileEstimatorLookupTable lookupTables;
-    lookupTables.calculateLookupTables();
-    
-    return lookupTables;
+    std::sort(sample.begin(), sample.end(), [](double a, double b){ return a < b; });
 }

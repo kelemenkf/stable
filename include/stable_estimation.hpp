@@ -5,7 +5,7 @@
 
 class Estimator
 {
-private: 
+protected: 
     std::vector<double> sample;
 
 
@@ -13,6 +13,8 @@ public:
     Estimator(std::vector<double> sampleInput);
 
     ~Estimator();
+
+    StableDistribution getParameters();
 
 
 private: 
