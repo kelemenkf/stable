@@ -28,6 +28,16 @@ public:
             return y;
         }
     }
+
+    void setX(double input)
+    {
+        x = input;
+    }
+
+    void setY(double input)
+    {
+        y = input;
+    }
 };
 
 double getQuantile(const std::vector<double>& sample, const float& p);

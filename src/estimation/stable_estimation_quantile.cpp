@@ -31,6 +31,41 @@ void QuantileEstimator::calculateQVector()
 }
 
 
+std::vector<CartesianPoint> QuantileEstimator::findAdjacentQuantiles(double quantile)
+{
+    CartesianPoint before;
+    CartesianPoint after;
+
+    size_t counter = 0;
+    auto findQuantile = [this, &quantile, &counter, &before, &after](double value) mutable {
+        if (quantile == value)
+        {
+            before.setX(value);
+            after.setX(value);
+            before.setY(sample[counter]);
+            after.setY(sample[counter]);
+        }
+        ++counter;
+    };
+
+    for_each(sampleQs.begin(), sampleQs.end(), findQuantile);
+
+    for (size_t index = 0; index < sampleQs.size(); index++)
+    {
+        if (sampleQs[index - 1] < quantile && sampleQs[index] > quantile)
+        {
+            before.setX(sampleQs[index - 1]);
+            after.setX(sampleQs[index]);
+            before.setY(sample[index - 1]);
+            after.setY(sample[index]);
+        }
+    }
+
+    std::vector<CartesianPoint> adjacentPoints{before, after};
+    return adjacentPoints;
+}
+
+
 double QuantileEstimator::correctQuantile(CartesianPoint percentiles, CartesianPoint sampleValuse)
 {
    

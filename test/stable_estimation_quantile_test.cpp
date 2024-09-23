@@ -43,6 +43,11 @@ struct QuantileEstimatorFixture: public QuantileEstimator
     {
         return getSampleQs();
     }
+
+    std::vector<CartesianPoint> testFindAdjacentQuantiles(double quantile)
+    {
+        return findAdjacentQuantiles(quantile);
+    }
 };
 
 
@@ -105,5 +110,35 @@ BOOST_AUTO_TEST_CASE( TestQuantileEstimatorCalculateQVector ) {
     BOOST_CHECK_LT(testSampleQs[testSampleQs.size() - 1], 1);
 }
 
+
+BOOST_AUTO_TEST_CASE( TestQunatileEstimatorFindAdjacentQuantilesEvenSample ) {
+    std::vector<double> testSample(100);
+    int start = 0;
+    std::generate(testSample.begin(), testSample.end(), [&start]() mutable { return start++; });
+    QuantileEstimatorFixture estimator(testSample);
+
+    estimator.testCalculateQVector();
+    std::vector<CartesianPoint> testPoints = estimator.testFindAdjacentQuantiles(0.500);
+
+    BOOST_CHECK_EQUAL(testPoints[0][0], 0.495);
+    BOOST_CHECK_EQUAL(testPoints[1][0], 0.505);
+    BOOST_CHECK_EQUAL(testPoints[0][1], 49);
+    BOOST_CHECK_EQUAL(testPoints[1][1], 50);
+}
+
+BOOST_AUTO_TEST_CASE( TestQunatileEstimatorFindAdjacentQuantilesOddSample ) {
+    std::vector<double> testSample(101);
+    int start = 0;
+    std::generate(testSample.begin(), testSample.end(), [&start]() mutable { return start++; });
+    QuantileEstimatorFixture estimator(testSample);
+
+    estimator.testCalculateQVector();
+    std::vector<CartesianPoint> testPoints = estimator.testFindAdjacentQuantiles(0.500);
+
+    BOOST_CHECK_EQUAL(testPoints[0][0], 0.5);
+    BOOST_CHECK_EQUAL(testPoints[1][0], 0.5);
+    BOOST_CHECK_EQUAL(testPoints[0][1], 50);
+    BOOST_CHECK_EQUAL(testPoints[1][1], 50);
+}
 
 BOOST_AUTO_TEST_SUITE_END()
