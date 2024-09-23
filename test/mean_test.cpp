@@ -11,5 +11,7 @@ int main()
 
     QuantileEstimatorLookupTable table;
 
+    table.calculateVFunctionValuesForAlphaBetaPair(1.5, 0.5);
+
     std::cout << "Elapsed time: " << timer.format() << std::endl;
 }

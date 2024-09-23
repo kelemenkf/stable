@@ -74,6 +74,8 @@ void QuantileEstimatorLookupTable::calculateLookupTables()
     fillAlphaVector(alphaValues);
     fillBetaVector(betaValues);
 
+    int counter = 0;
+
     for (auto alpha = alphaValues.cbegin(); alpha != alphaValues.cend(); 
     ++alpha)
     {
@@ -86,6 +88,8 @@ void QuantileEstimatorLookupTable::calculateLookupTables()
             lookupTables["vBeta"][index] = vValues["beta"];
             lookupTables["vGamma"][index] = vValues["gamma"];
             lookupTables["vDelta"][index] = vValues["delta"];
+            ++counter;
+            std::cout << counter << std::endl;
         }
     }
 } 
@@ -143,11 +147,7 @@ std::map<std::string, double> QuantileEstimatorLookupTable::calculateVFunctionVa
     };
 
     std::vector<double> sumOfSamples = calculateSumOfSamples(10000);
-    std::vector<double> meanOfSamples = calculateMeanQuantiles(sumOfSamples);
-
-    std::sort(meanOfSamples.begin(), meanOfSamples.end(), [](double a, double b) {
-        return a < b;
-    });
+    std::vector<double> meanOfSamples = calculateMeanOfSamples(sumOfSamples);
 
     double vAlpha = (getQuantile(meanOfSamples, 0.95) - getQuantile(meanOfSamples, 0.05)) / 
     (getQuantile(meanOfSamples, 0.75) - getQuantile(meanOfSamples, 0.25));
@@ -165,9 +165,9 @@ std::map<std::string, double> QuantileEstimatorLookupTable::calculateVFunctionVa
 }
 
 
-std::vector<double> QuantileEstimatorLookupTable::calculateMeanQuantiles(std::vector<double>& sumOfSamples)
+std::vector<double> QuantileEstimatorLookupTable::calculateMeanOfSamples(std::vector<double>& sumOfSamples)
 {
-    std::vector<double> meanOfSamples(100000);
+    std::vector<double> meanOfSamples(10000);
 
     std::transform(sumOfSamples.begin(), sumOfSamples.end(), meanOfSamples.begin(), [sumOfSamples](double value) { return value / sumOfSamples.size(); });
 
@@ -177,7 +177,7 @@ std::vector<double> QuantileEstimatorLookupTable::calculateMeanQuantiles(std::ve
 
 std::vector<double> QuantileEstimatorLookupTable::calculateSumOfSamples(const unsigned int& numberOfSamples)
 {
-    std::vector<double> sumOfSamples(100000);
+    std::vector<double> sumOfSamples(10000);
     Simulator simulator;
 
     int counter = 0;
@@ -186,9 +186,9 @@ std::vector<double> QuantileEstimatorLookupTable::calculateSumOfSamples(const un
 
     for (unsigned int i = 0; i < numberOfSamples; i++)
     {
-        std::vector<double> sample = simulator.simulateNonSymmetricZVector(100000);  
+        std::vector<double> sample = simulator.simulateNonSymmetricZVector(10000);  
         std::sort(sample.begin(), sample.end(), [](double a, double b){ return a < b; });
-        std::transform(sumOfSamples.begin(), sumOfSamples.end(), sample.begin(), sample.end(), addVectors);
+        std::transform(sumOfSamples.begin(), sumOfSamples.end(), sample.begin(), sumOfSamples.begin(), addVectors);
         counter++;
     }
 

@@ -30,6 +30,7 @@ public:
 
     void calculateLookupTables();
 
+    std::map<std::string, double> calculateVFunctionValuesForAlphaBetaPair(const double& alpha, const double& beta);
 
 private:
     static double validateMesh(double mesh);
@@ -42,15 +43,12 @@ private:
 
     static double validateBetaMax(double betaMax);
 
-
 protected:
     void fillAlphaVector(std::vector<double>& alphaValues);
 
     void fillBetaVector(std::vector<double>& betaValues);
 
-    std::map<std::string, double> calculateVFunctionValuesForAlphaBetaPair(const double& alpha, const double& beta);
-
-    std::vector<double> calculateMeanQuantiles(std::vector<double>& sumOfSamples);
+    std::vector<double> calculateMeanOfSamples(std::vector<double>& sumOfSamples);
 
     std::vector<double> calculateSumOfSamples(const unsigned int& numberOfSamples);
 
