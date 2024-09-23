@@ -82,4 +82,9 @@ BOOST_AUTO_TEST_CASE( TestQunatileEstimatorCalculateVBetaSample ) {
 }
 
 
+BOOST_AUTO_TEST_CASE( TestQuantileEstimatorCorrectQuantile ) {
+
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()
