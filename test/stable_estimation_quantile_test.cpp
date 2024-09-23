@@ -19,7 +19,7 @@ struct QuantileEstimatorFixture: public QuantileEstimator
         return getVAlpha();
     }
 
-        void testCalculateVBeta()
+    void testCalculateVBeta()
     {
         calculateVBeta();
     }
@@ -27,6 +27,11 @@ struct QuantileEstimatorFixture: public QuantileEstimator
     double testGetVBeta() 
     {
         return getVBeta();
+    }
+
+    std::vector<double> testGetSample()
+    {
+        return getSample();
     }
 };
 
@@ -43,7 +48,19 @@ BOOST_AUTO_TEST_CASE( TestQuantileEstimatorConstructor ) {
 }
 
 
-BOOST_AUTO_TEST_CASE( TestQunatileEstimatorCalculateVAlphaSample) {
+BOOST_AUTO_TEST_CASE( TestQuantileEstimatorConstructorSorting ) {
+    std::vector<double> testSample = {1.0, 2.33, 45.942, 6.1, 6.2, 7.6};
+    QuantileEstimatorFixture testEstimator(testSample);
+
+    std::sort(testSample.begin(), testSample.end(), [](double a, double b){ return a < b; });
+    std::vector<double> testInputSample = testEstimator.testGetSample();
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(testInputSample.begin(), testInputSample.end()
+    , testSample.begin(), testSample.end());
+}
+
+
+BOOST_AUTO_TEST_CASE( TestQunatileEstimatorCalculateVAlphaSample ) {
     std::vector<double> testSample(100);
     int start = 0;
     std::generate(testSample.begin(), testSample.end(), [&start]() mutable { return start++; });
@@ -54,7 +71,7 @@ BOOST_AUTO_TEST_CASE( TestQunatileEstimatorCalculateVAlphaSample) {
 }
 
 
-BOOST_AUTO_TEST_CASE( TestQunatileEstimatorCalculateVBetaSample) {
+BOOST_AUTO_TEST_CASE( TestQunatileEstimatorCalculateVBetaSample ) {
     std::vector<double> testSample(100);
     int start = 0;
     std::generate(testSample.begin(), testSample.end(), [&start]() mutable { return start++; });

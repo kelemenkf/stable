@@ -43,3 +43,9 @@ double QuantileEstimator::getVBeta()
 {
     return vBetaSample;
 }
+
+
+std::vector<double> QuantileEstimator::getSample()
+{
+    return sample;
+}

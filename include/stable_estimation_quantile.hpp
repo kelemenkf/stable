@@ -42,6 +42,8 @@ protected:
     double getVAlpha();
 
     double getVBeta();
+
+    std::vector<double> getSample();
 };
 
 #endif
