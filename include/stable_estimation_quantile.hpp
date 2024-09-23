@@ -24,6 +24,8 @@ public:
     StableDistribution getParameters() const;
     
 protected:
+    void readLookupTableFromFile();
+    
     void sortSample();
     
     void calculateQVector();
@@ -41,8 +43,6 @@ protected:
     double calculateVGamma();
 
     double calculateVDelta();
-
-    void readLookupTableFromFile();
 
     std::tuple<double, double> findParameterRangeFromLookupTable(const std::map<std::tuple<double, double>, double>& lookupTable);
 

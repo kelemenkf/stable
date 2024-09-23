@@ -1,9 +1,11 @@
 #include "stable_estimation_quantile.hpp"
 #include <iostream>
+#include <fstream>
 
 QuantileEstimator::QuantileEstimator(std::vector<double> sampleInput, std::vector<double> sampleQsInput, std::vector<double>
 correctedQuantilesInput) 
 : Estimator(sampleInput), sampleQs(sampleQsInput), correctedQuantiles(correctedQuantilesInput) {
+    readLookupTableFromFile();
     sortSample();
     calculateQVector();
     initializeMemberQuantiles();
@@ -13,6 +15,49 @@ correctedQuantilesInput)
 QuantileEstimator::~QuantileEstimator()
 {
 
+}
+
+
+void QuantileEstimator::readLookupTableFromFile()
+{
+    std::vector<std::string> vFunctions{ "vAlpha", "vBeta", "vGamma", "vDelta" };
+
+    for (size_t index = 0; index < vFunctions.size(); ++index)
+    {
+        std::string filePath = "../../assets/" + vFunctions[index] + "_lookup_tables.csv";
+
+        std::ifstream lookupTableFile(filePath, std::ios::in);
+    
+        //Va and Vb is needed together. 
+        std::vector<double> alphaValues;
+        std::vector<double> betaValues;
+
+        std::string line;
+        int counter = 0;
+
+        if (lookupTableFile.is_open())
+        {
+            while(getline(lookupTableFile, line))
+            {
+                if (counter == 0)
+                {   
+                    std::cout << line.substr(2) << std::endl;
+                    alphaValues = splitString(line.substr(2), ",");
+                }
+                else
+                {
+                    std::vector<double> doubleConvertedLine = splitString(line, ",");
+                    betaValues.push_back(doubleConvertedLine[0]);
+                }
+            
+                ++counter;
+                std::cout << counter << std::endl;
+            }
+
+            displayVector(alphaValues);
+            displayVector(betaValues);
+        }
+    }
 }
 
 

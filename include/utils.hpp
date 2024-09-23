@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 class CartesianPoint
 {
@@ -43,5 +44,17 @@ public:
 double getQuantile(const std::vector<double>& sample, const float& p);
 
 double linearInterpolation(CartesianPoint point1, CartesianPoint poin2, double x);
+
+std::vector<double> splitString(const std::string& str, const std::string& delimiter);
+
+template<typename T>
+void displayVector(const std::vector<T>& vector)
+{
+    for (auto element = vector.cbegin(); element != vector.cend(); 
+    ++element)
+    {
+        std::cout << *element << " " << std::endl;
+    }
+}
 
 #endif

@@ -37,6 +37,7 @@ void QuantileEstimatorLookupTable::writeLookupTablesToFile(const std::string& vF
     fillBetaVector(betaValues);
 
     std::string filePath = "../../assets/" + vFunction + "_lookup_tables.csv";
+
     std::ofstream lookupTableFile(filePath, std::ios::trunc);
 
     if (lookupTableFile.is_open())
@@ -44,7 +45,14 @@ void QuantileEstimatorLookupTable::writeLookupTablesToFile(const std::string& vF
         lookupTableFile << " ,";
         for(double beta: betaValues)
         {
-            lookupTableFile << beta << ",";
+            if (beta != *(betaValues.cend() - 1))
+            {
+                lookupTableFile << beta << ",";
+            }
+            else
+            {
+                lookupTableFile << beta;
+            }
         }
         lookupTableFile << '\n';
 
@@ -53,7 +61,14 @@ void QuantileEstimatorLookupTable::writeLookupTablesToFile(const std::string& vF
             lookupTableFile << alpha << ',';
             for (double beta: betaValues)
             {
-                lookupTableFile << lookupTables[vFunction][std::tuple<double, double>(alpha, beta)] << ',';
+                if (beta != *(betaValues.cend() - 1))
+                {
+                    lookupTableFile << lookupTables[vFunction][std::tuple<double, double>(alpha, beta)] << ',';
+                }
+                else
+                {
+                    lookupTableFile << lookupTables[vFunction][std::tuple<double, double>(alpha, beta)];
+                }
             }
             lookupTableFile << '\n';
         }
