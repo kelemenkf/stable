@@ -34,10 +34,14 @@ struct QuantileEstimatorFixture: public QuantileEstimator
         return getSample();
     }
 
-
     void testCalculateQVector()
     {
         calculateQVector();
+    }
+
+    std::vector<double> testGetSampleQs()
+    {
+        return getSampleQs();
     }
 };
 
@@ -88,13 +92,17 @@ BOOST_AUTO_TEST_CASE( TestQunatileEstimatorCalculateVBetaSample ) {
 }
 
 
-BOOST_AUTO_TEST_CASE( TestQuantileEstimatorCorrectQuantile ) {
+BOOST_AUTO_TEST_CASE( TestQuantileEstimatorCalculateQVector ) {
     std::vector<double> testSample(100);
     int start = 0;
     std::generate(testSample.begin(), testSample.end(), [&start]() mutable { return start++; });
     QuantileEstimatorFixture estimator(testSample);
 
     estimator.testCalculateQVector();
+    std::vector<double> testSampleQs = estimator.testGetSampleQs();
+
+    BOOST_CHECK_GT(testSampleQs[0], 0);
+    BOOST_CHECK_LT(testSampleQs[testSampleQs.size() - 1], 1);
 }
 
 

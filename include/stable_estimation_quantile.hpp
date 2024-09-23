@@ -26,6 +26,8 @@ protected:
     
     void calculateQVector();
 
+    std::vector<CartesianPoint> findAdjacentQuantiles(double quantile);
+
     double correctQuantile(CartesianPoint percentiles, CartesianPoint sampleValues);
 
     void calculateVAlpha();
@@ -49,6 +51,8 @@ protected:
     double getVBeta();
 
     std::vector<double> getSample();
+
+    std::vector<double> getSampleQs();
 };
 
 #endif

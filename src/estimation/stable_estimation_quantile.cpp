@@ -24,7 +24,6 @@ void QuantileEstimator::calculateQVector()
 
     int counter = 1;
     auto fillQVector = [this, &counter]() mutable { 
-        std::cout << ((2.0 * counter) - 1) / (2* sampleQs.size()) << " " << counter << "; ";
         return (2.0*(counter++) - 1) / (2 * this->sampleQs.size()); 
     };
 
@@ -34,7 +33,7 @@ void QuantileEstimator::calculateQVector()
 
 double QuantileEstimator::correctQuantile(CartesianPoint percentiles, CartesianPoint sampleValuse)
 {
-
+   
 }
 
 
@@ -67,4 +66,10 @@ double QuantileEstimator::getVBeta()
 std::vector<double> QuantileEstimator::getSample()
 {
     return sample;
+}
+
+
+std::vector<double> QuantileEstimator::getSampleQs()
+{
+    return sampleQs;
 }
