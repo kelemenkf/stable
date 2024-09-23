@@ -14,7 +14,7 @@ public:
 
     ~Estimator();
 
-    StableDistribution getParameters();
+    StableDistribution getParameters() const;
 
 
 private: 

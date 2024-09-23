@@ -9,20 +9,23 @@ class QuantileEstimator: public Estimator
 {
 private:
     StableDistribution estimatedDistribution;
+    double vAlphaSample;
+    double vBetaSample;
 
 
 public:
-    QuantileEstimator(std::vector<double> sample);
+    QuantileEstimator(std::vector<double> sampleInput);
 
     ~QuantileEstimator();
 
+    StableDistribution getParameters() const;
     
-private:
+protected:
     void sortSample();
 
-    double calculateVAlpha();
+    void calculateVAlpha();
 
-    double calculateVBeta();
+    void calculateVBeta();
 
     double calculateVGamma();
 
@@ -35,6 +38,10 @@ private:
     double interpolateParameter(std::tuple<double, double> paramRange);
 
     void setDistributionParameters();
+
+    double getVAlpha();
+
+    double getVBeta();
 };
 
 #endif
