@@ -1,9 +1,12 @@
 #include "stable_estimation_quantile.hpp"
 #include <iostream>
 
-QuantileEstimator::QuantileEstimator(std::vector<double> sampleInput) : Estimator(sampleInput) {
+QuantileEstimator::QuantileEstimator(std::vector<double> sampleInput, std::vector<double> sampleQsInput, std::vector<double>
+correctedQuantilesInput) 
+: Estimator(sampleInput), sampleQs(sampleQsInput), correctedQuantiles(correctedQuantilesInput) {
     sortSample();
     calculateQVector();
+    initializeMemberQuantiles();
 };
 
 
@@ -30,6 +33,24 @@ void QuantileEstimator::calculateQVector()
 
     std::generate(sampleQs.begin(), sampleQs.end(), fillQVector);
 }
+
+
+void QuantileEstimator::initializeMemberQuantiles()
+{
+    std::vector<double> quantilesNeeded {0.05, 0.25, 0.5, 0.75, 0.95};
+    for (size_t index = 0; index < quantilesNeeded.size(); ++index)
+    {
+        correctedQuantiles[index] = calculateCorrectedQuantile(quantilesNeeded[index]);
+    }
+}
+
+
+double QuantileEstimator::calculateCorrectedQuantile(const double& quantile)
+{
+    std::vector<CartesianPoint> adjacentQuantiles = findAdjacentQuantiles(quantile);
+
+    return linearInterpolation(adjacentQuantiles[0], adjacentQuantiles[1], quantile);
+} 
 
 
 std::vector<CartesianPoint> QuantileEstimator::findAdjacentQuantiles(double quantile)
@@ -67,24 +88,6 @@ std::vector<CartesianPoint> QuantileEstimator::findAdjacentQuantiles(double quan
 }
 
 
-double QuantileEstimator::calculateCorrectedQuantile(const double& quantile)
-{
-    std::vector<CartesianPoint> adjacentQuantiles = findAdjacentQuantiles(quantile);
-
-    return linearInterpolation(adjacentQuantiles[0], adjacentQuantiles[1], quantile);
-} 
-
-
-void QuantileEstimator::initializeMemberQuantiles()
-{
-    std::vector<double> quantilesNeeded {0.05, 0.25, 0.5, 0.75, 0.95};
-    for (size_t index = 0; index < quantilesNeeded.size(); ++index)
-    {
-        correctedQuantiles[index] = calculateCorrectedQuantile(quantilesNeeded[index]);
-    }
-}
-
-
 void QuantileEstimator::calculateVAlpha()
 {
     vAlphaSample = (correctedQuantiles[4] - correctedQuantiles[0]) / 
@@ -94,7 +97,7 @@ void QuantileEstimator::calculateVAlpha()
 
 void QuantileEstimator::calculateVBeta()
 {
-    vBetaSample = (correctedQuantiles[0] + correctedQuantiles[4] - 2*correctedQuantiles[3]) / 
+    vBetaSample = (correctedQuantiles[0] + correctedQuantiles[4] - 2*correctedQuantiles[2]) / 
     (correctedQuantiles[4] - correctedQuantiles[0]);
 }
 

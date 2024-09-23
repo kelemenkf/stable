@@ -16,7 +16,8 @@ private:
 
 
 public:
-    QuantileEstimator(std::vector<double> sampleInput);
+    QuantileEstimator(std::vector<double> sampleInput, std::vector<double> sampleQs = {},
+    std::vector<double> correctedQuantilesInput = {0, 0, 0, 0, 0});
 
     ~QuantileEstimator();
 

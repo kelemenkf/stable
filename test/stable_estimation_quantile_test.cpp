@@ -75,26 +75,26 @@ BOOST_AUTO_TEST_CASE( TestQuantileEstimatorConstructorSorting ) {
 }
 
 
-// BOOST_AUTO_TEST_CASE( TestQunatileEstimatorCalculateVAlphaSample ) {
-//     std::vector<double> testSample(100);
-//     int start = 0;
-//     std::generate(testSample.begin(), testSample.end(), [&start]() mutable { return start++; });
+BOOST_AUTO_TEST_CASE( TestQunatileEstimatorCalculateVAlphaSample ) {
+    std::vector<double> testSample(100);
+    int start = 0;
+    std::generate(testSample.begin(), testSample.end(), [&start]() mutable { return start++; });
 
-//     QuantileEstimatorFixture testEstimator(testSample);
-//     testEstimator.testCalculateVAlpha();
-//     BOOST_CHECK_EQUAL(testEstimator.testGetVAlpha(), (9.0 / 5));
-// }
+    QuantileEstimatorFixture testEstimator(testSample);
+    testEstimator.testCalculateVAlpha();
+    BOOST_CHECK_EQUAL(testEstimator.testGetVAlpha(), (9.0 / 5));
+}
 
 
-// BOOST_AUTO_TEST_CASE( TestQunatileEstimatorCalculateVBetaSample ) {
-//     std::vector<double> testSample(100);
-//     int start = 0;
-//     std::generate(testSample.begin(), testSample.end(), [&start]() mutable { return start++; });
+BOOST_AUTO_TEST_CASE( TestQunatileEstimatorCalculateVBetaSample ) {
+    std::vector<double> testSample(100);
+    int start = 0;
+    std::generate(testSample.begin(), testSample.end(), [&start]() mutable { return start++; });
 
-//     QuantileEstimatorFixture testEstimator(testSample);
-//     testEstimator.testCalculateVBeta();
-//     BOOST_CHECK_EQUAL(testEstimator.testGetVBeta(), 0);
-// }
+    QuantileEstimatorFixture testEstimator(testSample);
+    testEstimator.testCalculateVBeta();
+    BOOST_CHECK_EQUAL(testEstimator.testGetVBeta(), 0);
+}
 
 
 BOOST_AUTO_TEST_CASE( TestQuantileEstimatorCalculateQVector ) {
