@@ -7,7 +7,7 @@ int main(int argc, char* argv[])
     if (argc < 2)
     {
         QuantileEstimatorLookupTable table(0.1, 0.5, 2.0);
-        table.calculateLookupTables(10000);
+        table.calculateLookupTables(10);
         table.writeLookupTablesToFile("vAlpha");
         table.writeLookupTablesToFile("vBeta");
         table.writeLookupTablesToFile("vGamma");

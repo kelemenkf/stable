@@ -25,16 +25,18 @@ public:
     
 protected:
     void readLookupTableFromFile();
-    
+
     void sortSample();
     
     void calculateQVector();
 
-    std::vector<CartesianPoint> findAdjacentQuantiles(double quantile);
+    std::vector<CartesianPoint> findAdjacentQuantiles(double quantile, std::vector<double> xVector, std::vector<double> yVector);
 
     double calculateCorrectedQuantile(const double& quantile);
 
     void initializeMemberQuantiles();
+
+    void calculateAlpha(CartesianPoint vAlpha, CartesianPoint vBeta);
 
     void calculateVAlpha();
 

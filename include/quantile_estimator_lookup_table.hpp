@@ -20,6 +20,7 @@ private:
     int sampleCounterForTest;
 
 
+
 public:
     QuantileEstimatorLookupTable(double meshInput = 0.1, double alphaMinInput = 0.1, double alphaMaxInput = 2.0, 
     double betaMinInput = 0, double betaMaxInput = 1.0);

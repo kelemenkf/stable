@@ -25,6 +25,8 @@ public:
 
     std::vector<double> simulateUniformVector(unsigned int n = 1);
 
+    unsigned short getParametrizationIndex() const;
+
 private:
     double simulateStableX();
 

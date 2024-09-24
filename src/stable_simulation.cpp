@@ -179,3 +179,9 @@ unsigned int Simulator::validateN(const unsigned int& n)
 
     return n;
 }
+
+
+unsigned short Simulator::getParametrizationIndex() const
+{
+    return parametrizationIndex;
+}

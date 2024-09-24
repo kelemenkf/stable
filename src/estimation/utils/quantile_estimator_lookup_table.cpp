@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <iomanip>
+#include <cassert>
 
 QuantileEstimatorLookupTable::QuantileEstimatorLookupTable(double meshInput, double alphaMinInput,
 double alphaMaxInput, double betaMinInput, double betaMaxInput)
@@ -162,6 +163,9 @@ std::map<std::string, double> QuantileEstimatorLookupTable::calculateVFunctionVa
     };
 
     Simulator simulator(alpha, beta, 1, 0, 0);
+
+    assert(simulator.getParametrizationIndex() == 0);
+
     std::vector<double> sumOfSamples = calculateSumOfSamples(numberOfSamples, simulator);
     std::vector<double> meanOfSamples = calculateMeanOfSamples(sumOfSamples, numberOfSamples);
 

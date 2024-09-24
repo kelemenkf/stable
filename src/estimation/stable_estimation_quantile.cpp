@@ -9,6 +9,7 @@ correctedQuantilesInput)
     sortSample();
     calculateQVector();
     initializeMemberQuantiles();
+    // findAdjacentQuantiles(vAlphaSample);
 };
 
 
@@ -30,7 +31,7 @@ void QuantileEstimator::readLookupTableFromFile()
     
         std::vector<double> alphaValues;
         std::vector<double> betaValues;
-        std::vector<std::vector<double>> vValues;
+        std::vector<double> vValues;
 
         std::string line;
         int counter = 0;
@@ -47,8 +48,8 @@ void QuantileEstimator::readLookupTableFromFile()
                 {
                     std::vector<double> doubleConvertedLine = splitString(line, ",");
                     alphaValues.push_back(doubleConvertedLine[0]);
-                    doubleConvertedLine.erase(doubleConvertedLine.begin());
-                    vValues.push_back(doubleConvertedLine);
+                    doubleConvertedLine.erase(doubleConvertedLine.begin(), doubleConvertedLine.begin() + 1);
+                    vValues.insert(vValues.end(), doubleConvertedLine.begin(), doubleConvertedLine.end());
                 }
                 ++counter;
             }
@@ -88,25 +89,25 @@ void QuantileEstimator::initializeMemberQuantiles()
 
 double QuantileEstimator::calculateCorrectedQuantile(const double& quantile)
 {
-    std::vector<CartesianPoint> adjacentQuantiles = findAdjacentQuantiles(quantile);
+    std::vector<CartesianPoint> adjacentQuantiles = findAdjacentQuantiles(quantile, sampleQs, sample);
 
     return linearInterpolation(adjacentQuantiles[0], adjacentQuantiles[1], quantile);
 } 
 
 
-std::vector<CartesianPoint> QuantileEstimator::findAdjacentQuantiles(double quantile)
+std::vector<CartesianPoint> QuantileEstimator::findAdjacentQuantiles(double quantile, std::vector<double> xVector, std::vector<double> yVector)
 {
     CartesianPoint before;
     CartesianPoint after;
 
     size_t counter = 0;
-    auto findQuantile = [this, &quantile, &counter, &before, &after](double value) mutable {
+    auto findQuantile = [yVector, &quantile, &counter, &before, &after](double value) mutable {
         if (quantile == value)
         {
             before.setX(value);
             after.setX(value);  
-            before.setY(sample[counter]);
-            after.setY(sample[counter]);
+            before.setY(yVector[counter]);
+            after.setY(yVector[counter]);
         }
         ++counter;
     };
@@ -117,10 +118,10 @@ std::vector<CartesianPoint> QuantileEstimator::findAdjacentQuantiles(double quan
     {
         if (sampleQs[index - 1] < quantile && sampleQs[index] > quantile)
         {
-            before.setX(sampleQs[index - 1]);
-            after.setX(sampleQs[index]);
-            before.setY(sample[index - 1]);
-            after.setY(sample[index]);
+            before.setX(xVector[index - 1]);
+            after.setX(xVector[index]);
+            before.setY(yVector[index - 1]);
+            after.setY(yVector[index]);
         }
     }
 
