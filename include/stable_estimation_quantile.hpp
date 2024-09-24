@@ -13,6 +13,7 @@ private:
     double vBetaSample;
     std::vector<double> sampleQs;
     std::vector<double> correctedQuantiles;
+    std::map<std::string, std::map<std::tuple<double, double>, double>> invertedTable;
 
 
 public:
@@ -24,7 +25,9 @@ public:
     StableDistribution getParameters() const;
     
 protected:
-    void readLookupTableFromFile();
+    void buildGrid();
+
+    std::map<double, double> readLookupTableFromFile(std::string vFunction);
 
     void sortSample();
     

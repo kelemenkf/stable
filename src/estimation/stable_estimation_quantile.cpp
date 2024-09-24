@@ -5,11 +5,10 @@
 QuantileEstimator::QuantileEstimator(std::vector<double> sampleInput, std::vector<double> sampleQsInput, std::vector<double>
 correctedQuantilesInput) 
 : Estimator(sampleInput), sampleQs(sampleQsInput), correctedQuantiles(correctedQuantilesInput) {
-    readLookupTableFromFile();
+    buildGrid();
     sortSample();
     calculateQVector();
     initializeMemberQuantiles();
-    // findAdjacentQuantiles(vAlphaSample);
 };
 
 
@@ -19,42 +18,51 @@ QuantileEstimator::~QuantileEstimator()
 }
 
 
-void QuantileEstimator::readLookupTableFromFile()
+void QuantileEstimator::buildGrid()
 {
-    std::vector<std::string> vFunctions{ "vAlpha", "vBeta", "vGamma", "vDelta" };
+    std::vector<std::string> parameters{ "alpha", "beta" };
 
-    for (size_t index = 0; index < vFunctions.size(); ++index)
+    readLookupTableFromFile("vAlpha");
+    readLookupTableFromFile("vBeta");
+}
+
+
+
+
+std::map<double, double> QuantileEstimator::readLookupTableFromFile(std::string vFunction)
+{
+    std::string filePath = "../../assets/" + vFunction + "_lookup_tables.csv";
+
+    std::ifstream lookupTableFile(filePath, std::ios::in);
+
+    std::vector<double> alphaValues;
+    std::vector<double> vValues;
+
+    std::map<double, double> result;
+
+    std::string line;
+    int counter = 0;
+
+    if (lookupTableFile.is_open())
     {
-        std::string filePath = "../../assets/" + vFunctions[index] + "_lookup_tables.csv";
-
-        std::ifstream lookupTableFile(filePath, std::ios::in);
-    
-        std::vector<double> alphaValues;
-        std::vector<double> betaValues;
-        std::vector<double> vValues;
-
-        std::string line;
-        int counter = 0;
-
-        if (lookupTableFile.is_open())
+        while(getline(lookupTableFile, line))
         {
-            while(getline(lookupTableFile, line))
-            {
-                if (counter == 0)
-                { 
-                    betaValues = splitString(line.substr(2), ",");
-                }
-                else
-                {
-                    std::vector<double> doubleConvertedLine = splitString(line, ",");
-                    alphaValues.push_back(doubleConvertedLine[0]);
-                    doubleConvertedLine.erase(doubleConvertedLine.begin(), doubleConvertedLine.begin() + 1);
-                    vValues.insert(vValues.end(), doubleConvertedLine.begin(), doubleConvertedLine.end());
-                }
-                ++counter;
+            if (counter == 0)
+            { 
+                // betaValues = splitString(line.substr(2), ",");
             }
+            else
+            {
+                std::vector<double> doubleConvertedLine = splitString(line, ",");
+                alphaValues.push_back(doubleConvertedLine[0]);
+                doubleConvertedLine.erase(doubleConvertedLine.begin(), doubleConvertedLine.begin() + 1);
+                vValues.insert(vValues.end(), doubleConvertedLine.begin(), doubleConvertedLine.end());
+            }
+            ++counter;
         }
-    }
+    }    
+
+    vectorExtensionWithItself(11, alphaValues);
 }
 
 
