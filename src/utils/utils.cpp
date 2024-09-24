@@ -28,5 +28,7 @@ std::vector<double> splitString(const std::string& str, const std::string& delim
         end = str.find(delimiter, start);
     }
 
+    tokens.push_back(std::stod(str.substr(start)));
+
     return tokens;
 }

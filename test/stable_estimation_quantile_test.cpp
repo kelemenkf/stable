@@ -141,4 +141,14 @@ BOOST_AUTO_TEST_CASE( TestQunatileEstimatorFindAdjacentQuantilesOddSample ) {
     BOOST_CHECK_EQUAL(testPoints[1][1], 50);
 }
 
+
+BOOST_AUTO_TEST_CASE( TestQuantileEstimatorReadInLookupTableFile ) {
+        std::vector<double> testSample(101);
+        int start = 0;
+        std::generate(testSample.begin(), testSample.end(), [&start]() mutable { return start++; });
+        QuantileEstimatorFixture estimator(testSample);
+
+
+}
+
 BOOST_AUTO_TEST_SUITE_END()

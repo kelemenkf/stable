@@ -28,9 +28,9 @@ void QuantileEstimator::readLookupTableFromFile()
 
         std::ifstream lookupTableFile(filePath, std::ios::in);
     
-        //Va and Vb is needed together. 
         std::vector<double> alphaValues;
         std::vector<double> betaValues;
+        std::vector<std::vector<double>> vValues;
 
         std::string line;
         int counter = 0;
@@ -40,22 +40,18 @@ void QuantileEstimator::readLookupTableFromFile()
             while(getline(lookupTableFile, line))
             {
                 if (counter == 0)
-                {   
-                    std::cout << line.substr(2) << std::endl;
-                    alphaValues = splitString(line.substr(2), ",");
+                { 
+                    betaValues = splitString(line.substr(2), ",");
                 }
                 else
                 {
                     std::vector<double> doubleConvertedLine = splitString(line, ",");
-                    betaValues.push_back(doubleConvertedLine[0]);
+                    alphaValues.push_back(doubleConvertedLine[0]);
+                    doubleConvertedLine.erase(doubleConvertedLine.begin());
+                    vValues.push_back(doubleConvertedLine);
                 }
-            
                 ++counter;
-                std::cout << counter << std::endl;
             }
-
-            displayVector(alphaValues);
-            displayVector(betaValues);
         }
     }
 }

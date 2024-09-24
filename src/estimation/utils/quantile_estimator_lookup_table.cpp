@@ -89,6 +89,8 @@ void QuantileEstimatorLookupTable::calculateLookupTables(const unsigned int& num
     fillAlphaVector(alphaValues);
     fillBetaVector(betaValues);
 
+    int counter = 0; 
+
     for (auto alpha = alphaValues.cbegin(); alpha != alphaValues.cend(); 
     ++alpha)
     {
@@ -101,6 +103,7 @@ void QuantileEstimatorLookupTable::calculateLookupTables(const unsigned int& num
             lookupTables["vBeta"][index] = vValues["beta"];
             lookupTables["vGamma"][index] = vValues["gamma"];
             lookupTables["vDelta"][index] = vValues["delta"];
+            counter++;
         }
     }
 } 
@@ -158,7 +161,7 @@ std::map<std::string, double> QuantileEstimatorLookupTable::calculateVFunctionVa
         {"delta", 0}
     };
 
-    Simulator simulator(alpha, beta);
+    Simulator simulator(alpha, beta, 1, 0, 0);
     std::vector<double> sumOfSamples = calculateSumOfSamples(numberOfSamples, simulator);
     std::vector<double> meanOfSamples = calculateMeanOfSamples(sumOfSamples, numberOfSamples);
 
@@ -199,7 +202,7 @@ std::vector<double> QuantileEstimatorLookupTable::calculateSumOfSamples(const un
 
     for (unsigned int i = 0; i < numberOfSamples; i++)
     {
-        std::vector<double> sample = simulator.simulateNonSymmetricZVector(10000);  
+        std::vector<double> sample = simulator.simulateStableXVector(10000);  
         std::sort(sample.begin(), sample.end(), [](double a, double b){ return a < b; });
         std::transform(sumOfSamples.begin(), sumOfSamples.end(), sample.begin(), sumOfSamples.begin(), addVectors);
         counter++;
