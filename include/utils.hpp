@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <iostream>
 #include <map>
+#include <cmath>
 
 class CartesianPoint
 {
@@ -42,11 +43,16 @@ public:
     }
 };
 
+
 double getQuantile(const std::vector<double>& sample, const float& p);
 
 double linearInterpolation(CartesianPoint point1, CartesianPoint poin2, double x);
 
 std::vector<double> splitString(const std::string& str, const std::string& delimiter);
+
+std::vector<double> roundDoubleVector(std::vector<double>& inputVector, unsigned int precision);
+
+void transposeVector(const std::vector<double>& original, std::vector<double>& transposed, int rows, int cols);
 
 template<typename T>
 void displayVector(const std::vector<T>& vector)
@@ -58,16 +64,20 @@ void displayVector(const std::vector<T>& vector)
     }
 }
 
+
 template<typename T>
-std::vector<T> vectorExtensionWithItself(int times, std::vector<T> inputVector)
+std::vector<double> vectorExtensionWithItself(int times, const std::vector<T>& inputVector)
 {   
-    std::vector<T> original = inputVector;
+    std::vector<T> result = inputVector;
+
+    result.reserve(inputVector.size() * times);
+
     for (size_t i = 1; i < times; ++i)
     {
-        inputVector.insert(inputVector.end(), original.begin(), original.end());
+        result.insert(result.end(), inputVector.begin(), inputVector.end());
     }
 
-    return inputVector;
+    return result;
 }
 
 
@@ -83,6 +93,8 @@ std::map<T, T> buildMapFromVectors(std::vector<T> keyVector, std::vector<T> valu
             result[keyVector[index]] = valueVector[index];
         }
     }
+
+    return result;
 }
 
 #endif

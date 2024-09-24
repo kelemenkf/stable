@@ -33,3 +33,30 @@ std::vector<double> splitString(const std::string& str, const std::string& delim
     return tokens;
 }
 
+
+std::vector<double> roundDoubleVector(std::vector<double>& inputVector, unsigned int precision)
+{
+    double factor = std::pow(10, precision);
+
+    std::transform(inputVector.begin(), inputVector.end(), inputVector.begin(), [factor](double value){
+        return std::round(value * factor) / factor;
+    });
+
+    return inputVector;
+}
+
+
+void transposeVector(const std::vector<double>& original, std::vector<double>& transposed, int rows, int cols)
+{
+    if (original.size() != rows * cols) {
+        throw std::invalid_argument("Original vector size does not match specified dimensions.");
+    }
+
+    transposed.resize(cols * rows); 
+
+    for (int row = 0; row < rows; ++row) {
+        for (int col = 0; col < cols; ++col) {
+            transposed[col * rows + row] = original[row * cols + col];
+        }
+    }
+}
