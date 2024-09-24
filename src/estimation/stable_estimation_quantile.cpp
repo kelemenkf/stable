@@ -5,7 +5,10 @@
 QuantileEstimator::QuantileEstimator(std::vector<double> sampleInput, std::vector<double> sampleQsInput, std::vector<double>
 correctedQuantilesInput) 
 : Estimator(sampleInput), sampleQs(sampleQsInput), correctedQuantiles(correctedQuantilesInput) {
-    buildGrid();
+    for (std::string parameter: {"alpha", "beta"})
+    {
+        invertTable(parameter);
+    }
     sortSample();
     calculateQVector();
     initializeMemberQuantiles();
@@ -18,27 +21,44 @@ QuantileEstimator::~QuantileEstimator()
 }
 
 
-void QuantileEstimator::buildGrid()
+void QuantileEstimator::invertTable(const std::string& parameter)
 {
-    std::vector<std::string> parameters{ "alpha", "beta" };
+    std::unordered_map<double, double> vAlpha_param = readLookupTableFromFile("vAlpha", parameter);
+    std::unordered_map<double, double> vBeta_param = readLookupTableFromFile("vBeta", parameter);
 
-    readLookupTableFromFile("vAlpha");
-    readLookupTableFromFile("vBeta");
+    std::map<std::tuple<double, double>, double> table;
+
+    for (auto elementA = vAlpha_param.begin(); elementA != vAlpha_param.end();
+    ++elementA)
+    {
+        for (auto elementB = vBeta_param.begin(); elementB != vBeta_param.end();
+        ++elementB)
+        {
+            std::tuple<double, double> index{elementA->second, elementB->second};
+
+            table[index] = elementA->first;
+        }
+    }
+
+    invertedTable[parameter] = table;
 }
 
 
-
-
-std::map<double, double> QuantileEstimator::readLookupTableFromFile(std::string vFunction)
+std::map<std::string, std::map<std::tuple<double, double>, double>> readlookupTableFromFile(std::string vFunction)
 {
     std::string filePath = "../../assets/" + vFunction + "_lookup_tables.csv";
-
     std::ifstream lookupTableFile(filePath, std::ios::in);
 
+
+    std::map<std::string, std::map<std::tuple<double, double>, double>> lookupTable = 
+    {
+        {vFunction, {}} 
+    };
     std::vector<double> alphaValues;
+    std::vector<double> betaValues;
     std::vector<double> vValues;
 
-    std::map<double, double> result;
+    std::unordered_map<double, double> result;
 
     std::string line;
     int counter = 0;
@@ -49,20 +69,98 @@ std::map<double, double> QuantileEstimator::readLookupTableFromFile(std::string 
         {
             if (counter == 0)
             { 
-                // betaValues = splitString(line.substr(2), ",");
+                betaValues = splitString(line.substr(2), ",");
             }
             else
             {
                 std::vector<double> doubleConvertedLine = splitString(line, ",");
                 alphaValues.push_back(doubleConvertedLine[0]);
-                doubleConvertedLine.erase(doubleConvertedLine.begin(), doubleConvertedLine.begin() + 1);
-                vValues.insert(vValues.end(), doubleConvertedLine.begin(), doubleConvertedLine.end());
+                doubleConvertedLine.erase(doubleConvertedLine.begin());
+                vValues.insert(vValues.end(), doubleConvertedLine.begin(), doubleConvertedLine.end());   
             }
             ++counter;
         }
     }    
 
-    vectorExtensionWithItself(11, alphaValues);
+    for (size_t alphaIndex = 0; alphaIndex < alphaValues.size();
+    ++alphaIndex)
+    {
+        for (size_t betaIndex = 0; betaIndex < betaValues.size();
+        ++betaIndex)
+        {
+            std::tuple<double, double> index {alphaValues[alphaIndex], betaValues[betaIndex]};
+
+            lookupTable[vFunction][index] = vValues[alphaIndex * betaValues.size() + betaIndex];
+        }
+    }
+
+    return lookupTable;
+}
+
+
+
+std::unordered_map<double, double> QuantileEstimator::readLookupTableFromFile(std::string vFunction, const std::string& parameter)
+{
+    std::string filePath = "../../assets/" + vFunction + "_lookup_tables.csv";
+
+    std::ifstream lookupTableFile(filePath, std::ios::in);
+
+    std::vector<double> alphaValues;
+    std::vector<double> betaValues;
+    std::vector<double> vValues;
+
+    std::unordered_map<double, double> result;
+
+    std::string line;
+    int counter = 0;
+
+    if (lookupTableFile.is_open())
+    {
+        while(getline(lookupTableFile, line))
+        {
+            if (counter == 0)
+            { 
+                betaValues = splitString(line.substr(2), ",");
+            }
+            else
+            {
+                std::vector<double> doubleConvertedLine = splitString(line, ",");
+                alphaValues.push_back(doubleConvertedLine[0]);
+                doubleConvertedLine.erase(doubleConvertedLine.begin());
+                vValues.insert(vValues.end(), doubleConvertedLine.begin(), doubleConvertedLine.end());   
+            }
+            ++counter;
+        }
+    }    
+
+    if (parameter == "alpha")
+    {
+        alphaValues = vectorExtensionWithItself(11, alphaValues);
+        roundDoubleVector(vValues, 3);
+        result = buildMapFromVectors(vValues, alphaValues);
+
+        for (auto element = result.begin(); element != result.end();
+        ++element)
+        {
+            std::cout << element->first << " , "  << element->second << std::endl;
+        }
+
+        return result;
+    }
+    else if (parameter == "beta")
+    {
+        betaValues = vectorExtensionWithItself(16, betaValues);
+        roundDoubleVector(vValues, 3);
+        transposeVector(vValues, 16, 11);
+        result = buildMapFromVectors(vValues, betaValues);
+
+        return result;
+    }
+
+    else
+    {
+        std::cerr << "Not a valid parameter" << std::endl;
+    }
 }
 
 
@@ -173,4 +271,10 @@ std::vector<double> QuantileEstimator::getSample()
 std::vector<double> QuantileEstimator::getSampleQs()
 {
     return sampleQs;
+}
+
+
+std::map<std::tuple<double, double>, double> QuantileEstimator::getInvertedTable(const std::string& parameter)
+{
+    return invertedTable[parameter];
 }

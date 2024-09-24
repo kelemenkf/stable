@@ -25,9 +25,11 @@ public:
     StableDistribution getParameters() const;
     
 protected:
-    void buildGrid();
+    void invertTable(const std::string& parameter);
 
-    std::map<double, double> readLookupTableFromFile(std::string vFunction);
+    std::unordered_map<double, double> readLookupTableFromFile(std::string vFunction, const std::string& parameter);
+
+    std::map<std::string, std::map<std::tuple<double, double>, double>> readlookupTableFromFile(std::string vFunction);
 
     void sortSample();
     
@@ -62,6 +64,8 @@ protected:
     std::vector<double> getSample();
 
     std::vector<double> getSampleQs();
+
+    std::map<std::tuple<double, double>, double> getInvertedTable(const std::string& parameter);
 };
 
 #endif

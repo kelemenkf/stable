@@ -46,12 +46,13 @@ std::vector<double> roundDoubleVector(std::vector<double>& inputVector, unsigned
 }
 
 
-void transposeVector(const std::vector<double>& original, std::vector<double>& transposed, int rows, int cols)
+void transposeVector(const std::vector<double>& original, const int& rows, const int& cols)
 {
     if (original.size() != rows * cols) {
         throw std::invalid_argument("Original vector size does not match specified dimensions.");
     }
 
+    std::vector<double> transposed(rows );
     transposed.resize(cols * rows); 
 
     for (int row = 0; row < rows; ++row) {

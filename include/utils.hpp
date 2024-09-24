@@ -52,7 +52,7 @@ std::vector<double> splitString(const std::string& str, const std::string& delim
 
 std::vector<double> roundDoubleVector(std::vector<double>& inputVector, unsigned int precision);
 
-void transposeVector(const std::vector<double>& original, std::vector<double>& transposed, int rows, int cols);
+void transposeVector(const std::vector<double>& original, const int& rows, const int& cols);
 
 template<typename T>
 void displayVector(const std::vector<T>& vector)
@@ -62,6 +62,7 @@ void displayVector(const std::vector<T>& vector)
     {
         std::cout << *element << " " << std::endl;
     }
+    std::cout << std::endl;
 }
 
 
@@ -82,9 +83,9 @@ std::vector<double> vectorExtensionWithItself(int times, const std::vector<T>& i
 
 
 template<typename T>
-std::map<T, T> buildMapFromVectors(std::vector<T> keyVector, std::vector<T> valueVector)
+std::unordered_map<T, T> buildMapFromVectors(std::vector<T> keyVector, std::vector<T> valueVector)
 {
-    std::map<T, T> result;
+    std::unordered_map<T, T> result;
 
     if (keyVector.size() == valueVector.size())
     {

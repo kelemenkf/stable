@@ -105,6 +105,7 @@ void QuantileEstimatorLookupTable::calculateLookupTables(const unsigned int& num
             lookupTables["vGamma"][index] = vValues["gamma"];
             lookupTables["vDelta"][index] = vValues["delta"];
             counter++;
+            std::cout << counter << std::endl;
         }
     }
 } 
