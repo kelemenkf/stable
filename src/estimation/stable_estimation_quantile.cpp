@@ -32,8 +32,18 @@ std::vector<double> QuantileEstimator::calculateAlpha()
     std::map<std::tuple<double, double>, double> firstColumnVAlpha = getFirstColumnVAlpha();
 
     adjacentPoints = findAdjacentAlphas(vAlphaSample, firstColumnVAlpha);
-    
+
     std::vector<double> adjacentAlphas{ adjacentPoints[0].getX(), adjacentPoints[1].getX() };
+
+    std::cout << adjacentAlphas[0] << " " << adjacentAlphas[1] << std::endl;
+
+    std::map<std::tuple<double, double>, double> columnsBeta = getColumnsVBeta(adjacentAlphas[0], adjacentAlphas[1]);
+
+    for (auto element = columnsBeta.begin(); element != columnsBeta.end();
+    ++element)
+    {
+        std::cout << "Alpha" <<  std::get<0>(element->first) << " " <<  element->second << " ";
+    }
 
     return adjacentAlphas;
 }
@@ -52,6 +62,23 @@ std::map<std::tuple<double, double>, double> QuantileEstimator::getFirstColumnVA
         }
     }
     return firstColumnVAlpha; 
+}
+
+
+std::map<std::tuple<double, double>, double> QuantileEstimator::getColumnsVBeta(double alphaBelow, double alphaAbove)
+{
+    std::map<std::tuple<double, double>, double> columnsBeta;
+
+    for (auto element = lookupTable["vBeta"].begin(); element != lookupTable["vBeta"].end();
+    ++element) 
+    {
+        if (std::get<0>(element->first) == alphaBelow || std::get<0>(element->first) == alphaAbove)
+        {
+            columnsBeta[element->first] = element->second;
+        }
+    }
+
+    return columnsBeta;
 }
 
 
