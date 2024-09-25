@@ -35,8 +35,6 @@ std::vector<double> QuantileEstimator::calculateAlpha()
     
     std::vector<double> adjacentAlphas{ adjacentPoints[0].getX(), adjacentPoints[1].getX() };
 
-    displayVector(adjacentAlphas);
-
     return adjacentAlphas;
 }
 
@@ -238,7 +236,6 @@ void QuantileEstimator::calculateVAlpha()
 {
     vAlphaSample = (correctedQuantiles[4] - correctedQuantiles[0]) / 
     (correctedQuantiles[3] - correctedQuantiles[1]);
-    std::cout << vAlphaSample << std::endl;
 }
 
 
