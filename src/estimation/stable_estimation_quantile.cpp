@@ -12,6 +12,8 @@ correctedQuantilesInput)
     sortSample();
     calculateQVector();
     initializeMemberQuantiles();
+    calculateVAlpha();
+    calculateVBeta();
     calculateAlpha();
 };
 
@@ -23,14 +25,15 @@ QuantileEstimator::~QuantileEstimator()
 
 
 
-double QuantileEstimator::calculateAlpha()
+std::vector<double> QuantileEstimator::calculateAlpha()
 {
     std::vector<CartesianPoint> adjacentPoints;
 
     adjacentPoints = findAdjacentAlphas(vAlphaSample, lookupTable["vAlpha"]);
+    
+    std::vector<double> adjacentAlphas{ adjacentPoints[0].getY(), adjacentPoints[1].getY()  };
 
-    std::cout << adjacentPoints[0].getX() <<  adjacentPoints[1].getX() <<  adjacentPoints[0].getY()
-    <<  adjacentPoints[1].getY() << std::endl;
+    return adjacentAlphas;
 }
 
 
@@ -73,7 +76,6 @@ std::vector<CartesianPoint> QuantileEstimator::findAdjacentAlphas(double vValue,
     for (auto element = ++vAlpha.begin(); element != --vAlpha.end();
     ++element)
     {
-        std::cout << element->second << std::endl;
         auto previous = std::prev(element);
         if (previous->second < vValue &&  element->second > vValue)
         {
@@ -216,6 +218,7 @@ void QuantileEstimator::calculateVAlpha()
 {
     vAlphaSample = (correctedQuantiles[4] - correctedQuantiles[0]) / 
     (correctedQuantiles[3] - correctedQuantiles[1]);
+    std::cout << vAlphaSample << std::endl;
 }
 
 
@@ -247,4 +250,10 @@ std::vector<double> QuantileEstimator::getSample()
 std::vector<double> QuantileEstimator::getSampleQs()
 {
     return sampleQs;
+}
+
+
+std::vector<double> QuantileEstimator::getCorrectedQuantiles()
+{
+    return correctedQuantiles;
 }

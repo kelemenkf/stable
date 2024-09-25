@@ -48,6 +48,16 @@ struct QuantileEstimatorFixture: public QuantileEstimator
     {
         return findAdjacentQuantiles(quantile, xVector, yVector);
     }
+
+    std::vector<double> testCalculateAlpha()
+    {
+        return calculateAlpha();
+    }
+
+    std::vector<double> testGetCorrectedQuantiles()
+    {
+        return getCorrectedQuantiles();
+    }
 };
 
 
@@ -151,13 +161,15 @@ BOOST_AUTO_TEST_CASE( TestQuantileEstimatorReadInLookupTableFile ) {
 
 
 BOOST_AUTO_TEST_CASE( TestQuantileEstimatorBuildLookupTableInOrder ) {
-    std::vector<double> testSample(101);
-    int start = 0;
-    std::generate(testSample.begin(), testSample.end(), [&start]() mutable { return start++; });
+    Simulator simulator(1.5);
+    std::vector<double> testSample = simulator.simulateStableXVector(10000);
     QuantileEstimatorFixture testEstimator(testSample);
 
-    double vAlpha = 4.5;
-    testEstimator
+    std::vector<double> adjacentAlphas;
+    adjacentAlphas = testEstimator.testCalculateAlpha();
+    displayVector(adjacentAlphas);
+
+    std::cout << testEstimator.testGetVAlpha() << std::endl;
 }
 
 

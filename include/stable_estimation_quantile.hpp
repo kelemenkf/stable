@@ -25,7 +25,7 @@ public:
     StableDistribution getParameters() const;
     
 protected:
-    void calculateAlpha();
+    std::vector<double> calculateAlpha();
 
     std::vector<CartesianPoint> findAdjacentAlphas(double vValue, std::map<std::tuple<double, double>, double> vAlpha);
 
@@ -41,17 +41,13 @@ protected:
 
     void initializeMemberQuantiles();
 
-    double calculateVAlpha();
+    void calculateVAlpha();
 
     void calculateVBeta();
 
     double calculateVGamma();
 
     double calculateVDelta();
-
-    std::tuple<double, double> findParameterRangeFromLookupTable(const std::map<std::tuple<double, double>, double>& lookupTable);
-
-    double interpolateParameter(std::tuple<double, double> paramRange);
 
     void setDistributionParameters();
 
@@ -63,7 +59,7 @@ protected:
 
     std::vector<double> getSampleQs();
 
-    std::map<std::tuple<double, double>, double> getInvertedTable(const std::string& parameter);
+    std::vector<double> getCorrectedQuantiles();
 };
 
 #endif
