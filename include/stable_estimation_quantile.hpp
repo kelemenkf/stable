@@ -27,6 +27,10 @@ public:
 protected:
     std::vector<double> calculateAlpha();
 
+    std::map<std::tuple<double, double>, double> getFirstColumnVAlpha();
+
+    std::map<std::tuple<double, double>, double> getFirstColumnVBeta();
+
     std::vector<CartesianPoint> findAdjacentAlphas(double vValue, std::map<std::tuple<double, double>, double> vAlpha);
 
     void readLookupTableFromFile(const std::string& vFunction);

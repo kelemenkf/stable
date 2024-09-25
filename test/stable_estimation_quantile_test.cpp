@@ -168,8 +168,6 @@ BOOST_AUTO_TEST_CASE( TestQuantileEstimatorBuildLookupTableInOrder ) {
     std::vector<double> adjacentAlphas;
     adjacentAlphas = testEstimator.testCalculateAlpha();
     displayVector(adjacentAlphas);
-
-    std::cout << testEstimator.testGetVAlpha() << std::endl;
 }
 
 

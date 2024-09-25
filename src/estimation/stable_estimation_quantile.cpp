@@ -29,11 +29,31 @@ std::vector<double> QuantileEstimator::calculateAlpha()
 {
     std::vector<CartesianPoint> adjacentPoints;
 
-    adjacentPoints = findAdjacentAlphas(vAlphaSample, lookupTable["vAlpha"]);
+    std::map<std::tuple<double, double>, double> firstColumnVAlpha = getFirstColumnVAlpha();
+
+    adjacentPoints = findAdjacentAlphas(vAlphaSample, firstColumnVAlpha);
     
-    std::vector<double> adjacentAlphas{ adjacentPoints[0].getY(), adjacentPoints[1].getY()  };
+    std::vector<double> adjacentAlphas{ adjacentPoints[0].getX(), adjacentPoints[1].getX() };
+
+    displayVector(adjacentAlphas);
 
     return adjacentAlphas;
+}
+
+
+std::map<std::tuple<double, double>, double> QuantileEstimator::getFirstColumnVAlpha()
+{
+    std::map<std::tuple<double, double>, double> firstColumnVAlpha;
+
+    for (auto element = lookupTable["vAlpha"].begin(); element != lookupTable["vAlpha"].end(); 
+    ++element)
+    {
+        if (std::get<1>(element->first) == 0)
+        {
+            firstColumnVAlpha[element->first] = element->second;
+        }
+    }
+    return firstColumnVAlpha; 
 }
 
 
@@ -77,12 +97,12 @@ std::vector<CartesianPoint> QuantileEstimator::findAdjacentAlphas(double vValue,
     ++element)
     {
         auto previous = std::prev(element);
-        if (previous->second < vValue &&  element->second > vValue)
+        if (previous->second > vValue && element->second < vValue)
         {
-            before.setX(previous->second);
-            after.setX(element->second);
-            before.setY(std::get<0>(element->first));
-            after.setY(std::get<0>(element->first));
+            before.setX(std::get<0>(previous->first));
+            after.setX(std::get<0>(element->first));
+            before.setY(previous->second);
+            after.setY(element->second);
         }
     }
 
