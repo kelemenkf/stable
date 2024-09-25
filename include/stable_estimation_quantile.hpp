@@ -13,7 +13,7 @@ private:
     double vBetaSample;
     std::vector<double> sampleQs;
     std::vector<double> correctedQuantiles;
-    std::map<std::string, std::map<std::tuple<double, double>, double>> invertedTable;
+    std::map<std::string, std::map<std::tuple<double, double>, double>> lookupTable;
 
 
 public:
@@ -25,12 +25,12 @@ public:
     StableDistribution getParameters() const;
     
 protected:
-    void invertTable(const std::string& parameter);
+    void calculateAlpha();
 
-    std::unordered_map<double, double> readLookupTableFromFile(std::string vFunction, const std::string& parameter);
+    std::vector<CartesianPoint> findAdjacentAlphas(double vValue, std::map<std::tuple<double, double>, double> vAlpha);
 
-    std::map<std::string, std::map<std::tuple<double, double>, double>> readlookupTableFromFile(std::string vFunction);
-
+    void readLookupTableFromFile(const std::string& vFunction);
+    
     void sortSample();
     
     void calculateQVector();
@@ -41,9 +41,7 @@ protected:
 
     void initializeMemberQuantiles();
 
-    void calculateAlpha(CartesianPoint vAlpha, CartesianPoint vBeta);
-
-    void calculateVAlpha();
+    double calculateVAlpha();
 
     void calculateVBeta();
 

@@ -5,13 +5,14 @@
 QuantileEstimator::QuantileEstimator(std::vector<double> sampleInput, std::vector<double> sampleQsInput, std::vector<double>
 correctedQuantilesInput) 
 : Estimator(sampleInput), sampleQs(sampleQsInput), correctedQuantiles(correctedQuantilesInput) {
-    for (std::string parameter: {"alpha", "beta"})
+    for (std::string vFunction : {"vAlpha", "vBeta", "vGamma", "vDelta"})
     {
-        invertTable(parameter);
+        readLookupTableFromFile(vFunction);
     }
     sortSample();
     calculateQVector();
     initializeMemberQuantiles();
+    calculateAlpha();
 };
 
 
@@ -21,39 +22,80 @@ QuantileEstimator::~QuantileEstimator()
 }
 
 
-void QuantileEstimator::invertTable(const std::string& parameter)
+
+double QuantileEstimator::calculateAlpha()
 {
-    std::unordered_map<double, double> vAlpha_param = readLookupTableFromFile("vAlpha", parameter);
-    std::unordered_map<double, double> vBeta_param = readLookupTableFromFile("vBeta", parameter);
+    std::vector<CartesianPoint> adjacentPoints;
 
-    std::map<std::tuple<double, double>, double> table;
+    adjacentPoints = findAdjacentAlphas(vAlphaSample, lookupTable["vAlpha"]);
 
-    for (auto elementA = vAlpha_param.begin(); elementA != vAlpha_param.end();
-    ++elementA)
-    {
-        for (auto elementB = vBeta_param.begin(); elementB != vBeta_param.end();
-        ++elementB)
-        {
-            std::tuple<double, double> index{elementA->second, elementB->second};
-
-            table[index] = elementA->first;
-        }
-    }
-
-    invertedTable[parameter] = table;
+    std::cout << adjacentPoints[0].getX() <<  adjacentPoints[1].getX() <<  adjacentPoints[0].getY()
+    <<  adjacentPoints[1].getY() << std::endl;
 }
 
 
-std::map<std::string, std::map<std::tuple<double, double>, double>> readlookupTableFromFile(std::string vFunction)
+std::vector<CartesianPoint> QuantileEstimator::findAdjacentAlphas(double vValue, std::map<std::tuple<double, double>, double> vAlpha)
+{
+    CartesianPoint before;
+    CartesianPoint after;
+
+    auto findQuantile = [&vValue, &before, &after](auto element) mutable {
+        if (vValue == element.second)
+        {
+            before.setX(std::get<0>(element.first));
+            after.setX(std::get<0>(element.first));  
+            before.setY(element.second);
+            after.setY(element.second);
+        }
+    };
+
+    for_each(vAlpha.begin(), vAlpha.end(), findQuantile);
+
+    auto first = vAlpha.begin();
+    auto last = --vAlpha.end();
+
+    if (first->second < vValue)
+    {
+        before.setX(std::get<0>(first->first));
+        after.setX(std::get<0>(first->first));
+        before.setY(0.5);
+        after.setY(0.5);
+    }
+    else if (last->second > vValue)
+    {   
+        before.setX(std::get<0>(last->first));
+        after.setX(std::get<0>(last->first));
+        before.setY(2.0);
+        after.setY(2.0);
+    }
+
+
+    for (auto element = ++vAlpha.begin(); element != --vAlpha.end();
+    ++element)
+    {
+        std::cout << element->second << std::endl;
+        auto previous = std::prev(element);
+        if (previous->second < vValue &&  element->second > vValue)
+        {
+            before.setX(previous->second);
+            after.setX(element->second);
+            before.setY(std::get<0>(element->first));
+            after.setY(std::get<0>(element->first));
+        }
+    }
+
+    std::vector<CartesianPoint> adjacentPoints{before, after};
+    return adjacentPoints;
+}
+
+
+void QuantileEstimator::readLookupTableFromFile(const std::string& vFunction)
 {
     std::string filePath = "../../assets/" + vFunction + "_lookup_tables.csv";
     std::ifstream lookupTableFile(filePath, std::ios::in);
 
 
-    std::map<std::string, std::map<std::tuple<double, double>, double>> lookupTable = 
-    {
-        {vFunction, {}} 
-    };
+    std::map<std::tuple<double, double>, double> table = {};
     std::vector<double> alphaValues;
     std::vector<double> betaValues;
     std::vector<double> vValues;
@@ -90,77 +132,11 @@ std::map<std::string, std::map<std::tuple<double, double>, double>> readlookupTa
         {
             std::tuple<double, double> index {alphaValues[alphaIndex], betaValues[betaIndex]};
 
-            lookupTable[vFunction][index] = vValues[alphaIndex * betaValues.size() + betaIndex];
+            table[index] = vValues[alphaIndex * betaValues.size() + betaIndex];
         }
     }
 
-    return lookupTable;
-}
-
-
-
-std::unordered_map<double, double> QuantileEstimator::readLookupTableFromFile(std::string vFunction, const std::string& parameter)
-{
-    std::string filePath = "../../assets/" + vFunction + "_lookup_tables.csv";
-
-    std::ifstream lookupTableFile(filePath, std::ios::in);
-
-    std::vector<double> alphaValues;
-    std::vector<double> betaValues;
-    std::vector<double> vValues;
-
-    std::unordered_map<double, double> result;
-
-    std::string line;
-    int counter = 0;
-
-    if (lookupTableFile.is_open())
-    {
-        while(getline(lookupTableFile, line))
-        {
-            if (counter == 0)
-            { 
-                betaValues = splitString(line.substr(2), ",");
-            }
-            else
-            {
-                std::vector<double> doubleConvertedLine = splitString(line, ",");
-                alphaValues.push_back(doubleConvertedLine[0]);
-                doubleConvertedLine.erase(doubleConvertedLine.begin());
-                vValues.insert(vValues.end(), doubleConvertedLine.begin(), doubleConvertedLine.end());   
-            }
-            ++counter;
-        }
-    }    
-
-    if (parameter == "alpha")
-    {
-        alphaValues = vectorExtensionWithItself(11, alphaValues);
-        roundDoubleVector(vValues, 3);
-        result = buildMapFromVectors(vValues, alphaValues);
-
-        for (auto element = result.begin(); element != result.end();
-        ++element)
-        {
-            std::cout << element->first << " , "  << element->second << std::endl;
-        }
-
-        return result;
-    }
-    else if (parameter == "beta")
-    {
-        betaValues = vectorExtensionWithItself(16, betaValues);
-        roundDoubleVector(vValues, 3);
-        transposeVector(vValues, 16, 11);
-        result = buildMapFromVectors(vValues, betaValues);
-
-        return result;
-    }
-
-    else
-    {
-        std::cerr << "Not a valid parameter" << std::endl;
-    }
+    lookupTable[vFunction] = table;
 }
 
 
@@ -271,10 +247,4 @@ std::vector<double> QuantileEstimator::getSample()
 std::vector<double> QuantileEstimator::getSampleQs()
 {
     return sampleQs;
-}
-
-
-std::map<std::tuple<double, double>, double> QuantileEstimator::getInvertedTable(const std::string& parameter)
-{
-    return invertedTable[parameter];
 }

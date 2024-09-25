@@ -177,6 +177,11 @@ std::map<std::string, double> QuantileEstimatorLookupTable::calculateVFunctionVa
     double vGamma = (getQuantile(meanOfSamples, 0.75) - getQuantile(meanOfSamples, 0.25));
     double vDelta = -getQuantile(meanOfSamples, -0.5);
 
+    if (vBeta < 0)
+    {
+        vBeta = 0;
+    }
+
     V["alpha"] = vAlpha;
     V["beta"] = vBeta;
     V["gamma"] = vGamma;

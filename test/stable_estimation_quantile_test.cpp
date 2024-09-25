@@ -48,12 +48,6 @@ struct QuantileEstimatorFixture: public QuantileEstimator
     {
         return findAdjacentQuantiles(quantile, xVector, yVector);
     }
-
-
-    std::map<std::tuple<double, double>, double> testGetInvertedTable(const std::string& parameter)
-    {
-        return getInvertedTable(parameter);
-    }
 };
 
 
@@ -162,13 +156,8 @@ BOOST_AUTO_TEST_CASE( TestQuantileEstimatorBuildLookupTableInOrder ) {
     std::generate(testSample.begin(), testSample.end(), [&start]() mutable { return start++; });
     QuantileEstimatorFixture testEstimator(testSample);
 
-    std::vector<double> vValues;
-    std::map<std::tuple<double, double>, double> table = testEstimator.testGetInvertedTable("alpha");
-
-    // for (size_t i = 0; i < vValues.size() - 1; ++i)
-    // {
-    //     BOOST_CHECK_PREDICATE([](double a, double b) { return a < b; }, (vValues[i])(vValues[i+1]));
-    // }
+    double vAlpha = 4.5;
+    testEstimator
 }
 
 

@@ -41,6 +41,18 @@ public:
     {
         y = input;
     }
+
+
+    double getX()
+    {
+        return x;
+    }
+
+
+    double getY()
+    {
+        return y;
+    }
 };
 
 
