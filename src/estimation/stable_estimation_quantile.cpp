@@ -35,15 +35,9 @@ std::vector<double> QuantileEstimator::calculateAlpha()
 
     std::vector<double> adjacentAlphas{ adjacentPoints[0].getX(), adjacentPoints[1].getX() };
 
-    std::cout << adjacentAlphas[0] << " " << adjacentAlphas[1] << std::endl;
-
     std::map<std::tuple<double, double>, double> columnsBeta = getColumnsVBeta(adjacentAlphas[0], adjacentAlphas[1]);
 
-    for (auto element = columnsBeta.begin(); element != columnsBeta.end();
-    ++element)
-    {
-        std::cout << "Alpha" <<  std::get<0>(element->first) << " " <<  element->second << " ";
-    }
+    // findAdjacentBetas(vBetaSample, columnsBeta, adjacentAlphas[0], adjacentAlphas[1]);
 
     return adjacentAlphas;
 }
@@ -101,15 +95,15 @@ std::vector<CartesianPoint> QuantileEstimator::findAdjacentAlphas(double vValue,
 
     auto first = vAlpha.begin();
     auto last = --vAlpha.end();
-
-    if (first->second < vValue)
+ 
+    if (first->second <= vValue)
     {
         before.setX(std::get<0>(first->first));
         after.setX(std::get<0>(first->first));
         before.setY(0.5);
         after.setY(0.5);
     }
-    else if (last->second > vValue)
+    else if (last->second >= vValue)
     {   
         before.setX(std::get<0>(last->first));
         after.setX(std::get<0>(last->first));
@@ -118,7 +112,7 @@ std::vector<CartesianPoint> QuantileEstimator::findAdjacentAlphas(double vValue,
     }
 
 
-    for (auto element = ++vAlpha.begin(); element != --vAlpha.end();
+    for (auto element = ++vAlpha.begin(); element != vAlpha.end();
     ++element)
     {
         auto previous = std::prev(element);
@@ -130,6 +124,18 @@ std::vector<CartesianPoint> QuantileEstimator::findAdjacentAlphas(double vValue,
             after.setY(element->second);
         }
     }
+
+    std::vector<CartesianPoint> adjacentPoints{before, after};
+    return adjacentPoints;
+}
+
+
+std::vector<CartesianPoint> QuantileEstimator::findAdjacentBetas(double vValue, std::map<std::tuple<double, double>, double> vBeta, double alphaBelow, double alphaAbove)
+{
+    CartesianPoint before; 
+    CartesianPoint after;
+
+    
 
     std::vector<CartesianPoint> adjacentPoints{before, after};
     return adjacentPoints;

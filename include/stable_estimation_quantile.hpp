@@ -31,9 +31,9 @@ protected:
 
     std::map<std::tuple<double, double>, double> getColumnsVBeta(double alphaBelow, double alphaAbove);
 
-    std::vector<CartesianPoint> findAdjacentBetas(double vValue, std::map<std::tuple<double, double>, double> vBeta);
-
     std::vector<CartesianPoint> findAdjacentAlphas(double vValue, std::map<std::tuple<double, double>, double> vAlpha);
+
+    std::vector<CartesianPoint> findAdjacentBetas(double vValue, std::map<std::tuple<double, double>, double> vBeta, double alphaBelow, double alphaAbove);
 
     void readLookupTableFromFile(const std::string& vFunction);
     
