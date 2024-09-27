@@ -61,15 +61,15 @@ std::pair<double, double> QuantileEstimator::estimateAlphaBeta()
 
     // Bilinear interpolation for alpha
     double alpha = (1 - x) * (1 - y) * lowerAlpha->alpha +  // bottom-left
-                x * (1 - y) * upperAlpha->alpha +        // bottom-right
-                (1 - x) * y * lowerBeta->alpha +         // top-left
-                x * y * upperBeta->alpha;                // top-right
+                   x * (1 - y) * upperAlpha->alpha +        // bottom-right
+                   (1 - x) * y * lowerBeta->alpha +         // top-left
+                   x * y * upperBeta->alpha;                // top-right
 
     // Bilinear interpolation for beta
     double beta = (1 - x) * (1 - y) * lowerAlpha->beta +   // bottom-left
-                x * (1 - y) * upperAlpha->beta +         // bottom-right
-                (1 - x) * y * lowerBeta->beta +          // top-left
-                x * y * upperBeta->beta;                 // top-right
+                  x * (1 - y) * upperAlpha->beta +         // bottom-right
+                  (1 - x) * y * lowerBeta->beta +          // top-left
+                  x * y * upperBeta->beta;                 // top-right
 
     return {alpha, beta};
 }
