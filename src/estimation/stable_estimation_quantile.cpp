@@ -5,16 +5,22 @@
 QuantileEstimator::QuantileEstimator(std::vector<double> sampleInput, std::vector<double> sampleQsInput, std::vector<double>
 correctedQuantilesInput) 
 : Estimator(sampleInput), sampleQs(sampleQsInput), correctedQuantiles(correctedQuantilesInput) {
-    for (std::string vFunction : {"vAlpha", "vBeta", "vGamma", "vDelta"})
+    populateTableAlphaBeta();
+    for (std::string vFunction : {"vAlpha", "vBeta"})
     {
         readLookupTableFromFile(vFunction);
     }
-    sortSample();
-    calculateQVector();
-    initializeMemberQuantiles();
-    calculateVAlpha();
-    calculateVBeta();
-    calculateAlpha();
+    for (auto element: lookupTable)
+    {
+        std::cout << element.getAlpha() << ' ' << element.getBeta() << " " << element.getVAlpha()
+        << " " << element.getVBeta() << std::endl;
+    }
+    // sortSample();
+    // calculateQVector();
+    // initializeMemberQuantiles();
+    // calculateVAlpha();
+    // calculateVBeta();
+    // calculateAlpha();
 };
 
 
@@ -24,121 +30,48 @@ QuantileEstimator::~QuantileEstimator()
 }
 
 
-
-std::vector<double> QuantileEstimator::calculateAlpha()
+void QuantileEstimator::populateTableAlphaBeta()
 {
-    std::vector<CartesianPoint> adjacentPoints;
+    double mesh = 0.1;
+    double alphaMin = 0.5;
+    double alphaMax = 2.0;
+    double betaMin = 0;
+    double betaMax = 1.0;
 
-    std::map<std::tuple<double, double>, double> firstColumnVAlpha = getFirstColumnVAlpha();
+    std::vector<double> alphaValues;
+    fillVector(alphaValues, mesh, alphaMin, alphaMax);
 
-    adjacentPoints = findAdjacentAlphas(vAlphaSample, firstColumnVAlpha);
+    std::vector<double> betaValues;
+    fillVector(betaValues, mesh, betaMin, betaMax);
 
-    std::vector<double> adjacentAlphas{ adjacentPoints[0].getX(), adjacentPoints[1].getX() };
-
-    std::map<std::tuple<double, double>, double> columnsBeta = getColumnsVBeta(adjacentAlphas[0], adjacentAlphas[1]);
-
-    // findAdjacentBetas(vBetaSample, columnsBeta, adjacentAlphas[0], adjacentAlphas[1]);
-
-    return adjacentAlphas;
-}
-
-
-std::map<std::tuple<double, double>, double> QuantileEstimator::getFirstColumnVAlpha()
-{
-    std::map<std::tuple<double, double>, double> firstColumnVAlpha;
-
-    for (auto element = lookupTable["vAlpha"].begin(); element != lookupTable["vAlpha"].end(); 
-    ++element)
+    for (size_t i = 0; i < alphaValues.size(); ++i)
     {
-        if (std::get<1>(element->first) == 0)
+        for(size_t j = 0; j < betaValues.size(); ++j)
         {
-            firstColumnVAlpha[element->first] = element->second;
+            lookupTable.push_back(TableEntry(alphaValues[i], betaValues[j], 0, 0));
         }
-    }
-    return firstColumnVAlpha; 
+    }   
 }
 
 
-std::map<std::tuple<double, double>, double> QuantileEstimator::getColumnsVBeta(double alphaBelow, double alphaAbove)
+void QuantileEstimator::fillVector(std::vector<double>& parameters, double& mesh, double& paramMin, double& paramMax)
 {
-    std::map<std::tuple<double, double>, double> columnsBeta;
+    parameters.resize(static_cast<size_t>((paramMax - paramMin + mesh) / mesh));
 
-    for (auto element = lookupTable["vBeta"].begin(); element != lookupTable["vBeta"].end();
-    ++element) 
-    {
-        if (std::get<0>(element->first) == alphaBelow || std::get<0>(element->first) == alphaAbove)
+    double currentParam = paramMin;
+
+    auto vectorFill = [paramMax, mesh, &currentParam]() mutable -> double {
+        double param = currentParam;
+        
+        if (currentParam <= paramMax)
         {
-            columnsBeta[element->first] = element->second;
-        }
-    }
+            currentParam += mesh;
+        } 
 
-    return columnsBeta;
-}
-
-
-std::vector<CartesianPoint> QuantileEstimator::findAdjacentAlphas(double vValue, std::map<std::tuple<double, double>, double> vAlpha)
-{
-    CartesianPoint before;
-    CartesianPoint after;
-
-    auto findQuantile = [&vValue, &before, &after](auto element) mutable {
-        if (vValue == element.second)
-        {
-            before.setX(std::get<0>(element.first));
-            after.setX(std::get<0>(element.first));  
-            before.setY(element.second);
-            after.setY(element.second);
-        }
+        return param;
     };
 
-    for_each(vAlpha.begin(), vAlpha.end(), findQuantile);
-
-    auto first = vAlpha.begin();
-    auto last = --vAlpha.end();
- 
-    if (first->second <= vValue)
-    {
-        before.setX(std::get<0>(first->first));
-        after.setX(std::get<0>(first->first));
-        before.setY(0.5);
-        after.setY(0.5);
-    }
-    else if (last->second >= vValue)
-    {   
-        before.setX(std::get<0>(last->first));
-        after.setX(std::get<0>(last->first));
-        before.setY(2.0);
-        after.setY(2.0);
-    }
-
-
-    for (auto element = ++vAlpha.begin(); element != vAlpha.end();
-    ++element)
-    {
-        auto previous = std::prev(element);
-        if (previous->second > vValue && element->second < vValue)
-        {
-            before.setX(std::get<0>(previous->first));
-            after.setX(std::get<0>(element->first));
-            before.setY(previous->second);
-            after.setY(element->second);
-        }
-    }
-
-    std::vector<CartesianPoint> adjacentPoints{before, after};
-    return adjacentPoints;
-}
-
-
-std::vector<CartesianPoint> QuantileEstimator::findAdjacentBetas(double vValue, std::map<std::tuple<double, double>, double> vBeta, double alphaBelow, double alphaAbove)
-{
-    CartesianPoint before; 
-    CartesianPoint after;
-
-    
-
-    std::vector<CartesianPoint> adjacentPoints{before, after};
-    return adjacentPoints;
+    std::generate(parameters.begin(), parameters.end(), vectorFill);
 }
 
 
@@ -147,13 +80,9 @@ void QuantileEstimator::readLookupTableFromFile(const std::string& vFunction)
     std::string filePath = "../../assets/" + vFunction + "_lookup_tables.csv";
     std::ifstream lookupTableFile(filePath, std::ios::in);
 
-
-    std::map<std::tuple<double, double>, double> table = {};
     std::vector<double> alphaValues;
     std::vector<double> betaValues;
     std::vector<double> vValues;
-
-    std::unordered_map<double, double> result;
 
     std::string line;
     int counter = 0;
@@ -175,7 +104,7 @@ void QuantileEstimator::readLookupTableFromFile(const std::string& vFunction)
             }
             ++counter;
         }
-    }    
+    }
 
     for (size_t alphaIndex = 0; alphaIndex < alphaValues.size();
     ++alphaIndex)
@@ -183,13 +112,16 @@ void QuantileEstimator::readLookupTableFromFile(const std::string& vFunction)
         for (size_t betaIndex = 0; betaIndex < betaValues.size();
         ++betaIndex)
         {
-            std::tuple<double, double> index {alphaValues[alphaIndex], betaValues[betaIndex]};
-
-            table[index] = vValues[alphaIndex * betaValues.size() + betaIndex];
+            if (vFunction == "vAlpha")
+            {
+                lookupTable[alphaIndex * betaValues.size() + betaIndex].setVAlpha(vValues[alphaIndex * betaValues.size() + betaIndex]);
+            }
+            else if (vFunction == "vBeta")
+            {
+                lookupTable[alphaIndex * betaValues.size() + betaIndex].setVBeta(vValues[alphaIndex * betaValues.size() + betaIndex]);
+            }
         }
     }
-
-    lookupTable[vFunction] = table;
 }
 
 

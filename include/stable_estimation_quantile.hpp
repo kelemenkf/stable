@@ -5,6 +5,49 @@
 #include "quantile_estimator_lookup_table.hpp"
 
 
+class TableEntry 
+{
+private:
+    double alpha, beta, vAlpha, vBeta;
+
+
+public: 
+    TableEntry(double alphaInput, double betaInput, double vAlphaInput, double vBetaInput) :
+    alpha(alphaInput), beta(betaInput), vAlpha(vAlphaInput), vBeta(vBetaInput) {};
+
+
+    double getAlpha()
+    {
+        return alpha; 
+    }  
+
+    double getBeta()
+    {
+        return beta;
+    }
+
+    double getVAlpha()
+    {
+        return vAlpha;
+    }
+
+    double getVBeta()
+    {
+        return vBeta;
+    }
+
+    void setVAlpha(double input)
+    {
+        vAlpha = input;
+    }
+
+    void setVBeta(double input)
+    {
+        vBeta = input;
+    }
+};
+
+
 class QuantileEstimator: public Estimator
 {
 private:
@@ -13,7 +56,7 @@ private:
     double vBetaSample;
     std::vector<double> sampleQs;
     std::vector<double> correctedQuantiles;
-    std::map<std::string, std::map<std::tuple<double, double>, double>> lookupTable;
+    std::vector<TableEntry> lookupTable;
 
 
 public:
@@ -27,13 +70,9 @@ public:
 protected:
     std::vector<double> calculateAlpha();
 
-    std::map<std::tuple<double, double>, double> getFirstColumnVAlpha();
+    void populateTableAlphaBeta();
 
-    std::map<std::tuple<double, double>, double> getColumnsVBeta(double alphaBelow, double alphaAbove);
-
-    std::vector<CartesianPoint> findAdjacentAlphas(double vValue, std::map<std::tuple<double, double>, double> vAlpha);
-
-    std::vector<CartesianPoint> findAdjacentBetas(double vValue, std::map<std::tuple<double, double>, double> vBeta, double alphaBelow, double alphaAbove);
+    void fillVector(std::vector<double>& parameters, double& mesh, double& paramMin, double& paramMax);
 
     void readLookupTableFromFile(const std::string& vFunction);
     
