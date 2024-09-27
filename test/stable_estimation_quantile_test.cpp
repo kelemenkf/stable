@@ -162,17 +162,15 @@ BOOST_AUTO_TEST_SUITE( StableEstimationQuantileTestSuite )
 
 
 BOOST_AUTO_TEST_CASE( TestQuantileEstimatorFindAdjacentAlphasInRange ) {
-    Simulator simulator(1.5, 0.5);
+    Simulator simulator(1, 0.7);
 
     std::vector<double> alphas;
-    std::vector<double> betas;
     for (size_t i = 0; i < 100; ++i)
     {
         std::vector<double> testSample = simulator.simulateStableXVector(10000);
         QuantileEstimatorFixture testEstimator(testSample);
         std::pair<double, double> params =  testEstimator.testEstimateAlphaBeta();
         alphas.push_back(std::get<0>(params));
-        betas.push_back(std::get<1>(params));
     }
 
     double sum = std::accumulate(alphas.begin(), alphas.end(), 0.0);
@@ -183,7 +181,7 @@ BOOST_AUTO_TEST_CASE( TestQuantileEstimatorFindAdjacentAlphasInRange ) {
 
 
 BOOST_AUTO_TEST_CASE( TestQuantileEstimatorFindAdjacentBetasInRange ) {
-    Simulator simulator(1.55, 0.59);
+    Simulator simulator(1, 0.7);
 
     std::vector<double> betas;
     for (size_t i = 0; i < 100; ++i)

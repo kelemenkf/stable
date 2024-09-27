@@ -69,7 +69,7 @@ std::pair<double, double> QuantileEstimator::estimateAlphaBeta()
     double beta = (1 - x) * (1 - y) * lowerAlpha->beta +   // bottom-left
                   x * (1 - y) * upperAlpha->beta +         // bottom-right
                   (1 - x) * y * lowerBeta->beta +          // top-left
-                  x * y * upperBeta->beta;                 // top-right
+                  x * y * upperBeta->beta;                 // top-right 
 
     return {alpha, beta};
 }
