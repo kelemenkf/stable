@@ -7,7 +7,7 @@
 
 class TableEntry 
 {
-private:
+public:
     double alpha, beta, vAlpha, vBeta;
 
 
@@ -68,7 +68,7 @@ public:
     StableDistribution getParameters() const;
     
 protected:
-    std::vector<double> calculateAlpha();
+    std::pair<double, double> estimateAlphaBeta();
 
     void populateTableAlphaBeta();
 

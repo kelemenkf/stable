@@ -10,23 +10,68 @@ correctedQuantilesInput)
     {
         readLookupTableFromFile(vFunction);
     }
-    for (auto element: lookupTable)
-    {
-        std::cout << element.getAlpha() << ' ' << element.getBeta() << " " << element.getVAlpha()
-        << " " << element.getVBeta() << std::endl;
-    }
-    // sortSample();
-    // calculateQVector();
-    // initializeMemberQuantiles();
-    // calculateVAlpha();
-    // calculateVBeta();
-    // calculateAlpha();
+    std::reverse(lookupTable.begin(), lookupTable.end());
+    sortSample();
+    calculateQVector();
+    initializeMemberQuantiles();
+    calculateVAlpha();
+    calculateVBeta();
 };
 
 
 QuantileEstimator::~QuantileEstimator()
 {
 
+}
+
+
+std::pair<double, double> QuantileEstimator::estimateAlphaBeta()
+{
+    // Find the four closest points in the table
+    auto compareVAlpha = [](const TableEntry& entry, double value) {
+        return entry.vAlpha < value;
+    };
+    auto upperAlpha = std::lower_bound(lookupTable.begin(), lookupTable.end(), vAlphaSample, compareVAlpha);
+    
+    if (upperAlpha == lookupTable.begin()) upperAlpha++;
+    if (upperAlpha == lookupTable.end()) upperAlpha--;
+
+    auto lowerAlpha = upperAlpha;
+    upperAlpha--;
+
+    auto startBeta = lowerAlpha - 10;
+    auto endBeta = upperAlpha + 10;
+
+    if (endBeta == lookupTable.end()) {
+        std::cerr << "Error: Could not find startBeta or endBeta." << std::endl;
+    }
+
+    auto upperBeta = std::lower_bound(startBeta, upperAlpha, vBetaSample, 
+        [this](const TableEntry& entry, double value) {
+            return entry.vBeta > value;
+        });
+    auto lowerBeta = upperBeta + 1;
+
+    lowerAlpha->beta = lowerBeta->beta;
+    upperAlpha->alpha = lowerAlpha ->alpha;
+    upperAlpha->beta = upperBeta->beta;
+
+    double x = (vAlphaSample - lowerAlpha->vAlpha) / (upperAlpha->vAlpha - lowerAlpha->vAlpha);
+    double y = (vBetaSample - lowerBeta->vBeta) / (upperBeta->vBeta - lowerBeta->vBeta);
+
+    // Bilinear interpolation for alpha
+    double alpha = (1 - x) * (1 - y) * lowerAlpha->alpha +  // bottom-left
+                x * (1 - y) * upperAlpha->alpha +        // bottom-right
+                (1 - x) * y * lowerBeta->alpha +         // top-left
+                x * y * upperBeta->alpha;                // top-right
+
+    // Bilinear interpolation for beta
+    double beta = (1 - x) * (1 - y) * lowerAlpha->beta +   // bottom-left
+                x * (1 - y) * upperAlpha->beta +         // bottom-right
+                (1 - x) * y * lowerBeta->beta +          // top-left
+                x * y * upperBeta->beta;                 // top-right
+
+    return {alpha, beta};
 }
 
 
