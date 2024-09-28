@@ -25,7 +25,7 @@ QuantileEstimator::~QuantileEstimator()
 }
 
 
-std::pair<double, double> QuantileEstimator::estimateAlphaBeta()
+std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> QuantileEstimator::findAlphaPoints()
 {
     // Find the four closest points in the table
     auto compareVAlpha = [](const TableEntry& entry, double value) {
@@ -39,18 +39,41 @@ std::pair<double, double> QuantileEstimator::estimateAlphaBeta()
     auto lowerAlpha = upperAlpha;
     upperAlpha--;
 
-    auto startBeta = lowerAlpha - 10;
-    auto endBeta = upperAlpha + 10;
+    return {lowerAlpha, upperAlpha};
+}
+
+
+std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> QuantileEstimator::findBetaPoints(
+    std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> alphaPoints)
+{
+    auto startBeta = std::get<0>(alphaPoints) - 10;
+    auto endBeta = std::get<1>(alphaPoints) + 10;
 
     if (endBeta == lookupTable.end()) {
         std::cerr << "Error: Could not find startBeta or endBeta." << std::endl;
     }
 
-    auto upperBeta = std::lower_bound(startBeta, upperAlpha, vBetaSample, 
+    auto upperBeta = std::lower_bound(startBeta, std::get<1>(alphaPoints), vBetaSample, 
         [this](const TableEntry& entry, double value) {
             return entry.vBeta > value;
         });
     auto lowerBeta = upperBeta + 1;
+
+
+    return {lowerBeta, upperBeta};
+}
+
+
+
+std::pair<double, double> QuantileEstimator::estimateAlphaBeta()
+{
+    std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> alphaPoints = findAlphaPoints();
+    std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> betaPoints = findBetaPoints(alphaPoints);
+
+    auto lowerAlpha = std::get<0>(alphaPoints);
+    auto upperAlpha = std::get<1>(alphaPoints);
+    auto lowerBeta = std::get<0>(betaPoints);
+    auto upperBeta = std::get<1>(betaPoints);
 
     lowerAlpha->beta = lowerBeta->beta;
     upperAlpha->alpha = lowerAlpha ->alpha;

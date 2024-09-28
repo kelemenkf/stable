@@ -65,10 +65,15 @@ public:
 
     ~QuantileEstimator();
 
-    StableDistribution getParameters() const;
+    void getParameters();
     
 protected:
     std::pair<double, double> estimateAlphaBeta();
+
+    std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> findAlphaPoints();
+
+    std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> findBetaPoints(
+        std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> alphaPoints);
 
     void populateTableAlphaBeta();
 
