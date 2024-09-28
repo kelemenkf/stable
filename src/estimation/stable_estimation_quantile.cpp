@@ -16,6 +16,11 @@ correctedQuantilesInput)
     initializeMemberQuantiles();
     calculateVAlpha();
     calculateVBeta();
+    // for(size_t i = 0; i < lookupTable.size(); ++i)
+    // {
+    //     std::cout << lookupTable[i].alpha << " " << lookupTable[i].vAlpha << " " 
+    //     << lookupTable[i].beta << " " << lookupTable[i].vBeta << "  " << vBetaSample << std::endl;
+    // }
 };
 
 
@@ -27,17 +32,16 @@ QuantileEstimator::~QuantileEstimator()
 
 std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> QuantileEstimator::findAlphaPoints()
 {
-    // Find the four closest points in the table
     auto compareVAlpha = [](const TableEntry& entry, double value) {
         return entry.vAlpha < value;
     };
-    auto upperAlpha = std::lower_bound(lookupTable.begin(), lookupTable.end(), vAlphaSample, compareVAlpha);
-    
-    if (upperAlpha == lookupTable.begin()) upperAlpha++;
-    if (upperAlpha == lookupTable.end()) upperAlpha--;
+    auto lowerAlpha = std::lower_bound(lookupTable.begin(), lookupTable.end(), vAlphaSample, compareVAlpha);
 
-    auto lowerAlpha = upperAlpha;
-    upperAlpha--;
+    if (lowerAlpha == lookupTable.begin()) lowerAlpha++;
+    if (lowerAlpha == lookupTable.end()) lowerAlpha--;
+
+    auto upperAlpha = lowerAlpha;
+    lowerAlpha += 11;
 
     return {lowerAlpha, upperAlpha};
 }
@@ -46,19 +50,25 @@ std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> 
 std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> QuantileEstimator::findBetaPoints(
     std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> alphaPoints)
 {
-    auto startBeta = std::get<0>(alphaPoints) - 10;
-    auto endBeta = std::get<1>(alphaPoints) + 10;
+    const double epsilon = 1e-6;
+
+    auto startBeta = find_if(lookupTable.begin(), lookupTable.end(), [&epsilon, &alphaPoints](const TableEntry& entry){
+        return (std::fabs(entry.alpha - std::get<1>(alphaPoints)->alpha) < epsilon && std::fabs(entry.beta - 1) < epsilon);
+    });
+    auto endBeta = find_if(lookupTable.begin(), lookupTable.end(), [&epsilon, &alphaPoints](const TableEntry& entry){
+        return (std::fabs(entry.alpha - std::get<1>(alphaPoints)->alpha) < epsilon && std::fabs(entry.beta - 0) < epsilon);
+    });
+
 
     if (endBeta == lookupTable.end()) {
         std::cerr << "Error: Could not find startBeta or endBeta." << std::endl;
     }
 
-    auto upperBeta = std::lower_bound(startBeta, std::get<1>(alphaPoints), vBetaSample, 
+    auto lowerBeta = std::lower_bound(startBeta, endBeta, vBetaSample, 
         [this](const TableEntry& entry, double value) {
             return entry.vBeta > value;
         });
-    auto lowerBeta = upperBeta + 1;
-
+    auto upperBeta = lowerBeta - 1;
 
     return {lowerBeta, upperBeta};
 }
@@ -76,8 +86,11 @@ std::pair<double, double> QuantileEstimator::estimateAlphaBeta()
     auto upperBeta = std::get<1>(betaPoints);
 
     lowerAlpha->beta = lowerBeta->beta;
-    upperAlpha->alpha = lowerAlpha ->alpha;
+    upperAlpha->alpha = lowerAlpha->alpha;
     upperAlpha->beta = upperBeta->beta;
+
+    // std::cout << lowerAlpha->alpha << " , " << lowerAlpha->beta << " " << upperAlpha->alpha << " , " << upperAlpha->beta
+    // << " " << lowerBeta->alpha << " , " << lowerBeta->beta << " " << upperBeta->alpha << " , " << upperBeta->beta << std::endl; 
 
     double x = (vAlphaSample - lowerAlpha->vAlpha) / (upperAlpha->vAlpha - lowerAlpha->vAlpha);
     double y = (vBetaSample - lowerBeta->vBeta) / (upperBeta->vBeta - lowerBeta->vBeta);

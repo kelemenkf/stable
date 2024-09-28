@@ -59,6 +59,17 @@ struct QuantileEstimatorFixture: public QuantileEstimator
     {
         return estimateAlphaBeta();
     }
+
+    std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> testFindAlphaPoints()
+    {
+        return findAlphaPoints();
+    }
+
+    std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> testFindBetaPoints(
+        std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> alphaPoints)
+    {
+        return findBetaPoints(alphaPoints);
+    }
 };
 
 
@@ -161,8 +172,56 @@ BOOST_AUTO_TEST_CASE( TestQuantileEstimatorReadInLookupTableFile ) {
 }
 
 
+BOOST_AUTO_TEST_CASE( TestQuantileEstimatorFindAlphaPoints ) {
+    Simulator simulator(1.15, 0.75);
+
+    const double epsilon = 1e-6; 
+    int searchCounter = 0;
+    std::vector<std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator>> alphaPointVector;
+    for (size_t i = 0; i < 100; ++i)
+    {
+        std::vector<double> testSample = simulator.simulateStableXVector(10000);
+        QuantileEstimatorFixture testEstimator(testSample);
+        std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> alphaPoints = testEstimator.testFindAlphaPoints();
+        if (std::fabs(std::get<0>(alphaPoints)->alpha - 1.1) < epsilon && 
+            std::fabs(std::get<1>(alphaPoints)->alpha - 1.2) < epsilon) 
+        {
+            ++searchCounter;
+        }
+        alphaPointVector.push_back(alphaPoints);
+    }
+
+    BOOST_CHECK_GE(searchCounter, 95);
+}
+
+
+BOOST_AUTO_TEST_CASE( TestQuantileEstimatorFindBetaPoints ) {
+    Simulator simulator(1.15, 0.55);
+
+    const double epsilon = 1e-6;
+    int searchCounter = 0;
+    std::vector<std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator>> betaPointVector;
+    for (size_t i = 0; i < 100; ++i)
+    {
+        std::vector<double> testSample = simulator.simulateStableXVector(10000);
+        QuantileEstimatorFixture testEstimator(testSample);
+        std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> alphaPoints = testEstimator.testFindAlphaPoints();
+        std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> betaPoints = testEstimator.testFindBetaPoints(alphaPoints);
+        if (std::fabs(std::get<1>(betaPoints)->beta - 0.6) < epsilon && 
+            std::fabs(std::get<0>(betaPoints)->beta - 0.5) < epsilon) 
+        {
+            ++searchCounter;
+        }
+        betaPointVector.push_back(betaPoints);
+    }
+
+
+    BOOST_CHECK_GE(searchCounter, 95);
+}
+
+
 BOOST_AUTO_TEST_CASE( TestQuantileEstimatorFindAdjacentAlphasInRange ) {
-    Simulator simulator(1.1, 0.7);
+    Simulator simulator(1.15, 0.7);
 
     std::vector<double> alphas;
     for (size_t i = 0; i < 100; ++i)
@@ -181,7 +240,7 @@ BOOST_AUTO_TEST_CASE( TestQuantileEstimatorFindAdjacentAlphasInRange ) {
 
 
 BOOST_AUTO_TEST_CASE( TestQuantileEstimatorFindAdjacentBetasInRange ) {
-    Simulator simulator(1.1, 0.7);
+    Simulator simulator(1.15, 0.55);
 
     std::vector<double> betas;
     for (size_t i = 0; i < 100; ++i)
