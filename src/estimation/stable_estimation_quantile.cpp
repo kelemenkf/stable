@@ -30,6 +30,72 @@ QuantileEstimator::~QuantileEstimator()
 }
 
 
+std::pair<double, double> QuantileEstimator::estimateAlpha()
+{
+    std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> alphaPoints = findAlphaPoints();
+    std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> betaPoints = findBetaPoints(alphaPoints);
+
+    auto lowerAlpha = std::get<0>(alphaPoints);
+    auto upperAlpha = std::get<1>(alphaPoints);
+    auto lowerBeta = std::get<0>(betaPoints);
+    auto upperBeta = std::get<1>(betaPoints);
+
+    lowerAlpha->beta = lowerBeta->beta;
+    upperAlpha->alpha = lowerAlpha->alpha;
+    upperAlpha->beta = upperBeta->beta;
+
+    double x = (vAlphaSample - lowerAlpha->vAlpha) / (upperAlpha->vAlpha - lowerAlpha->vAlpha);
+    double y = (vBetaSample - lowerBeta->vBeta) / (upperBeta->vBeta - lowerBeta->vBeta);
+
+    // Bilinear interpolation for alpha
+    double alpha = (1 - x) * (1 - y) * lowerAlpha->alpha +  // bottom-left
+                   x * (1 - y) * upperAlpha->alpha +        // bottom-right
+                   (1 - x) * y * lowerBeta->alpha +         // top-left
+                   x * y * upperBeta->alpha;                // top-right
+
+    // Bilinear interpolation for beta
+    double beta = (1 - x) * (1 - y) * lowerAlpha->beta +   // bottom-left
+                  x * (1 - y) * upperAlpha->beta +         // bottom-right
+                  (1 - x) * y * lowerBeta->beta +          // top-left
+                  x * y * upperBeta->beta;                 // top-right 
+
+    return {alpha, beta};
+}
+
+
+std::pair<double, double> QuantileEstimator::estimateBeta()
+{
+    std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> alphaPoints = findAlphaPoints();
+    std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> betaPoints = findBetaPoints(alphaPoints, true);
+
+    auto lowerAlpha = std::get<0>(alphaPoints);
+    auto upperAlpha = std::get<1>(alphaPoints);
+    auto lowerBeta = std::get<0>(betaPoints);
+    auto upperBeta = std::get<1>(betaPoints);
+
+    lowerAlpha->beta = lowerBeta->beta;
+    upperAlpha->alpha = lowerAlpha->alpha;
+    upperAlpha->beta = upperBeta->beta;
+
+    double x = (vAlphaSample - lowerAlpha->vAlpha) / (upperAlpha->vAlpha - lowerAlpha->vAlpha);
+    double y = (vBetaSample - lowerBeta->vBeta) / (upperBeta->vBeta - lowerBeta->vBeta);
+
+    // Bilinear interpolation for alpha
+    double alpha = (1 - x) * (1 - y) * lowerAlpha->alpha +  // bottom-left
+                   x * (1 - y) * upperAlpha->alpha +        // bottom-right
+                   (1 - x) * y * lowerBeta->alpha +         // top-left
+                   x * y * upperBeta->alpha;                // top-right
+
+    // Bilinear interpolation for beta
+    double beta = (1 - x) * (1 - y) * lowerAlpha->beta +   // bottom-left
+                  x * (1 - y) * upperAlpha->beta +         // bottom-right
+                  (1 - x) * y * lowerBeta->beta +          // top-left
+                  x * y * upperBeta->beta;                 // top-right 
+
+    return {alpha, beta};
+}
+
+
 std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> QuantileEstimator::findAlphaPoints()
 {
     auto compareVAlpha = [](const TableEntry& entry, double value) {
@@ -48,66 +114,44 @@ std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> 
 
 
 std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> QuantileEstimator::findBetaPoints(
-    std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> alphaPoints)
+    std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> alphaPoints, bool estimateBeta)
 {
     const double epsilon = 1e-6;
 
-    auto startBeta = find_if(lookupTable.begin(), lookupTable.end(), [&epsilon, &alphaPoints](const TableEntry& entry){
-        return (std::fabs(entry.alpha - std::get<1>(alphaPoints)->alpha) < epsilon && std::fabs(entry.beta - 1) < epsilon);
-    });
-    auto endBeta = find_if(lookupTable.begin(), lookupTable.end(), [&epsilon, &alphaPoints](const TableEntry& entry){
-        return (std::fabs(entry.alpha - std::get<1>(alphaPoints)->alpha) < epsilon && std::fabs(entry.beta - 0) < epsilon);
-    });
+    std::vector<TableEntry>::iterator startBeta;
+    std::vector<TableEntry>::iterator endBeta;
+
+    if (estimateBeta)
+    {
+        startBeta = find_if(lookupTable.begin(), lookupTable.end(), [&epsilon, &alphaPoints](const TableEntry& entry){
+            return (std::fabs(entry.alpha - std::get<0>(alphaPoints)->alpha) < epsilon && std::fabs(entry.beta - 1) < epsilon);
+        });
+        endBeta = find_if(lookupTable.begin(), lookupTable.end(), [&epsilon, &alphaPoints](const TableEntry& entry){
+            return (std::fabs(entry.alpha - std::get<0>(alphaPoints)->alpha) < epsilon && std::fabs(entry.beta - 0) < epsilon);
+        });
+    }
+    else 
+    {
+        startBeta = find_if(lookupTable.begin(), lookupTable.end(), [&epsilon, &alphaPoints](const TableEntry& entry){
+            return (std::fabs(entry.alpha - std::get<1>(alphaPoints)->alpha) < epsilon && std::fabs(entry.beta - 1) < epsilon);
+        });
+        endBeta = find_if(lookupTable.begin(), lookupTable.end(), [&epsilon, &alphaPoints](const TableEntry& entry){
+            return (std::fabs(entry.alpha - std::get<1>(alphaPoints)->alpha) < epsilon && std::fabs(entry.beta - 0) < epsilon);
+        }); 
+    }
 
 
     if (endBeta == lookupTable.end()) {
         std::cerr << "Error: Could not find startBeta or endBeta." << std::endl;
     }
 
-    auto lowerBeta = std::lower_bound(startBeta, endBeta, vBetaSample, 
+    auto lowerBeta = std::lower_bound(startBeta, startBeta + 10, vBetaSample, 
         [this](const TableEntry& entry, double value) {
             return entry.vBeta > value;
         });
     auto upperBeta = lowerBeta - 1;
 
     return {lowerBeta, upperBeta};
-}
-
-
-
-std::pair<double, double> QuantileEstimator::estimateAlphaBeta()
-{
-    std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> alphaPoints = findAlphaPoints();
-    std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> betaPoints = findBetaPoints(alphaPoints);
-
-    auto lowerAlpha = std::get<0>(alphaPoints);
-    auto upperAlpha = std::get<1>(alphaPoints);
-    auto lowerBeta = std::get<0>(betaPoints);
-    auto upperBeta = std::get<1>(betaPoints);
-
-    lowerAlpha->beta = lowerBeta->beta;
-    upperAlpha->alpha = lowerAlpha->alpha;
-    upperAlpha->beta = upperBeta->beta;
-
-    // std::cout << lowerAlpha->alpha << " , " << lowerAlpha->beta << " " << upperAlpha->alpha << " , " << upperAlpha->beta
-    // << " " << lowerBeta->alpha << " , " << lowerBeta->beta << " " << upperBeta->alpha << " , " << upperBeta->beta << std::endl; 
-
-    double x = (vAlphaSample - lowerAlpha->vAlpha) / (upperAlpha->vAlpha - lowerAlpha->vAlpha);
-    double y = (vBetaSample - lowerBeta->vBeta) / (upperBeta->vBeta - lowerBeta->vBeta);
-
-    // Bilinear interpolation for alpha
-    double alpha = (1 - x) * (1 - y) * lowerAlpha->alpha +  // bottom-left
-                   x * (1 - y) * upperAlpha->alpha +        // bottom-right
-                   (1 - x) * y * lowerBeta->alpha +         // top-left
-                   x * y * upperBeta->alpha;                // top-right
-
-    // Bilinear interpolation for beta
-    double beta = (1 - x) * (1 - y) * lowerAlpha->beta +   // bottom-left
-                  x * (1 - y) * upperAlpha->beta +         // bottom-right
-                  (1 - x) * y * lowerBeta->beta +          // top-left
-                  x * y * upperBeta->beta;                 // top-right 
-
-    return {alpha, beta};
 }
 
 

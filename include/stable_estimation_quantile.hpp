@@ -68,12 +68,14 @@ public:
     void getParameters();
     
 protected:
-    std::pair<double, double> estimateAlphaBeta();
+    std::pair<double, double> estimateAlpha();
+
+    std::pair<double, double> estimateBeta();
 
     std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> findAlphaPoints();
 
     std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> findBetaPoints(
-        std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> alphaPoints);
+        std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> alphaPoints, bool estimateBeta = false);
 
     void populateTableAlphaBeta();
 

@@ -55,11 +55,16 @@ struct QuantileEstimatorFixture: public QuantileEstimator
     }
 
 
-    std::pair<double, double> testEstimateAlphaBeta()
+    std::pair<double, double> testEstimateAlpha()
     {
-        return estimateAlphaBeta();
+        return estimateAlpha();
     }
 
+    std::pair<double, double> testEstimateBeta()
+    {
+        return estimateBeta();
+    }
+    
     std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> testFindAlphaPoints()
     {
         return findAlphaPoints();
@@ -221,40 +226,52 @@ BOOST_AUTO_TEST_CASE( TestQuantileEstimatorFindBetaPoints ) {
 
 
 BOOST_AUTO_TEST_CASE( TestQuantileEstimatorFindAdjacentAlphasInRange ) {
-    Simulator simulator(1.15, 0.7);
+    std::vector<double> alphaTestValues;
+    std::vector<double> betaTestValues;
+    double alphaStart = 0.6;
+    double betaStart = 0.1;
 
-    std::vector<double> alphas;
-    for (size_t i = 0; i < 100; ++i)
+    while (alphaStart <= 1.9)
     {
-        std::vector<double> testSample = simulator.simulateStableXVector(10000);
-        QuantileEstimatorFixture testEstimator(testSample);
-        std::pair<double, double> params =  testEstimator.testEstimateAlphaBeta();
-        alphas.push_back(std::get<0>(params));
+        alphaTestValues.push_back(alphaStart); 
+        alphaStart += 0.05;
+    }
+    while (betaStart <= 0.9)
+    {
+        betaTestValues.push_back(betaStart);
+        betaStart += 0.05;
     }
 
-    double sum = std::accumulate(alphas.begin(), alphas.end(), 0.0);
-    double mean = sum / alphas.size();
-
-    std::cout << mean << std::endl;
-}
-
-
-BOOST_AUTO_TEST_CASE( TestQuantileEstimatorFindAdjacentBetasInRange ) {
-    Simulator simulator(1.15, 0.55);
-
-    std::vector<double> betas;
-    for (size_t i = 0; i < 100; ++i)
+    for (size_t alphaIndex = 0; alphaIndex < alphaTestValues.size(); ++alphaIndex)
     {
-        std::vector<double> testSample = simulator.simulateStableXVector(10000);
-        QuantileEstimatorFixture testEstimator(testSample);
-        std::pair<double, double> params =  testEstimator.testEstimateAlphaBeta();
-        betas.push_back(std::get<1>(params));
+        for (size_t betaIndex = 0; betaIndex < betaTestValues.size(); ++betaIndex)
+        {
+            Simulator simulator(alphaTestValues[alphaIndex], betaTestValues[betaIndex]);
+
+            std::vector<double> alphas;
+            std::vector<double> betas;
+            for (size_t i = 0; i < 100; ++i)
+            {
+                std::vector<double> testSample = simulator.simulateStableXVector(10000);
+                QuantileEstimatorFixture testEstimator(testSample);
+                std::pair<double, double> alpha =  testEstimator.testEstimateAlpha();
+                std::pair<double, double> beta = testEstimator.testEstimateBeta();
+                alphas.push_back(std::get<0>(alpha));
+                betas.push_back(std::get<1>(beta));
+            }
+            double alphaSum = std::accumulate(alphas.begin(), alphas.end(), 0.0);
+            double alphaMean = alphaSum / alphas.size();
+
+            BOOST_CHECK_GE(alphaMean, alphaTestValues[alphaIndex] - 0.025);
+            BOOST_CHECK_LE(alphaMean, alphaTestValues[alphaIndex] + 0.025);
+
+            double betaSum = std::accumulate(betas.begin(), betas.end(), 0.0);
+            double betaMean = betaSum / betas.size();
+
+            BOOST_CHECK_GE(betaMean, betaTestValues[betaIndex] - 0.025);
+            BOOST_CHECK_LE(betaMean, betaTestValues[betaIndex] + 0.025);
+        }
     }
-
-    double sum = std::accumulate(betas.begin(), betas.end(), 0.0);
-    double mean = sum / betas.size();
-
-    std::cout << mean << std::endl;
 }
 
 BOOST_AUTO_TEST_SUITE_END()
