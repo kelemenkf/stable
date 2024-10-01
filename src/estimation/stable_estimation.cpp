@@ -14,7 +14,7 @@ std::vector<double> Estimator::validateSample(std::vector<double> sample)
 {
     if (sample.empty())
     {
-        throw std::invalid_argument("Sample containes no data");
+        throw std::invalid_argument("Sample contains no data");
     }
 
     return sample;

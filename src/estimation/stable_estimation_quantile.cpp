@@ -16,11 +16,6 @@ correctedQuantilesInput)
     initializeMemberQuantiles();
     calculateVAlpha();
     calculateVBeta();
-    // for(size_t i = 0; i < lookupTable.size(); ++i)
-    // {
-    //     std::cout << lookupTable[i].alpha << " " << lookupTable[i].vAlpha << " " 
-    //     << lookupTable[i].beta << " " << lookupTable[i].vBeta << "  " << vBetaSample << std::endl;
-    // }
 };
 
 
