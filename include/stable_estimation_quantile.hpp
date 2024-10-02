@@ -74,6 +74,10 @@ protected:
 
     std::pair<double, double> estimateBeta();
 
+    double estimateGamma();
+
+    double estimateDelta();
+
     std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> findAlphaPoints();
 
     std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> findBetaPoints(

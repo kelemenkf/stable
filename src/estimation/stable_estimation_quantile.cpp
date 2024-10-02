@@ -16,12 +16,26 @@ correctedQuantilesInput)
     initializeMemberQuantiles();
     calculateVAlpha();
     calculateVBeta();
+    calculateVGamma();
+    calculateVDelta();
 };
 
 
 QuantileEstimator::~QuantileEstimator()
 {
 
+}
+
+
+void QuantileEstimator::getParameters()
+{
+    double alpha = std::get<0>(estimateAlpha());
+    double beta = std::get<1>(estimateBeta());
+    double gamma = estimateGamma();
+    double delta = estimateDelta();
+
+
+    estimatedDistribution = StableDistribution(alpha, beta, gamma, delta);
 }
 
 
@@ -88,6 +102,18 @@ std::pair<double, double> QuantileEstimator::estimateBeta()
                   x * y * upperBeta->beta;                 // top-right 
 
     return {alpha, beta};
+}
+
+
+double QuantileEstimator::estimateGamma()
+{
+
+}
+
+
+double QuantileEstimator::estimateDelta()
+{
+
 }
 
 
