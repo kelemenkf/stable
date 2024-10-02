@@ -54,6 +54,8 @@ private:
     StableDistribution estimatedDistribution;
     double vAlphaSample;
     double vBetaSample;
+    double vGammaSample;
+    double VDeltaSample;
     std::vector<double> sampleQs;
     std::vector<double> correctedQuantiles;
     std::vector<TableEntry> lookupTable;
@@ -97,9 +99,9 @@ protected:
 
     void calculateVBeta();
 
-    double calculateVGamma();
+    void calculateVGamma();
 
-    double calculateVDelta();
+    void calculateVDelta();
 
     void setDistributionParameters();
 

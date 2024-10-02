@@ -331,6 +331,18 @@ void QuantileEstimator::calculateVBeta()
 }
 
 
+void QuantileEstimator::calculateVGamma()
+{
+    vGammaSample = (correctedQuantiles[3] - correctedQuantiles[1]);
+}
+
+
+void QuantileEstimator::calculateVDelta()
+{
+    VDeltaSample = -correctedQuantiles[2];
+}
+
+
 double QuantileEstimator::getVAlpha()
 {
     return vAlphaSample;
