@@ -2,6 +2,7 @@ bin/
 build/
 notebooks/
 papers/
+notes/
 
 *.o
 *.obj
@@ -18,3 +19,5 @@ Makefile
 cmake_install.cmake
 
 .vscode/
+
+

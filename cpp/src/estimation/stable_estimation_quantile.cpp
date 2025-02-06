@@ -107,7 +107,7 @@ std::pair<double, double> QuantileEstimator::estimateBeta()
 
 double QuantileEstimator::estimateGamma()
 {
-
+    
 }
 
 
