@@ -16,19 +16,13 @@ class StableDensity(Stable):
         self.bound = self.calculate_series_bound()
         self.x_method = (X < self.bound) & (X > -self.bound)
         self.pdf = self.calculate_density()
+        self.scaled_nodes
+        self.scaled_weights
 
 
     def get_pdf(self):
         return self.pdf
-    
-    
-    def get_bound(self):
-        return self.bound
-    
-
-    def get_x_method(self):
-        return self.x_method
-
+     
 
     def determine_series_n(self):
         n = 0
@@ -54,19 +48,20 @@ class StableDensity(Stable):
         return T_alpha
     
 
-    def series_representation(self):
-        pass 
+    def quadrature(self, x):
+        np.dot(np.array([self.integrand_symmetric(tau, x) for tau in self.scaled_nodes]), self.scaled_weights)
+        return 
+    
+
+    def series_representation(self, x):
+        pass
 
 
-    def quadrature(self, pdf):
+    def scale_quadrature_rule(self):
         if self.beta == 0: 
-            scaled_nodes = symmetric_nodes * self.T_alpha
-            scaled_weights = symmetric_weights * (self.T_alpha / math.pi)
-        for i in range(self.X.size):
-            if self.x_method[i]:
-                pdf.append(np.dot(np.array([self.integrand_symmetric(tau, self.X[i]) for tau in scaled_nodes]), scaled_weights))
+            self.scaled_nodes = symmetric_nodes * self.T_alpha
+            self.scaled_weights = symmetric_weights * (self.T_alpha / math.pi)
         
-
 
     def integrand_symmetric(self, tau, x):
         return math.cos(x * (tau * self.T_alpha)) * math.exp(-(tau*self.T_alpha)**self.alpha)
@@ -74,7 +69,15 @@ class StableDensity(Stable):
 
     def calculate_density(self):
         pdf = []
-        self.quadrature(pdf)
+
+        self.scale_quadrature_rule()
+
+        for i in range(self.X.size):
+            if self.x_method[i]:
+                pdf.append(self.quadrature(self.X[i]))
+            else: 
+                pdf.append(self.series_representation(self.X[i]))
+
         return np.array(pdf)
 
 
