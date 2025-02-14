@@ -22,6 +22,14 @@ class StableDensity(Stable):
 
     def get_pdf(self):
         return self.pdf
+    
+
+    def get_scaled_nodes(self):
+        return self.scaled_nodes
+    
+
+    def get_scaled_weights(self):
+        return self.scaled_weights
      
 
     def determine_series_n(self):
@@ -49,12 +57,22 @@ class StableDensity(Stable):
     
 
     def quadrature(self, x):
-        np.dot(np.array([self.integrand_symmetric(tau, x) for tau in self.scaled_nodes]), self.scaled_weights)
-        return 
+        return (self.T_alpha / math.pi) * np.dot(np.array([self.integrand_symmetric(tau, x) for tau in self.scaled_nodes]), self.scaled_weights)
     
 
     def series_representation(self, x):
-        pass
+        zeta = -self.beta * math.tan((math.pi / self.alpha) / 2)
+        if self.beta == 0:
+            n = symmetric_nodes.size
+        f_x = 0
+        for k in range(1,n+1):
+            first_term = (-1)**(k + 1)
+            second_term = math.gamma((self.alpha*k)) / math.gamma(k)
+            third_term = ((1 + zeta**2) ** (k / 2)) 
+            fourth_term = math.sin((math.pi * self.alpha / 2 - math.atan(zeta)) * k)
+            fifth_term = (x - zeta)**(-self.alpha * k - 1)
+            f_x += first_term * second_term * third_term * fourth_term * fifth_term
+        return (self.alpha / math.pi) * f_x
 
 
     def scale_quadrature_rule(self):
