@@ -57,7 +57,7 @@ class StableDensity(Stable):
     
 
     def quadrature(self, x):
-        return (self.T_alpha / math.pi) * np.dot(np.array([self.integrand_symmetric(tau, x) for tau in self.scaled_nodes]), self.scaled_weights)
+        return np.dot(np.array([self.integrand_symmetric(tau, x) for tau in self.scaled_nodes]), self.scaled_weights)
     
 
     def series_representation(self, x):
@@ -77,7 +77,7 @@ class StableDensity(Stable):
 
     def scale_quadrature_rule(self):
         if self.beta == 0: 
-            self.scaled_nodes = symmetric_nodes * self.T_alpha
+            self.scaled_nodes = symmetric_nodes
             self.scaled_weights = symmetric_weights * (self.T_alpha / math.pi)
         
 
