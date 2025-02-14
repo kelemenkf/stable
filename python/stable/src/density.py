@@ -2,7 +2,7 @@ import numpy as np
 import math
 import sys
 from .stable import Stable 
-from .quadrature_rules import symmetric_nodes, symmetric_weights
+from .quadrature_rules import SYMMETRIC_NODES, SYMMETRIC_WEIGHTS, ASYMMETRIC_WEIGHTS_ALPHA_MORE_11, ASYMMETRIC_NODES_ALPHA_MORE_11, ASYMMETRIC_NODES_ALPHA_LESS_09, ASYMMETRIC_WEIGHTS_ALPHA_LESS_09 
 
 
 class StableDensity(Stable):   
@@ -34,15 +34,25 @@ class StableDensity(Stable):
 
     def determine_series_n(self):
         n = 0
+
         if self.beta == 0: 
             n = 46
+        elif self.beta != 0 and self.alpha >= 1.1:
+            n = 86
+        elif self.beta != 0 and self.alpha >= 0.5 and self.alpha <= 0.9:
+            n = 94
+
         return n
 
 
     def calculate_zeta(self):
         zeta = 0
+
         if self.beta == 0: 
             zeta = 0
+        else: 
+            zeta = -self.beta * math.tan((math.pi / self.alpha) / 2)
+
         return zeta
             
 
@@ -61,24 +71,23 @@ class StableDensity(Stable):
     
 
     def series_representation(self, x):
-        zeta = -self.beta * math.tan((math.pi / self.alpha) / 2)
         if self.beta == 0:
-            n = symmetric_nodes.size
+            n = SYMMETRIC_NODES.size
         f_x = 0
         for k in range(1,n+1):
             first_term = (-1)**(k + 1)
             second_term = math.gamma((self.alpha*k)) / math.gamma(k)
-            third_term = ((1 + zeta**2) ** (k / 2)) 
-            fourth_term = math.sin((math.pi * self.alpha / 2 - math.atan(zeta)) * k)
-            fifth_term = (x - zeta)**(-self.alpha * k - 1)
+            third_term = ((1 + self.zeta**2) ** (k / 2)) 
+            fourth_term = math.sin((math.pi * self.alpha / 2 - math.atan(self.zeta)) * k)
+            fifth_term = (x - self.zeta)**(-self.alpha * k - 1)
             f_x += first_term * second_term * third_term * fourth_term * fifth_term
         return (self.alpha / math.pi) * f_x
 
 
     def scale_quadrature_rule(self):
         if self.beta == 0: 
-            self.scaled_nodes = symmetric_nodes
-            self.scaled_weights = symmetric_weights * (self.T_alpha / math.pi)
+            self.scaled_nodes = SYMMETRIC_NODES
+            self.scaled_weights = SYMMETRIC_WEIGHTS * (self.T_alpha / math.pi)
         
 
     def integrand_symmetric(self, tau, x):
