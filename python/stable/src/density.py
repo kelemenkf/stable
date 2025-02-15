@@ -53,7 +53,7 @@ class StableDensity(Stable):
         if self.beta == 0: 
             zeta = 0
         else: 
-            zeta = -self.beta * math.tan((math.pi / self.alpha) / 2)
+            zeta = -self.beta * math.tan((math.pi * self.alpha) / 2)
 
         return zeta
     
@@ -72,10 +72,7 @@ class StableDensity(Stable):
     
 
     def determine_x_method(self):
-        if self.negative: 
-            return (self.X > -self.bound)
-        else: 
-            return (self.X < self.bound)
+        return (self.X - self.zeta < self.bound)
             
 
     def calculate_series_bound(self):
@@ -98,7 +95,6 @@ class StableDensity(Stable):
     def series_representation(self, x):
         f_x = 0
 
-
         for k in range(1,self.n+1):
             first_term = (-1)**(k + 1)
             second_term = math.gamma((self.alpha*k)) / math.gamma(k)
@@ -106,6 +102,8 @@ class StableDensity(Stable):
             fourth_term = math.sin((math.pi * self.alpha / 2 - math.atan(self.zeta)) * k)
             fifth_term = (x - self.zeta)**(-self.alpha * k - 1)
             f_x += first_term * second_term * third_term * fourth_term * fifth_term
+            if f_x < 0: 
+                print(first_term, second_term, third_term, fourth_term, fifth_term)
 
         return (self.alpha / math.pi) * f_x
 
@@ -117,9 +115,9 @@ class StableDensity(Stable):
         elif self.beta != 0 and self.alpha >= 1.1: 
             self.scaled_nodes = ASYMMETRIC_NODES_ALPHA_MORE_11
             self.scaled_weights = ASYMMETRIC_WEIGHTS_ALPHA_MORE_11 * (self.T_alpha / math.pi)
-        elif self.beta != 0 and self.alpha <= 0.9 and self.alpha >= 0.5:
+        elif self.beta != 0 and (self.alpha <= 0.9 and self.alpha >= 0.5):
             self.scaled_nodes = ASYMMETRIC_NODES_ALPHA_LESS_09
-            self.scaled_weights = ASYMMETRIC_WEIGHTS_ALPHA_LESS_09
+            self.scaled_weights = ASYMMETRIC_WEIGHTS_ALPHA_LESS_09 * (self.T_alpha / math.pi)
         
 
     def integrand_symmetric(self, tau, x):
@@ -144,8 +142,12 @@ class StableDensity(Stable):
 
         for i in range(self.X.size):
             if self.x_method[i]:
-                pdf.append(self.quadrature(self.X[i]))
+                f_x = self.quadrature(self.X[i])
+                print("Quad ", self.bound, self.X[i], f_x, self.x_method[i])
+                pdf.append(f_x)
             else: 
-                pdf.append(self.series_representation(self.X[i]))
+                f_x = self.series_representation(self.X[i]) 
+                print("Series ", self.bound, self.X[i], f_x, self.x_method[i])
+                pdf.append(f_x)
 
         return np.array(pdf)
