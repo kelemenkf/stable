@@ -6,15 +6,17 @@ from .quadrature_rules import SYMMETRIC_NODES, SYMMETRIC_WEIGHTS, ASYMMETRIC_WEI
 
 
 class StableDensity(Stable):   
-    def __init__(self, X , eps = sys.float_info.epsilon):
-        super().__init__()
+    def __init__(self, X, alpha=2.0, beta=0.0, negative = False, eps = sys.float_info.epsilon):
+        super().__init__(alpha, beta)
         self.X = X
+        self.negative = negative
         self.eps = eps
         self.n = self.determine_series_n()
         self.zeta = self.calculate_zeta()
         self.T_alpha = self.calculate_T_alpha()
         self.bound = self.calculate_series_bound()
-        self.x_method = (X < self.bound) & (X > -self.bound)
+        self.X_negative = self.determine_x_negative()
+        self.x_method = self.determine_x_method() 
         self.pdf = self.calculate_density()
         self.scaled_nodes
         self.scaled_weights
@@ -36,11 +38,11 @@ class StableDensity(Stable):
         n = 0
 
         if self.beta == 0: 
-            n = 46
+            n = SYMMETRIC_NODES.size
         elif self.beta != 0 and self.alpha >= 1.1:
-            n = 86
+            n = ASYMMETRIC_NODES_ALPHA_MORE_11.size
         elif self.beta != 0 and self.alpha >= 0.5 and self.alpha <= 0.9:
-            n = 94
+            n = ASYMMETRIC_NODES_ALPHA_LESS_09.size
 
         return n
 
@@ -54,6 +56,26 @@ class StableDensity(Stable):
             zeta = -self.beta * math.tan((math.pi / self.alpha) / 2)
 
         return zeta
+    
+
+    def determine_x_negative(self):
+        result = []
+
+        if not self.negative:
+            for x in self.X: 
+                if (x - self.zeta < 0):
+                    result.append(x)
+                    i = np.where(self.X == x)
+                    self.X = np.delete(self.X, i)
+
+        return np.array(result)
+    
+
+    def determine_x_method(self):
+        if self.negative: 
+            return (self.X > -self.bound)
+        else: 
+            return (self.X < self.bound)
             
 
     def calculate_series_bound(self):
@@ -67,20 +89,24 @@ class StableDensity(Stable):
     
 
     def quadrature(self, x):
-        return np.dot(np.array([self.integrand_symmetric(tau, x) for tau in self.scaled_nodes]), self.scaled_weights)
+        if self.beta == 0:
+            return np.dot(np.array([self.integrand_symmetric(tau, x) for tau in self.scaled_nodes]), self.scaled_weights)
+        else: 
+            return np.dot(np.array([self.integrand_asymmetric(tau, x) for tau in self.scaled_nodes]), self.scaled_weights)
     
 
     def series_representation(self, x):
-        if self.beta == 0:
-            n = SYMMETRIC_NODES.size
         f_x = 0
-        for k in range(1,n+1):
+
+
+        for k in range(1,self.n+1):
             first_term = (-1)**(k + 1)
             second_term = math.gamma((self.alpha*k)) / math.gamma(k)
             third_term = ((1 + self.zeta**2) ** (k / 2)) 
             fourth_term = math.sin((math.pi * self.alpha / 2 - math.atan(self.zeta)) * k)
             fifth_term = (x - self.zeta)**(-self.alpha * k - 1)
             f_x += first_term * second_term * third_term * fourth_term * fifth_term
+
         return (self.alpha / math.pi) * f_x
 
 
@@ -88,16 +114,33 @@ class StableDensity(Stable):
         if self.beta == 0: 
             self.scaled_nodes = SYMMETRIC_NODES
             self.scaled_weights = SYMMETRIC_WEIGHTS * (self.T_alpha / math.pi)
+        elif self.beta != 0 and self.alpha >= 1.1: 
+            self.scaled_nodes = ASYMMETRIC_NODES_ALPHA_MORE_11
+            self.scaled_weights = ASYMMETRIC_WEIGHTS_ALPHA_MORE_11 * (self.T_alpha / math.pi)
+        elif self.beta != 0 and self.alpha <= 0.9 and self.alpha >= 0.5:
+            self.scaled_nodes = ASYMMETRIC_NODES_ALPHA_LESS_09
+            self.scaled_weights = ASYMMETRIC_WEIGHTS_ALPHA_LESS_09
         
 
     def integrand_symmetric(self, tau, x):
         return math.cos(x * (tau * self.T_alpha)) * math.exp(-(tau*self.T_alpha)**self.alpha)
     
 
+    def integrand_asymmetric(self, tau, x):
+        h = (x - self.zeta) * (tau*self.T_alpha) + self.zeta * (tau * self.T_alpha)**self.alpha
+        return math.cos(h) * math.exp(-(tau * self.T_alpha)**self.alpha)
+    
+
     def calculate_density(self):
         pdf = []
 
         self.scale_quadrature_rule()
+
+        if not self.negative:
+            negative = StableDensity(-self.X_negative, self.alpha, -self.beta, True)
+            negative_pdf = negative.get_pdf()
+
+            pdf += list(negative_pdf)
 
         for i in range(self.X.size):
             if self.x_method[i]:
@@ -106,7 +149,3 @@ class StableDensity(Stable):
                 pdf.append(self.series_representation(self.X[i]))
 
         return np.array(pdf)
-
-
-    def integrand_asymmetric(self):
-        pass

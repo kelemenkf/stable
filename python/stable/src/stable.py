@@ -6,3 +6,7 @@ class Stable():
         self.beta = beta
         self.gamma = gamma
         self.delta = delta
+
+
+    def get_alpha(self):
+        return self.alpha
