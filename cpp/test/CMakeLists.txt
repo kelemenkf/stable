@@ -1,7 +1,3 @@
-#Find Boost
-find_package(Boost 1.76 REQUIRED COMPONENTS unit_test_framework)
-find_package(Boost 1.76 REQUIRED COMPONENTS timer)
-
 # Add test executable
 add_executable(stable_distribution_test stable_distribution_test.cpp)
 add_executable(performance_test_stable performance_test_stable.cpp)
@@ -21,7 +17,15 @@ target_link_libraries(quantile_estimator_lookup_table_test stable_library)
 target_link_libraries(mean_test stable_library)
 
 
-# Link Boost libraries
+target_include_directories(stable_distribution_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(performance_test_stable PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(stable_simulation_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(stable_estimation_quantile_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(stable_estimation_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(quantile_estimator_lookup_table_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(mean_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
+
+
 target_link_libraries(stable_distribution_test Boost::unit_test_framework)
 target_link_libraries(stable_simulation_test Boost::unit_test_framework)
 target_link_libraries(stable_estimation_test Boost::unit_test_framework)

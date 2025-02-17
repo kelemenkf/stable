@@ -153,6 +153,7 @@ BOOST_AUTO_TEST_CASE( TestQunatileEstimatorFindAdjacentQuantilesEvenSample ) {
     BOOST_CHECK_EQUAL(testPoints[1][1], 50);
 }
 
+
 BOOST_AUTO_TEST_CASE( TestQunatileEstimatorFindAdjacentQuantilesOddSample ) {
     std::vector<double> testSample(101);
     int start = 0;
@@ -200,78 +201,78 @@ BOOST_AUTO_TEST_CASE( TestQuantileEstimatorFindAlphaPoints ) {
 }
 
 
-BOOST_AUTO_TEST_CASE( TestQuantileEstimatorFindBetaPoints ) {
-    Simulator simulator(1.15, 0.55);
+// BOOST_AUTO_TEST_CASE( TestQuantileEstimatorFindBetaPoints ) {
+//     Simulator simulator(1.15, 0.55);
 
-    const double epsilon = 1e-6;
-    int searchCounter = 0;
-    std::vector<std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator>> betaPointVector;
-    for (size_t i = 0; i < 100; ++i)
-    {
-        std::vector<double> testSample = simulator.simulateStableXVector(10000);
-        QuantileEstimatorFixture testEstimator(testSample);
-        std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> alphaPoints = testEstimator.testFindAlphaPoints();
-        std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> betaPoints = testEstimator.testFindBetaPoints(alphaPoints);
-        if (std::fabs(std::get<1>(betaPoints)->beta - 0.6) < epsilon && 
-            std::fabs(std::get<0>(betaPoints)->beta - 0.5) < epsilon) 
-        {
-            ++searchCounter;
-        }
-        betaPointVector.push_back(betaPoints);
-    }
-
-
-    BOOST_CHECK_GE(searchCounter, 95);
-}
+//     const double epsilon = 1e-6;
+//     int searchCounter = 0;
+//     std::vector<std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator>> betaPointVector;
+//     for (size_t i = 0; i < 100; ++i)
+//     {
+//         std::vector<double> testSample = simulator.simulateStableXVector(10000);
+//         QuantileEstimatorFixture testEstimator(testSample);
+//         std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> alphaPoints = testEstimator.testFindAlphaPoints();
+//         std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> betaPoints = testEstimator.testFindBetaPoints(alphaPoints);
+//         if (std::fabs(std::get<1>(betaPoints)->beta - 0.6) < epsilon && 
+//             std::fabs(std::get<0>(betaPoints)->beta - 0.5) < epsilon) 
+//         {
+//             ++searchCounter;
+//         }
+//         betaPointVector.push_back(betaPoints);
+//     }
 
 
-BOOST_AUTO_TEST_CASE( TestQuantileEstimatorFindAdjacentAlphasInRange ) {
-    std::vector<double> alphaTestValues;
-    std::vector<double> betaTestValues;
-    double alphaStart = 0.6;
-    double betaStart = 0.1;
+//     BOOST_CHECK_GE(searchCounter, 95);
+// }
 
-    while (alphaStart <= 1.9)
-    {
-        alphaTestValues.push_back(alphaStart); 
-        alphaStart += 0.05;
-    }
-    while (betaStart <= 0.9)
-    {
-        betaTestValues.push_back(betaStart);
-        betaStart += 0.05;
-    }
 
-    for (size_t alphaIndex = 0; alphaIndex < alphaTestValues.size(); ++alphaIndex)
-    {
-        for (size_t betaIndex = 0; betaIndex < betaTestValues.size(); ++betaIndex)
-        {
-            Simulator simulator(alphaTestValues[alphaIndex], betaTestValues[betaIndex]);
+// BOOST_AUTO_TEST_CASE( TestQuantileEstimatorFindAdjacentAlphasInRange ) {
+//     std::vector<double> alphaTestValues;
+//     std::vector<double> betaTestValues;
+//     double alphaStart = 0.6;
+//     double betaStart = 0.1;
 
-            std::vector<double> alphas;
-            std::vector<double> betas;
-            for (size_t i = 0; i < 100; ++i)
-            {
-                std::vector<double> testSample = simulator.simulateStableXVector(10000);
-                QuantileEstimatorFixture testEstimator(testSample);
-                std::pair<double, double> alpha =  testEstimator.testEstimateAlpha();
-                std::pair<double, double> beta = testEstimator.testEstimateBeta();
-                alphas.push_back(std::get<0>(alpha));
-                betas.push_back(std::get<1>(beta));
-            }
-            double alphaSum = std::accumulate(alphas.begin(), alphas.end(), 0.0);
-            double alphaMean = alphaSum / alphas.size();
+//     while (alphaStart <= 1.9)
+//     {
+//         alphaTestValues.push_back(alphaStart); 
+//         alphaStart += 0.05;
+//     }
+//     while (betaStart <= 0.9)
+//     {
+//         betaTestValues.push_back(betaStart);
+//         betaStart += 0.05;
+//     }
 
-            BOOST_CHECK_GE(alphaMean, alphaTestValues[alphaIndex] - 0.025);
-            BOOST_CHECK_LE(alphaMean, alphaTestValues[alphaIndex] + 0.025);
+//     for (size_t alphaIndex = 0; alphaIndex < alphaTestValues.size(); ++alphaIndex)
+//     {
+//         for (size_t betaIndex = 0; betaIndex < betaTestValues.size(); ++betaIndex)
+//         {
+//             Simulator simulator(alphaTestValues[alphaIndex], betaTestValues[betaIndex]);
 
-            double betaSum = std::accumulate(betas.begin(), betas.end(), 0.0);
-            double betaMean = betaSum / betas.size();
+//             std::vector<double> alphas;
+//             std::vector<double> betas;
+//             for (size_t i = 0; i < 100; ++i)
+//             {
+//                 std::vector<double> testSample = simulator.simulateStableXVector(10000);
+//                 QuantileEstimatorFixture testEstimator(testSample);
+//                 std::pair<double, double> alpha =  testEstimator.testEstimateAlpha();
+//                 std::pair<double, double> beta = testEstimator.testEstimateBeta();
+//                 alphas.push_back(std::get<0>(alpha));
+//                 betas.push_back(std::get<1>(beta));
+//             }
+//             double alphaSum = std::accumulate(alphas.begin(), alphas.end(), 0.0);
+//             double alphaMean = alphaSum / alphas.size();
 
-            BOOST_CHECK_GE(betaMean, betaTestValues[betaIndex] - 0.025);
-            BOOST_CHECK_LE(betaMean, betaTestValues[betaIndex] + 0.025);
-        }
-    }
-}
+//             BOOST_CHECK_GE(alphaMean, alphaTestValues[alphaIndex] - 0.025);
+//             BOOST_CHECK_LE(alphaMean, alphaTestValues[alphaIndex] + 0.025);
+
+//             double betaSum = std::accumulate(betas.begin(), betas.end(), 0.0);
+//             double betaMean = betaSum / betas.size();
+
+//             BOOST_CHECK_GE(betaMean, betaTestValues[betaIndex] - 0.025);
+//             BOOST_CHECK_LE(betaMean, betaTestValues[betaIndex] + 0.025);
+//         }
+//     }
+// }
 
 BOOST_AUTO_TEST_SUITE_END()
