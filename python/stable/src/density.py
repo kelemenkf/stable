@@ -6,8 +6,8 @@ from .quadrature_rules import SYMMETRIC_NODES, SYMMETRIC_WEIGHTS, ASYMMETRIC_WEI
 
 
 class StableDensity(Stable):   
-    def __init__(self, X, alpha=2.0, beta=0.0, negative = False, eps = sys.float_info.epsilon):
-        super().__init__(alpha, beta)
+    def __init__(self, X, alpha=2.0, beta=0.0, gamma=1.0, negative = False, eps = sys.float_info.epsilon):
+        super().__init__(alpha, beta, gamma)
         self.X = X
         self.negative = negative
         self.eps = eps
@@ -135,7 +135,7 @@ class StableDensity(Stable):
         self.scale_quadrature_rule()
 
         if not self.negative:
-            negative = StableDensity(-self.X_negative, self.alpha, -self.beta, True)
+            negative = StableDensity(-self.X_negative, self.alpha, -self.beta, self.gamma, True)
             negative_pdf = negative.get_pdf()
 
             pdf += list(negative_pdf)
@@ -143,11 +143,9 @@ class StableDensity(Stable):
         for i in range(self.X.size):
             if self.x_method[i]:
                 f_x = self.quadrature(self.X[i])
-                print("Quad ", self.bound, self.X[i], f_x, self.x_method[i])
                 pdf.append(f_x)
             else: 
                 f_x = self.series_representation(self.X[i]) 
-                print("Series ", self.bound, self.X[i], f_x, self.x_method[i])
                 pdf.append(f_x)
 
         return np.array(pdf)

@@ -5,7 +5,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(stable, m) {
+PYBIND11_MODULE(stable_cpp, m) {
     py::class_<StableDistribution>(m, "StableDistribution")
         .def(py::init<>())
         .def(py::init<double, double, double, double>())
