@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import time
+import sys
 from .stable import Stable
 from .density import StableDensity
 
@@ -13,6 +14,11 @@ class MLE(Stable):
         self.beta = beta
         self.gamma = gamma 
         self.delta = delta
+        self.alpha_lower = 0
+        self.alpha_upper = 2.0
+        self.beta_lower = -1
+        self.beta_upper = 1
+        self.gamma_lower = 0
         self.newton()
 
     
@@ -98,6 +104,16 @@ class MLE(Stable):
         print("Hessian ", end - start)
         
         return hess
+    
+
+    def clamp_parameters(self, params):
+        params[0] = np.clip(params[0], 0, 2)
+        params[1] = np.clip(params[1], -1, 1)
+        params[2] = np.clip(params[2], sys.float_info.epsilon, np.inf)
+
+        return params
+
+
 
 
     def newton(self, eps=10e-6):
@@ -118,5 +134,6 @@ class MLE(Stable):
             end = time.time()
             print("Inverse ", end - start)
             x_k = x_k - (H_inverse @ G)
+            x_k = self.clamp_parameters(x_k)
             self.alpha, self.beta, self.gamma, self.delta = x_k
 

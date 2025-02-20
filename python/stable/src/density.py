@@ -48,12 +48,14 @@ class StableDensity(Stable):
     def determine_series_n(self):
         n = 0
 
+        print(self.alpha, self.beta)
+
         if self.beta == 0: 
-            n = SYMMETRIC_NODES.size
+            n = 46
         elif self.beta != 0 and self.alpha >= 1.1:
-            n = ASYMMETRIC_NODES_ALPHA_MORE_11.size
+            n = 80
         elif self.beta != 0 and self.alpha >= 0.5 and self.alpha <= 0.9:
-            n = ASYMMETRIC_NODES_ALPHA_LESS_09.size
+            n = 90
 
         return n
 
@@ -87,6 +89,7 @@ class StableDensity(Stable):
             
 
     def calculate_series_bound(self):
+        print(self.alpha, self.n)
         bound = (self.alpha / (math.pi * self.eps) * (1 + self.zeta**2)**(self.n/2)*(math.gamma(self.alpha*self.n)/math.gamma(self.n)))**(1/(self.alpha*self.n-1))
         return bound
     
@@ -113,8 +116,6 @@ class StableDensity(Stable):
             fourth_term = math.sin((math.pi * self.alpha / 2 - math.atan(self.zeta)) * k)
             fifth_term = (x - self.zeta)**(-self.alpha * k - 1)
             f_x += first_term * second_term * third_term * fourth_term * fifth_term
-            if f_x < 0: 
-                print(first_term, second_term, third_term, fourth_term, fifth_term)
 
         return (self.alpha / math.pi) * f_x
 
