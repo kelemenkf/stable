@@ -1,29 +1,40 @@
 import numpy as np
 import math
 import sys
+from scipy.stats import norm
 from .stable import Stable 
 from .quadrature_rules import SYMMETRIC_NODES, SYMMETRIC_WEIGHTS, ASYMMETRIC_WEIGHTS_ALPHA_MORE_11, ASYMMETRIC_NODES_ALPHA_MORE_11, ASYMMETRIC_NODES_ALPHA_LESS_09, ASYMMETRIC_WEIGHTS_ALPHA_LESS_09 
 
 
 class StableDensity(Stable):   
-    def __init__(self, X, alpha=2.0, beta=0.0, gamma=1.0, negative = False, eps = sys.float_info.epsilon):
-        super().__init__(alpha, beta, gamma)
-        self.X = X
+    def __init__(self, X, alpha=2.0, beta=0.0, gamma=1.0, delta=0, negative = False, eps = sys.float_info.epsilon):
+        super().__init__(alpha, beta, gamma, delta)
         self.negative = negative
-        self.eps = eps
-        self.n = self.determine_series_n()
-        self.zeta = self.calculate_zeta()
-        self.T_alpha = self.calculate_T_alpha()
-        self.bound = self.calculate_series_bound()
-        self.X_negative = self.determine_x_negative()
-        self.x_method = self.determine_x_method() 
-        self.pdf = self.calculate_density()
-        self.scaled_nodes
-        self.scaled_weights
+        if self.alpha != 2.0:
+            self.zeta = self.calculate_zeta()
+            if (self.gamma != 1.0 or self.delta != 0 or self.beta != 0) and self.negative == False:
+                self.X = (X - self.delta + self.zeta * self.gamma) / self.gamma
+            else: 
+                self.X = X
+            self.eps = eps
+            self.n = self.determine_series_n()
+            self.T_alpha = self.calculate_T_alpha()
+            self.bound = self.calculate_series_bound()
+            self.X_negative = self.determine_x_negative()
+            self.x_method = self.determine_x_method() 
+            self.pdf = self.calculate_density()
+            self.scaled_nodes = []
+            self.scaled_weights = []
+        else: 
+            self.X = X
+            self.pdf = self.calculate_density()
 
 
     def get_pdf(self):
-        return self.pdf
+        if self.negative == False:
+            return (1 / self.gamma) * self.pdf
+        else: 
+            return self.pdf
     
 
     def get_scaled_nodes(self):
@@ -132,20 +143,23 @@ class StableDensity(Stable):
     def calculate_density(self):
         pdf = []
 
-        self.scale_quadrature_rule()
+        if self.alpha == 2.0:
+            pdf = norm.pdf(self.X, self.delta, self.gamma * math.sqrt(2))
+        else:
+            self.scale_quadrature_rule()
 
-        if not self.negative:
-            negative = StableDensity(-self.X_negative, self.alpha, -self.beta, self.gamma, True)
-            negative_pdf = negative.get_pdf()
+            if not self.negative:
+                negative = StableDensity(-self.X_negative, self.alpha, -self.beta, self.gamma, self.delta, True)
+                negative_pdf = negative.get_pdf()
 
-            pdf += list(negative_pdf)
+                pdf += list(negative_pdf)
 
-        for i in range(self.X.size):
-            if self.x_method[i]:
-                f_x = self.quadrature(self.X[i])
-                pdf.append(f_x)
-            else: 
-                f_x = self.series_representation(self.X[i]) 
-                pdf.append(f_x)
+            for i in range(self.X.size):
+                if self.x_method[i]:
+                    f_x = self.quadrature(self.X[i])
+                    pdf.append(f_x)
+                else: 
+                    f_x = self.series_representation(self.X[i]) 
+                    pdf.append(f_x)
 
         return np.array(pdf)
