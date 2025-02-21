@@ -109,7 +109,6 @@ class MLE(Stable):
     def clamp_parameters(self, params):
         params[0] = np.clip(params[0], 0, 2)
         params[1] = np.clip(params[1], -1, 1)
-        params[2] = np.clip(params[2], sys.float_info.epsilon, np.inf)
 
         return params
 

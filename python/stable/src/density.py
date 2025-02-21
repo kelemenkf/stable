@@ -48,7 +48,7 @@ class StableDensity(Stable):
     def determine_series_n(self):
         n = 0
 
-        print(self.alpha, self.beta)
+        print("Alpha, beta ", self.alpha, self.beta)
 
         if self.beta == 0: 
             n = 46
@@ -89,7 +89,7 @@ class StableDensity(Stable):
             
 
     def calculate_series_bound(self):
-        print(self.alpha, self.n)
+        print("Alpha, n ", self.alpha, self.n)
         bound = (self.alpha / (math.pi * self.eps) * (1 + self.zeta**2)**(self.n/2)*(math.gamma(self.alpha*self.n)/math.gamma(self.n)))**(1/(self.alpha*self.n-1))
         return bound
     

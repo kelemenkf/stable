@@ -62,8 +62,6 @@ class StableRegression(Stable):
         results = sm.OLS(self.trimmed_y, self.trimmed_x).fit()
         #Initial coefficient values
         coeffs = results.params
-
-        print(coeffs)
         
         return coeffs
     
