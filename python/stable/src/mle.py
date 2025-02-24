@@ -1,9 +1,9 @@
 import numpy as np
+import numba
 import time
 from .stable import Stable
 from .density import StableDensity
 from .quantile import Quantile
-
 
 
 class MLE(Stable):
@@ -25,7 +25,7 @@ class MLE(Stable):
 
         end = time.time()
 
-        print("Initial estimates in ", end - start)
+        print("Initial estimates in ", end - start, " ", quant.get_params())
 
         return quant.get_params()
 
@@ -69,18 +69,24 @@ class MLE(Stable):
         start = time.time()
 
         theta = np.array([self.alpha, self.beta, self.gamma, self.delta])
+        start = time.time()
         f_theta = self.loglikelihood(theta)
+        end = time.time()
+        print(end - start, " function evaluation time")
 
         hess = np.zeros((theta.size, theta.size))
 
+        function_counter = 0
+
         for i in range(theta.size):
-            for j in range(theta.size):
+            for j in range(i, theta.size):
                 if i == j:
                     forward = theta.copy()
                     backward = theta.copy()
                     forward[j] += eps
                     backward[j] -= eps
                     df2_dx2 = (self.loglikelihood(forward) - (2 * f_theta) + self.loglikelihood(backward)) / (eps**2)
+                    function_counter += 2
                     hess[i, j] = df2_dx2
                 else:
                     theta_ij1 = theta.copy()
@@ -105,11 +111,14 @@ class MLE(Stable):
                     f3 = self.loglikelihood(theta_ij3)
                     f4 = self.loglikelihood(theta_ij4)
 
-                    hess[i, j] = (f1 - f2 - f3 + f4) / (4 * eps ** 2)  
+                    function_counter += 4
+
+                    hess[i, j] = (f1 - f2 - f3 + f4) / (4 * eps ** 2) 
+                    hess[j, i] = hess[i, j] 
         
         end = time.time()
 
-        print("Hessian ", end - start)
+        print("Hessian ", end - start, " with ", function_counter, " evaluations")
         
         return hess
     

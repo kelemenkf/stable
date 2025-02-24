@@ -76,7 +76,9 @@ class StableRegression(Stable):
     def calculate_initial_distribution_parameters(self):
         trimmed_residuals = self.trimmed_residuals()
 
-        initial_distribution_parameters = MLE(trimmed_residuals, 1.8, 0, 1, 0).get_params() 
+        initial_distribution_parameters = MLE(trimmed_residuals).get_params() 
+
+        print(initial_distribution_parameters)
 
         self.distribution_params = initial_distribution_parameters
 
