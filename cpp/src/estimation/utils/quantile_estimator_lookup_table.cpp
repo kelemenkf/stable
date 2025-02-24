@@ -43,7 +43,7 @@ void QuantileEstimatorLookupTable::writeLookupTablesToFile(const std::string& vF
 
     if (lookupTableFile.is_open())
     {
-        lookupTableFile << " ,";
+        lookupTableFile << "NaN,";
         for(double beta: betaValues)
         {
             if (beta != *(betaValues.cend() - 1))
@@ -175,7 +175,8 @@ std::map<std::string, double> QuantileEstimatorLookupTable::calculateVFunctionVa
     double vBeta = (getQuantile(meanOfSamples, 0.05) + getQuantile(meanOfSamples, 0.95) - 2*getQuantile(meanOfSamples, 0.50)) / 
     (getQuantile(meanOfSamples, 0.95) - getQuantile(meanOfSamples, 0.05));
     double vGamma = (getQuantile(meanOfSamples, 0.75) - getQuantile(meanOfSamples, 0.25));
-    double vDelta = -getQuantile(meanOfSamples, -0.5);
+    double vDelta = -getQuantile(meanOfSamples, 0.5);
+    std::cout << "vDelta " << vDelta << std::endl;
 
     if (vBeta < 0)
     {

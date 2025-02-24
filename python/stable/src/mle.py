@@ -1,19 +1,15 @@
 import numpy as np
-import math
 import time
-import sys
 from .stable import Stable
 from .density import StableDensity
+from .quantile import Quantile
 
 
 
 class MLE(Stable):
-    def __init__(self, X, alpha, beta, gamma, delta):
+    def __init__(self, X):
         self.X = np.sort(np.array(X))
-        self.alpha = alpha 
-        self.beta = beta
-        self.gamma = gamma 
-        self.delta = delta
+        self.alpha, self.beta, self.gamma, self.delta = self.get_initial_estimates()
         self.alpha_lower = 0
         self.alpha_upper = 2.0
         self.beta_lower = -1
@@ -21,7 +17,19 @@ class MLE(Stable):
         self.gamma_lower = 0
         self.newton()
 
-    
+
+    def get_initial_estimates(self):
+        start = time.time()
+
+        quant = Quantile(self.X)
+
+        end = time.time()
+
+        print("Initial estimates in ", end - start)
+
+        return quant.get_params()
+
+
     def get_params(self):
         return (self.alpha, self.beta, self.gamma, self.delta)
 

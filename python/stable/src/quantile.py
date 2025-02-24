@@ -18,9 +18,12 @@ class Quantile():
       self.v_gamma_values = self.load_gamma_table()
       self.v_delta_values = self.load_delta_table()
       self.alpha, self.beta = self.estimate_alpha_beta()
-      print(self.v_gamma_values, self.alphas, self.betas)
       self.gamma = self.estimate_gamma()
       self.delta = self.estimate_delta()
+
+
+    def get_params(self):
+        return self.alpha, self.beta, self.gamma, self.delta
 
 
     def calculate_v_alpha(self):
@@ -110,6 +113,7 @@ class Quantile():
         v_delta = self.v_delta_interpolator()
 
         v_delta_1 = v_delta([self.alpha, self.beta])[0]
-        delta = self.v_delta / v_delta_1
+        print(v_delta_1, self.v_delta, self.gamma)
+        delta = self.gamma * v_delta_1 - self.v_delta
 
         return delta 
