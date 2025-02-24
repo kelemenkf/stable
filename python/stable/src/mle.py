@@ -131,7 +131,6 @@ class MLE(Stable):
 
 
 
-
     def newton(self, eps=10e-6):
         G = self.gradient()
 
