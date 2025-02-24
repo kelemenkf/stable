@@ -1,5 +1,6 @@
 #include "stable_distribution.hpp"
 #include "stable_simulation.hpp"
+#include "stable_estimation_quantile.hpp"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -20,4 +21,14 @@ PYBIND11_MODULE(stable_cpp, m) {
         .def("non_symmetric", &Simulator::simulateNonSymmetricZVector)
         .def("stable", &Simulator::simulateStableXVector)
     ;
+
+
+    py::class_<QuantileEstimator>(m, "Quantile")
+        .def(py::init<std::vector<double>>())
+        .def("get_v_alpha", &QuantileEstimator::getVAlpha)
+        .def("get_v_beta", &QuantileEstimator::getVBeta)
+        .def("get_v_gamma", &QuantileEstimator::getVGamma)
+        .def("get_v_delta", &QuantileEstimator::getVDelta)
+        .def("get_quantiles", &QuantileEstimator::getCorrectedQuantiles)
+        ;
 }

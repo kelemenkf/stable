@@ -5,49 +5,6 @@
 #include "quantile_estimator_lookup_table.hpp"
 
 
-class TableEntry 
-{
-public:
-    double alpha, beta, vAlpha, vBeta;
-
-
-public: 
-    TableEntry(double alphaInput, double betaInput, double vAlphaInput, double vBetaInput) :
-    alpha(alphaInput), beta(betaInput), vAlpha(vAlphaInput), vBeta(vBetaInput) {};
-
-
-    double getAlpha()
-    {
-        return alpha; 
-    }  
-
-    double getBeta()
-    {
-        return beta;
-    }
-
-    double getVAlpha()
-    {
-        return vAlpha;
-    }
-
-    double getVBeta()
-    {
-        return vBeta;
-    }
-
-    void setVAlpha(double input)
-    {
-        vAlpha = input;
-    }
-
-    void setVBeta(double input)
-    {
-        vBeta = input;
-    }
-};
-
-
 class QuantileEstimator: public Estimator
 {
 private:
@@ -55,10 +12,9 @@ private:
     double vAlphaSample;
     double vBetaSample;
     double vGammaSample;
-    double VDeltaSample;
+    double vDeltaSample;
     std::vector<double> sampleQs;
     std::vector<double> correctedQuantiles;
-    std::vector<TableEntry> lookupTable;
 
 
 public:
@@ -68,26 +24,25 @@ public:
     ~QuantileEstimator();
 
     void getParameters();
+
+    double getVAlpha();
+
+    double getVBeta();
+
+    double getVGamma();
+
+    double getVDelta();
+
+    std::vector<double> getCorrectedQuantiles();
     
 protected:
-    std::pair<double, double> estimateAlpha();
+    std::vector<double> fillVector(std::vector<double>& parameters, double& mesh, double& paramMin, double& paramMax);
 
-    std::pair<double, double> estimateBeta();
+    double searchAlpha();
 
-    double estimateGamma();
+    double searchBeta();
 
-    double estimateDelta();
-
-    std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> findAlphaPoints();
-
-    std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> findBetaPoints(
-        std::pair<std::vector<TableEntry>::iterator, std::vector<TableEntry>::iterator> alphaPoints, bool estimateBeta = false);
-
-    void populateTableAlphaBeta();
-
-    void fillVector(std::vector<double>& parameters, double& mesh, double& paramMin, double& paramMax);
-
-    void readLookupTableFromFile(const std::string& vFunction);
+    double calculateV(const std::string& param);
     
     void sortSample();
     
@@ -107,17 +62,9 @@ protected:
 
     void calculateVDelta();
 
-    void setDistributionParameters();
-
-    double getVAlpha();
-
-    double getVBeta();
-
     std::vector<double> getSample();
 
     std::vector<double> getSampleQs();
-
-    std::vector<double> getCorrectedQuantiles();
 };
 
 #endif
