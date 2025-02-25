@@ -13,9 +13,10 @@ class StableRegression(Stable):
         self.X = sm.add_constant(X)
         self.y = y
         self.trimmed_y, self.trimmed_x = self.trim_data()
-        self.distribution_params = self.calculate_initial_distribution_parameters()
+        self.distribution_params, self.delta = self.calculate_initial_distribution_parameters()
         print("Initial dist params ", self.distribution_params)
         self.linear_params = self.second_fit()
+        print("Initial linear params ", self.linear_params)
         self.newton()
 
 
@@ -28,11 +29,11 @@ class StableRegression(Stable):
 
 
     def loglikelihood(self, params):
-        alpha, beta, gamma, delta = params[:4] 
+        alpha, beta, gamma = params[:3] 
 
-        residuals_full = self.y - self.X @ params[4:] 
+        residuals_full = self.y - self.X @ params[3:] 
 
-        pdf = StableDensity(residuals_full, alpha, beta, gamma, delta).get_pdf()
+        pdf = StableDensity(residuals_full, alpha, beta, gamma, 0).get_pdf()
 
         pdf = np.maximum(pdf, np.finfo(float).eps) 
 
@@ -77,6 +78,8 @@ class StableRegression(Stable):
         results = sm.OLS(self.trimmed_y, self.trimmed_x).fit()
         #Initial coefficient values
         coeffs = results.params
+
+        coeffs[0] = coeffs[0] - self.delta
         
         return coeffs
     
@@ -92,9 +95,11 @@ class StableRegression(Stable):
         coeffs = self.first_fit()
         residuals = self.get_residuals(coeffs, self.y, self.X)
 
-        initial_distribution_parameters = Quantile(residuals).get_params() 
+        initial_distribution_parameters = Quantile(residuals).get_params()
 
-        return np.array(initial_distribution_parameters)
+        delta = initial_distribution_parameters[3]
+
+        return np.array(initial_distribution_parameters[:3]), delta
 
 
     def gradient(self, eps=10e-6):
@@ -218,11 +223,10 @@ class StableRegression(Stable):
 
             H = self.hessian()
             x_k = np.concatenate((self.distribution_params, self.linear_params))
-            if (np.linalg.det(H) == 0):
-                print(H)
-                print(self.distribution_params, self.linear_params)
+            #if (np.linalg.det(H) == 0):
             H_inverse = np.linalg.inv(H)
             x_k = x_k - (H_inverse @ G)
             x_k = self.clamp_parameters(x_k)
-            self.distribution_params = x_k[:4]
-            self.linear_params = x_k[4:]
+            print(x_k)
+            self.distribution_params = x_k[:3]
+            self.linear_params = x_k[3:]
