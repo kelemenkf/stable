@@ -113,6 +113,8 @@ class StableDensity(Stable):
             fourth_term = math.sin((math.pi * self.alpha / 2 - math.atan(self.zeta)) * k)
             fifth_term = (x - self.zeta)**(-self.alpha * k - 1)
             f_x += first_term * second_term * third_term * fourth_term * fifth_term
+            if f_x < 0: 
+                print(self.n, x, self.alpha, self.beta, self.gamma, self.delta)
 
         return (self.alpha / math.pi) * f_x
 

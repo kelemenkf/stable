@@ -1,5 +1,4 @@
 import numpy as np
-import numba
 import time
 from .stable import Stable
 from .density import StableDensity
