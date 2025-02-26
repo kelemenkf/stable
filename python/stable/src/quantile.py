@@ -97,7 +97,7 @@ class Quantile():
 
         result = minimize(error_function, initial_guess, bounds=[(min(self.alphas), max(self.alphas)), (min(self.betas), max(self.betas))])
         
-        return result.x if result.success else None  
+        return result.x  
 
 
     def estimate_gamma(self):
@@ -113,7 +113,6 @@ class Quantile():
         v_delta = self.v_delta_interpolator()
 
         v_delta_1 = v_delta([self.alpha, self.beta])[0]
-        print(v_delta_1, self.v_delta, self.gamma)
         delta = self.gamma * v_delta_1 - self.v_delta
 
         return delta 

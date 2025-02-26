@@ -46,6 +46,8 @@ class StableRegression(Stable):
         results = sm.OLS(self.y, self.X).fit()
         coeffs = results.params
 
+        print(coeffs)
+
         return coeffs
     
     
@@ -190,6 +192,34 @@ class StableRegression(Stable):
         return params
     
 
+    def calculate_trust_region_radius(self, G):
+        return 0.1 * np.linalg.norm(G)
+    
+
+
+    def determine_step_direction(self, trust_radius, G, H):
+        p = np.linalg.inv(H) @ G
+        reg_factor = 0
+
+        while(np.linalg.norm(p) <= trust_radius):
+            reg_factor += max(np.linalg.eigvals(H))
+            p = np.linalg.inv(H + reg_factor * np.identity(H.shape[0])) @ G
+            print("Reg factor, step size ", reg_factor, np.linalg.norm(p))
+            
+        return p
+            
+
+
+    def trust_region(self):
+        #Determine step within the trust region. How is the trust radius determiend? How is the direction determined? 
+        #Eigenvalue method. Regularized Hessian is solved. This method takes step with size exactly equal to the trust region. 
+            #Lots of inversions for iteratively finding the regularization factor. But Hessian is not large just expensive to evaluate. 
+        #First Newton step within the trust region is taken. 
+        #Evaulate if the step is accurate enough. Step in actual function relative to step in model. (1 if the model is goood).
+        #If its good trust region is increased. If its bad it is decreased. 
+        pass
+    
+
     def reflect_gradient_at_boundary(self, params, grad):
         normal = np.zeros_like(params)
 
@@ -223,10 +253,15 @@ class StableRegression(Stable):
 
             H = self.hessian()
             x_k = np.concatenate((self.distribution_params, self.linear_params))
-            #if (np.linalg.det(H) == 0):
             H_inverse = np.linalg.inv(H)
+            trust_radius = self.calculate_trust_region_radius(G)
+            print("Trust radius ", trust_radius)
+            #Instead of a simple Newton step step direction is determined using exact trust region method
+            step = H_inverse @ G
+            print("Step size ", np.linalg.norm(step))
+            trust_step = self.determine_step_direction(trust_radius, G, H)
+            print("Trust step size ", np.linagl.norm(trust_step))
             x_k = x_k - (H_inverse @ G)
             x_k = self.clamp_parameters(x_k)
-            print(x_k)
             self.distribution_params = x_k[:3]
             self.linear_params = x_k[3:]

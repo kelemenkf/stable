@@ -32,8 +32,6 @@ double QuantileEstimator::searchAlpha()
     alphas = fillVector(alphas, mesh, alphaMin, alphaMax);
 
     double vAlpha = getVAlpha();
-
-    std::cout << vAlpha << std::endl;
 }
 
 
