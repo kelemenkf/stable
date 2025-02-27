@@ -227,8 +227,6 @@ private:
                 std::transform(X_negative.begin(), X_negative.end(), X_negative.begin(), [this](double x) {
                     return -x;
                 });
-                std::cout << "X_negative " << std::endl;
-                displayVector(X_negative);
                 Density negative_density(X_negative, alpha, -beta, gamma, delta, true);
                 std::vector<double> negative_pdf = negative_density.getPdf();
                 pdf.insert(pdf.end(), negative_pdf.begin(), negative_pdf.end());

@@ -1,10 +1,12 @@
 import numpy as np
+import sys
 from .stable import Stable 
 from .density import StableDensity 
-from .mle import MLE
 from .quantile import Quantile
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
+sys.path.append("/Users/kelemenkf/dev/stable/cpp/build/src")
+import stable_cpp
 
 
 class StableRegression(Stable):
@@ -33,7 +35,7 @@ class StableRegression(Stable):
 
         residuals_full = self.y - self.X @ params[3:] 
 
-        pdf = StableDensity(residuals_full, alpha, beta, gamma, 0).get_pdf()
+        pdf = stable_cpp.Density(residuals_full, alpha, beta, gamma, 0).get_pdf()
 
         pdf = np.maximum(pdf, np.finfo(float).eps) 
 

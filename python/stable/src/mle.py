@@ -3,6 +3,10 @@ import time
 from .stable import Stable
 from .density import StableDensity
 from .quantile import Quantile
+import sys
+sys.path.append("/Users/kelemenkf/dev/stable/cpp/build/src")
+import stable_cpp
+
 
 
 class MLE(Stable):
@@ -35,7 +39,7 @@ class MLE(Stable):
 
     def loglikelihood(self, params):
         alpha, beta, gamma, delta = params
-        pdf = StableDensity(self.X, alpha, beta, gamma, delta).get_pdf()
+        pdf = stable_cpp.Density(self.X, alpha, beta, gamma, delta).get_pdf()
 
         logL = np.sum(np.log(pdf))
 
