@@ -194,17 +194,18 @@ class StableRegression(Stable):
 
     def calculate_trust_region_radius(self, G):
         return 0.1 * np.linalg.norm(G)
-    
 
 
     def determine_step_direction(self, trust_radius, G, H):
         p = np.linalg.inv(H) @ G
+        step_size = np.linalg.norm(p)
         reg_factor = 0
 
-        while(np.linalg.norm(p) <= trust_radius):
-            reg_factor += max(np.linalg.eigvals(H))
-            p = np.linalg.inv(H + reg_factor * np.identity(H.shape[0])) @ G
-            print("Reg factor, step size ", reg_factor, np.linalg.norm(p))
+        if step_size > trust_radius:
+            while(step_size > trust_radius):
+                reg_factor += max(np.linalg.eigvals(H))
+                p = np.linalg.inv(H + reg_factor * np.identity(H.shape[0])) @ G
+                print("Reg factor, step size ", reg_factor, np.linalg.norm(p))
             
         return p
             
@@ -253,15 +254,13 @@ class StableRegression(Stable):
 
             H = self.hessian()
             x_k = np.concatenate((self.distribution_params, self.linear_params))
-            H_inverse = np.linalg.inv(H)
             trust_radius = self.calculate_trust_region_radius(G)
             print("Trust radius ", trust_radius)
             #Instead of a simple Newton step step direction is determined using exact trust region method
-            step = H_inverse @ G
-            print("Step size ", np.linalg.norm(step))
             trust_step = self.determine_step_direction(trust_radius, G, H)
-            print("Trust step size ", np.linagl.norm(trust_step))
-            x_k = x_k - (H_inverse @ G)
+            print("Trust step size ", np.linalg.norm(trust_step))
+            x_k = x_k - trust_step
+            print(x_k) 
             x_k = self.clamp_parameters(x_k)
             self.distribution_params = x_k[:3]
             self.linear_params = x_k[3:]

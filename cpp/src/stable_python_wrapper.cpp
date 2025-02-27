@@ -1,6 +1,7 @@
 #include "stable_distribution.hpp"
 #include "stable_simulation.hpp"
 #include "stable_estimation_quantile.hpp"
+#include "stable_density.hpp"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -30,5 +31,11 @@ PYBIND11_MODULE(stable_cpp, m) {
         .def("get_v_gamma", &QuantileEstimator::getVGamma)
         .def("get_v_delta", &QuantileEstimator::getVDelta)
         .def("get_quantiles", &QuantileEstimator::getCorrectedQuantiles)
+        ;
+
+
+    py::class_<Density>(m, "Density")
+        .def(py::init<std::vector<double>, double, double, double, double>())
+        .def("get_pdf", &Density::getPdf)
         ;
 }
