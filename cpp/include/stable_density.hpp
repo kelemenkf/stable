@@ -1,6 +1,7 @@
 #ifndef STABLE_DENSITY_HPP
 #define STABLE_DENSITY_HPP
 #include "utils.hpp"
+#include "quadrature_rules.hpp"
 #include <cmath>
 #include <vector>
 #include <array>
@@ -28,12 +29,6 @@ private:
     std::vector<double> X_negative;
     std::vector<bool> x_method;
 
-    static constexpr std::array<double, 46> SYMMETRIC_NODES = { /* values from quadrarule.py */ };
-    static constexpr std::array<double, 46> SYMMETRIC_WEIGHTS = { /* values from quadrarule.py */ };
-    static constexpr std::array<double, 80> ASYMMETRIC_NODES_ALPHA_MORE_11 = { /* values from quadrarule.py */ };
-    static constexpr std::array<double, 80> ASYMMETRIC_WEIGHTS_ALPHA_MORE_11 = { /* values from quadrarule.py */ };
-    static constexpr std::array<double, 90> ASYMMETRIC_NODES_ALPHA_LESS_09 = { /* values from quadrarule.py */ };
-    static constexpr std::array<double, 90> ASYMMETRIC_WEIGHTS_ALPHA_LESS_09 = { /* values from quadrarule.py */ };
 
 public: 
     Density(std::vector<double> inputX, double alphaInput = 2.0, double betaInput = 0.0,
