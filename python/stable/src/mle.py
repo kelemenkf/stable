@@ -133,8 +133,7 @@ class MLE(Stable):
         return params
 
 
-
-    def newton(self, eps=10e-6):
+    def newton(self, eps=10e-8):
         G = self.gradient()
 
         while (np.linalg.norm(G , 2) > eps):

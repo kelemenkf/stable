@@ -210,7 +210,17 @@ class StableRegression(Stable):
                 print("Reg factor, step size ", reg_factor, np.linalg.norm(p))
             
         return p
-            
+    
+
+    def evaluate_trust_region_step(self, G, H, p, x_k):
+        f_x = self.loglikelihood(x_k)
+        f_step = self.loglikelihood(x_k + p)
+        model_step = f_x + G.T @ p + 0.5 * p.T @ H @ p
+
+        ratio = (f_x - f_step) / (f_x - model_step)
+
+        return ratio
+
 
 
     def trust_region(self):
@@ -243,7 +253,7 @@ class StableRegression(Stable):
 
 
     
-    def newton(self, eps=10e-6):
+    def newton(self, eps=10e-8):
         G = self.gradient()
 
         while (np.linalg.norm(G , 2) > eps):
@@ -256,13 +266,18 @@ class StableRegression(Stable):
 
             H = self.hessian()
             x_k = np.concatenate((self.distribution_params, self.linear_params))
+
             trust_radius = self.calculate_trust_region_radius(G)
             print("Trust radius ", trust_radius)
-            #Instead of a simple Newton step step direction is determined using exact trust region method
             trust_step = self.determine_step_direction(trust_radius, G, H)
             print("Trust step size ", np.linalg.norm(trust_step))
+            evaluation_ratio = self.evaluate_trust_region_step(G, H, x_k, trust_step)
+            print("Eval ratio ", evaluation_ratio)
+            # if evaluation_ratio > 0.75:
+            #     x_k = x_k - trust_step
+            # elif evaluation_ratio < 0.25: 
+            #     x_k = x_k + 0.5 * trust_step
             x_k = x_k - trust_step
-            print(x_k) 
             x_k = self.clamp_parameters(x_k)
             self.distribution_params = x_k[:3]
             self.linear_params = x_k[3:]
