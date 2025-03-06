@@ -15,8 +15,8 @@ class StableRegression(Stable):
         self.X = sm.add_constant(X)
         self.y = y
         self.trimmed_y, self.trimmed_x = self.trim_data()
+        self.residuals = self.calculate_residuals()
         self.distribution_params, self.delta = self.calculate_initial_distribution_parameters()
-        print("Initial dist params ", self.distribution_params)
         self.linear_params = self.second_fit()
         print("Initial linear params ", self.linear_params)
         self.newton()
@@ -28,10 +28,16 @@ class StableRegression(Stable):
 
     def get_linear_params(self):
         return self.linear_params
+    
+
+    def get_residuals(self):
+        return self.residuals
 
 
     def loglikelihood(self, params):
-        alpha, beta, gamma = params[:3] 
+        alpha, beta, gamma = params[:3]
+
+        print("Dist ", params[:3], " linear ", params[3:])
 
         residuals_full = self.y - self.X @ params[3:] 
 
@@ -48,12 +54,12 @@ class StableRegression(Stable):
         results = sm.OLS(self.y, self.X).fit()
         coeffs = results.params
 
-        print(coeffs)
+        print("First fit coefficients ", coeffs)
 
         return coeffs
     
     
-    def get_residuals(self, coeffs, y, x):
+    def residuals(self, coeffs, y, x):
         fit_line1 = np.vectorize(lambda x: coeffs[0] + coeffs[1]*x)
 
         y_fitted = fit_line1(x[:,1])
@@ -62,7 +68,7 @@ class StableRegression(Stable):
     
 
     def trim_data(self):
-        residuals = self.get_residuals(self.first_fit(), self.y, self.X)
+        residuals = self.residuals(self.first_fit(), self.y, self.X)
         q_01 = np.quantile(residuals, 0.1)
         q_09 = np.quantile(residuals, 0.9)
         trimmed_x = []
@@ -88,26 +94,34 @@ class StableRegression(Stable):
         return coeffs
     
 
+    def calculate_residuals(self):
+        coeffs = self.first_fit()
+        residuals = self.residuals(coeffs, self.y, self.X)
+
+        return residuals
+    
+
     def trimmed_residuals(self):
         coeffs = self.second_fit()
-        residuals = self.get_residuals(coeffs, self.trimmed_y, self.trimmed_x)
+        residuals = self.residuals(coeffs, self.trimmed_y, self.trimmed_x)
 
         return residuals
 
 
     def calculate_initial_distribution_parameters(self):
-        coeffs = self.first_fit()
-        residuals = self.get_residuals(coeffs, self.y, self.X)
-
-        initial_distribution_parameters = Quantile(residuals).get_params()
+        initial_distribution_parameters = Quantile(self.residuals).get_params()
 
         delta = initial_distribution_parameters[3]
+
+        print("Initial dist params ", initial_distribution_parameters)
 
         return np.array(initial_distribution_parameters[:3]), delta
 
 
     def gradient(self, eps=10e-6):
         theta = np.concatenate((self.distribution_params, self.linear_params))
+
+        print("Parameters of thee gradient ", theta)
 
         grad = []
 
@@ -119,7 +133,7 @@ class StableRegression(Stable):
             backward[t] -= eps
             backward = self.clamp_parameters(backward)
             df_dx = (self.loglikelihood(forward) - self.loglikelihood(backward))  /  (2 * eps)
-            print(df_dx, theta[t])
+            print("df_dx " ,df_dx, " of param ", theta[t])
             grad.append(df_dx)
 
         return np.array(grad)
@@ -128,6 +142,8 @@ class StableRegression(Stable):
 
     def hessian(self, eps=10e-6):
         theta = np.concatenate((self.distribution_params, self.linear_params))
+
+        print("Parameters of the Hessians ", theta)
 
         f_theta = self.loglikelihood(theta)
 
@@ -187,7 +203,7 @@ class StableRegression(Stable):
 
 
     def clamp_parameters(self, params):
-        params[0] = np.clip(params[0], 0, 2)
+        params[0] = np.clip(params[0], 0.5, 2)
         params[1] = np.clip(params[1], -1, 1)
         params[2] = np.clip(params[2], 0, None)
 
@@ -195,19 +211,31 @@ class StableRegression(Stable):
     
 
     def calculate_trust_region_radius(self, G):
-        return 0.1 * np.linalg.norm(G)
+        return 0.1 * np.linalg.norm(G, 2)
 
 
-    def determine_step_direction(self, trust_radius, G, H):
+    def determine_step_direction(self, trust_radius, G, H, eps=10e-6):
         p = np.linalg.inv(H) @ G
-        step_size = np.linalg.norm(p)
+        step_size = np.linalg.norm(p, 2)
+        print("Newton step size ", step_size)
         reg_factor = 0
+        lower_lambda = 0
+        upper_lambda = max(np.linalg.eigvals(H))
+        # p_upper = np.linalg.inv(H + upper_lambda * np.identity(H.shape[0])) @ G
+        # p_lower = np.linalg.inv(H + lower_lambda * np.identity(H.shape[0])) @ G
+
+        # while (not((step_size - eps < trust_radius) and (step_size + eps > trust_radius))):
+        #     lambda_mid = (lower_lambda + upper_lambda) / 2
+        #     p_new = np.linalg.inv(H + lambda_mid * np.identity(H.shape[0])) @ G
+
+
+        # print("Reg factor max, step size ", upper_lambda, np.linalg.norm(p, 2))
 
         if step_size > trust_radius:
             while(step_size > trust_radius):
                 reg_factor += max(np.linalg.eigvals(H))
                 p = np.linalg.inv(H + reg_factor * np.identity(H.shape[0])) @ G
-                print("Reg factor, step size ", reg_factor, np.linalg.norm(p))
+                print("Reg factor, step size ", reg_factor, np.linalg.norm(p, 2))
             
         return p
     
@@ -253,13 +281,14 @@ class StableRegression(Stable):
 
 
     
-    def newton(self, eps=10e-8):
+    def newton(self, eps=10e-6):
         G = self.gradient()
 
         while (np.linalg.norm(G , 2) > eps):
             G = self.gradient()
 
             print("Gradient ", G)
+            print("Accuracy ", np.linalg.norm(G, 2))
 
             if np.linalg.norm(G, 2) < eps: 
                 break

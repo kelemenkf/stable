@@ -13,7 +13,14 @@ double getQuantile(const std::vector<double>& sample, const float& p)
 
 double linearInterpolation(CartesianPoint point0, CartesianPoint point1, double x)
 {
-    return (point0[1] * (point1[0] - x) + point1[1] * (x - point0[0])) / (point1[0] - point0[0]);
+    if (point1[0] == point0[0])
+    {
+        return x;
+    }
+    else
+    {
+        return (point0[1] * (point1[0] - x) + point1[1] * (x - point0[0])) / (point1[0] - point0[0]);
+    } 
 }
 
 
