@@ -18,6 +18,9 @@ class StableRegression(Stable):
         self.residuals = self.calculate_residuals()
         self.distribution_params, self.delta = self.calculate_initial_distribution_parameters()
         self.linear_params = self.second_fit()
+        print("OLS coefficients ", self.linear_params)
+        #Plus not minus probably because Quantile sets -x_50 as the inital value
+        self.linear_params[0] += self.delta
         print("Initial linear params ", self.linear_params)
         self.newton()
 
@@ -36,8 +39,6 @@ class StableRegression(Stable):
 
     def loglikelihood(self, params):
         alpha, beta, gamma = params[:3]
-
-        print("Dist ", params[:3], " linear ", params[3:])
 
         residuals_full = self.y - self.X @ params[3:] 
 
@@ -203,7 +204,7 @@ class StableRegression(Stable):
 
 
     def clamp_parameters(self, params):
-        params[0] = np.clip(params[0], 0.5, 2)
+        params[0] = np.clip(params[0], 0, 2)
         params[1] = np.clip(params[1], -1, 1)
         params[2] = np.clip(params[2], 0, None)
 
@@ -295,6 +296,7 @@ class StableRegression(Stable):
 
             H = self.hessian()
             x_k = np.concatenate((self.distribution_params, self.linear_params))
+            print("x_k ", x_k)
 
             trust_radius = self.calculate_trust_region_radius(G)
             print("Trust radius ", trust_radius)
